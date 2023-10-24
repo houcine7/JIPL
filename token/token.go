@@ -48,3 +48,12 @@ const (
 	FUNCTION = 100
 	DEF      = 101 // a variable definition
 )
+
+
+/*
+* Create a new token helper function
+*/
+
+func NewToken (tType TokenType, value rune) Token{
+	return Token{Type: tType , Value: string(value)};
+}

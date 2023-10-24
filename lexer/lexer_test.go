@@ -9,9 +9,8 @@ import (
 
 // MOCK1_TEST := "=+(){},;"
 
-func AssertNextToken(t *testing.T) {
+func TestNextToken(t *testing.T) {
 	MOCK1_TEST := "=+(){},;"
-	log.Print(MOCK1_TEST)
 
 	var tests = []struct {
 		expectedTokenType token.TokenType
@@ -22,17 +21,19 @@ func AssertNextToken(t *testing.T) {
 		{expectedTokenType: token.LP, expectedValue: "("},
 		{expectedTokenType: token.RP, expectedValue: ")"},
 		{expectedTokenType: token.LCB, expectedValue: "{"},
-		{expectedTokenType: token.RCB, expectedValue: "{"},
+		{expectedTokenType: token.RCB, expectedValue: "}"},
 		{expectedTokenType: token.CAMMA, expectedValue: ","},
 		{expectedTokenType: token.SCOLON, expectedValue: ";"},
 	}
 
 	myLexer := New(MOCK1_TEST)
 	
+
 	for i,et :=range(tests) {
 		calculatedToken:= myLexer.NextToken()
-
+		log.Print(calculatedToken)
 		// test the token type 
+
 		if et.expectedTokenType !=  calculatedToken.Type {
 			log.Fatalf("tests index %d -> tokenType wrong, expected:[%q] and got:[%q]",
 			i,et.expectedTokenType,calculatedToken.Type)
