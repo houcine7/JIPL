@@ -1,13 +1,11 @@
 package token
 
 /*
-* We are going to use int as the token type to povide more performance
+* We are going to use int as the token type to provide more performance
 * Using string's as token type would be less performant
 * And also the int allows Us to define many values
-* String's will provide less debuging headache '(that's what's fun to more challanging)
-*
- */
-
+* String's will provide less debugging headache '(that's what's fun to more challenging)
+*/
 type TokenType int
 
 type Token struct {
@@ -17,8 +15,8 @@ type Token struct {
 
 /*
 *As the first iteration OUR JIPL lang
-* will define limited tokens so we decalre em
-* as constats
+* will define limited tokens so we declare em
+* as constants
  */
 
 const (
@@ -27,7 +25,7 @@ const (
 	FILEENDED = 0  //file ended
 
 	//Identifiers and literals [1,20]
-	IDENTIFIER = 1 // varaibles
+	IDENTIFIER = 1 // variables
 	INT        = 2 // int values
 
 	//OPERATORS  values [40,80]
