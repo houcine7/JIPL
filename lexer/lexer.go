@@ -5,6 +5,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/houcine7/JIPL/token"
+	"github.com/houcine7/JIPL/utils"
 )
 
 type Lexer struct {
@@ -17,8 +18,7 @@ type Lexer struct {
 /*
 * Init a Lexer
  */
-
-func New(input string) *Lexer {
+func InitLexer(input string) *Lexer {
 	l := &Lexer{input: input}
 	l.ReadChar() // READ FIRST CHAR 
 	return l
@@ -52,7 +52,10 @@ func (l *Lexer) NextToken() token.Token {
 		case 0:
 			// program ends here 
 			test = token.NewToken(token.FILEENDED, 0)
+		default:
+			
 	}
+
 	fmt.Print(test)
 
 	l.ReadChar() // move to next char
@@ -65,7 +68,7 @@ func (l *Lexer) NextToken() token.Token {
 */
 func (l *Lexer) ReadChar(){
 	
-	if l.readPos >= utf8.RuneCount([]byte(l.input)){
+	if l.readPos >= utf8.RuneCount([]byte(l.input)){ // the number of runes in the string
 		l.char = 0 // SET THE CURRENT CHAR TO NUL CHARACTER (TO INDICATE THE TERMINATION OF THE STRING)
 	}else{
 		r, size :=utf8.DecodeRuneInString(l.input[l.readPos:])
@@ -75,5 +78,24 @@ func (l *Lexer) ReadChar(){
 	} 
 }
 
+
+
+/*
+* 	this functions reads the identifiers and keywords
+*   starting with a letter and stops when it finds a non letter character
+*/
+func (l *Lexer) ReadIdentifier() string{
+	currPosition := l.currentPos;
+	
+	//identifiers can't start with numbers 
+	if currPosition ==0 && utils.IsDigit(l.char){
+		return "" // this identifier is invalid 
+	}
+
+	for utils.IsDigit(l.char) || utils.IsLetter(l.char)  {
+		l.ReadChar()
+	}
+	return l.input[currPosition:l.readPos]
+}
 
 
