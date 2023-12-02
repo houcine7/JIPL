@@ -36,7 +36,13 @@ func (l *Lexer) NextToken() token.Token {
 
 	switch l.char{
 		case '=':
-			test = token.NewToken(token.ASSIGN,string(l.char));
+			if l.peek() =='='{
+				prev :=l.char
+				l.readChar()
+				test = token.NewToken(token.EQUAL, string(prev)+ string(l.char));
+			} else {
+				test = token.NewToken(token.ASSIGN,string(l.char));
+			}
 		case '+':
 			test = token.NewToken(token.PLUS, string(l.char))
 		case '-':
@@ -46,11 +52,29 @@ func (l *Lexer) NextToken() token.Token {
 		case '*':
 			test = token.NewToken(token.STAR,string(l.char))
 		case '!':
-			test = token.NewToken(token.EXMARK,string(l.char))
+			if l.peek() =='=' {
+				prev := l.char
+				l.readChar()
+				test = token.NewToken(token.NOT_EQUAL,string(prev)+ string(l.char))
+			}else {
+				test = token.NewToken(token.EX_MARK,string(l.char))
+			}
 		case '<':
-			test = token.NewToken(token.LT,string(l.char))
+			if l.peek() =='='{
+				prev :=l.char
+				l.readChar()
+				test = token.NewToken(token.LT_OR_EQ, string(prev) + string(l.char))
+			}else{
+				test = token.NewToken(token.LT,string(l.char))
+			}
 		case '>':
-			test = token.NewToken(token.GT,string(l.char))
+			if l.peek() == '='{
+				prev :=l.char
+				l.readChar()
+				test = token.NewToken(token.GT_OR_EQ,string(prev) + string(l.char))
+			}else{
+				test = token.NewToken(token.GT,string(l.char))
+			}
 		case ')':
 			test = token.NewToken(token.RP,string(l.char))
 		case '(':
@@ -62,10 +86,10 @@ func (l *Lexer) NextToken() token.Token {
 		case ',':
 			test = token.NewToken(token.COMMA, string(l.char))
 		case ';':
-			test = token.NewToken(token.SCOLON, string(l.char))
+			test = token.NewToken(token.S_COLON, string(l.char))
 		case 0:
 			// program ends here 
-			test = token.NewToken(token.FILEENDED, string(rune(0)))
+			test = token.NewToken(token.FILE_ENDED, string(rune(0)))
 		default:
 			if utils.IsLetter(l.char)  {
 				ident := l.ReadIdentifier()
@@ -101,6 +125,21 @@ func (l *Lexer) readChar(){
 		l.readPos += size
 	} 
 }
+
+/*
+* This function peeks the next character 
+* used in case of tokens that are compose of more than 2 tokens ( like "==" and "<=" ">=" and "!=")
+*/
+
+func (l *Lexer) peek() rune {
+	// if we still in the input length range
+	if l.readPos >= utf8.RuneCount([]byte(l.input)) {
+		return 0;
+	}
+	return rune(l.input[l.readPos]);
+}
+
+
 
 
 /*

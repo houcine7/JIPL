@@ -25,7 +25,7 @@ func TestNextToken(t *testing.T) {
 		{expectedTokenType: token.LCB, expectedValue: "{"},
 		{expectedTokenType: token.RCB, expectedValue: "}"},
 		{expectedTokenType: token.COMMA, expectedValue: ","},
-		{expectedTokenType: token.SCOLON, expectedValue: ";"},
+		{expectedTokenType: token.S_COLON, expectedValue: ";"},
 	}
 
 	myLexer := InitLexer(MOCK1_TEST)
@@ -67,13 +67,13 @@ func TestNextToken2(t *testing.T) {
 		{expectedTokenType: token.IDENTIFIER, expectedValue: "val1"},
 		{expectedTokenType: token.ASSIGN, expectedValue: "="},
 		{expectedTokenType: token.INT, expectedValue: "30"},
-		{expectedTokenType: token.SCOLON, expectedValue: ";"},
+		{expectedTokenType: token.S_COLON, expectedValue: ";"},
 
 		{expectedTokenType: token.DEF, expectedValue: "def"},
 		{expectedTokenType: token.IDENTIFIER, expectedValue: "val2"},
 		{expectedTokenType: token.ASSIGN, expectedValue: "="},
 		{expectedTokenType: token.INT, expectedValue: "3"},
-		{expectedTokenType: token.SCOLON, expectedValue: ";"},
+		{expectedTokenType: token.S_COLON, expectedValue: ";"},
 
 		{expectedTokenType: token.DEF, expectedValue: "def"},
 		{expectedTokenType: token.IDENTIFIER, expectedValue: "add"},
@@ -88,9 +88,9 @@ func TestNextToken2(t *testing.T) {
 		{expectedTokenType: token.IDENTIFIER, expectedValue: "x"},
 		{expectedTokenType: token.PLUS, expectedValue: "+"},
 		{expectedTokenType: token.IDENTIFIER, expectedValue: "y"},
-		{expectedTokenType: token.SCOLON, expectedValue: ";"},
+		{expectedTokenType: token.S_COLON, expectedValue: ";"},
 		{expectedTokenType: token.RCB, expectedValue: "}"},
-		{expectedTokenType: token.SCOLON, expectedValue: ";"},
+		{expectedTokenType: token.S_COLON, expectedValue: ";"},
 		{expectedTokenType: token.DEF, expectedValue: "def"},
 		{expectedTokenType: token.IDENTIFIER, expectedValue: "result"},
 		{expectedTokenType: token.ASSIGN , expectedValue: "="},
@@ -100,7 +100,7 @@ func TestNextToken2(t *testing.T) {
 		{expectedTokenType: token.COMMA, expectedValue: ","},
 		{expectedTokenType: token.IDENTIFIER, expectedValue: "val2"},
 		{expectedTokenType: token.RP,expectedValue: ")"},
-		{expectedTokenType: token.SCOLON,expectedValue: ";"},
+		{expectedTokenType: token.S_COLON,expectedValue: ";"},
 		
 	}
 	myLexer := InitLexer(MOCK1_TEST)
@@ -133,7 +133,8 @@ func TestNextToken3(t *testing.T){
 	
 	def val2 = 3;
 	def add = function(x, y) {
-		return x + y;
+		x + y;
+		return true;
 	};
 	
 	def result = add(val1, val2);
@@ -145,6 +146,10 @@ func TestNextToken3(t *testing.T){
 	} else {
 		val2=7777;
 	}
+	10 == 10;
+	10 != 7;
+	10 <= 20;
+	10 >= 0;
 	`
 
 	var tests = []struct {
@@ -155,13 +160,13 @@ func TestNextToken3(t *testing.T){
 		{expectedTokenType: token.IDENTIFIER, expectedValue: "val1"},
 		{expectedTokenType: token.ASSIGN, expectedValue: "="},
 		{expectedTokenType: token.INT, expectedValue: "30"},
-		{expectedTokenType: token.SCOLON, expectedValue: ";"},
+		{expectedTokenType: token.S_COLON, expectedValue: ";"},
 
 		{expectedTokenType: token.DEF, expectedValue: "def"},
 		{expectedTokenType: token.IDENTIFIER, expectedValue: "val2"},
 		{expectedTokenType: token.ASSIGN, expectedValue: "="},
 		{expectedTokenType: token.INT, expectedValue: "3"},
-		{expectedTokenType: token.SCOLON, expectedValue: ";"},
+		{expectedTokenType: token.S_COLON, expectedValue: ";"},
 
 		{expectedTokenType: token.DEF, expectedValue: "def"},
 		{expectedTokenType: token.IDENTIFIER, expectedValue: "add"},
@@ -173,13 +178,15 @@ func TestNextToken3(t *testing.T){
 		{expectedTokenType: token.IDENTIFIER, expectedValue: "y"},
 		{expectedTokenType: token.RP, expectedValue: ")"},
 		{expectedTokenType: token.LCB, expectedValue: "{"},
-		{expectedTokenType: token.RETURN, expectedValue: "return"},
 		{expectedTokenType: token.IDENTIFIER, expectedValue: "x"},
 		{expectedTokenType: token.PLUS, expectedValue: "+"},
 		{expectedTokenType: token.IDENTIFIER, expectedValue: "y"},
-		{expectedTokenType: token.SCOLON, expectedValue: ";"},
+		{expectedTokenType: token.S_COLON, expectedValue: ";"},
+		{expectedTokenType: token.RETURN, expectedValue: "return"},
+		{expectedTokenType: token.TRUE, expectedValue: "true"},
+		{expectedTokenType: token.S_COLON, expectedValue: ";"},
 		{expectedTokenType: token.RCB, expectedValue: "}"},
-		{expectedTokenType: token.SCOLON, expectedValue: ";"},
+		{expectedTokenType: token.S_COLON, expectedValue: ";"},
 
 		{expectedTokenType: token.DEF, expectedValue: "def"},
 		{expectedTokenType: token.IDENTIFIER, expectedValue: "result"},
@@ -190,14 +197,14 @@ func TestNextToken3(t *testing.T){
 		{expectedTokenType: token.COMMA, expectedValue: ","},
 		{expectedTokenType: token.IDENTIFIER, expectedValue: "val2"},
 		{expectedTokenType: token.RP,expectedValue: ")"},
-		{expectedTokenType: token.SCOLON,expectedValue: ";"},
+		{expectedTokenType: token.S_COLON,expectedValue: ";"},
 
-		{expectedTokenType: token.EXMARK, expectedValue: "!"},
+		{expectedTokenType: token.EX_MARK, expectedValue: "!"},
 		{expectedTokenType: token.MINUS, expectedValue: "-"},
 		{expectedTokenType: token.STAR,expectedValue: "*"},
 		{expectedTokenType: token.INT, expectedValue: "7"},
 		{expectedTokenType: token.SLASH,expectedValue: "/"},
-		{expectedTokenType: token.SCOLON,expectedValue: ";"},
+		{expectedTokenType: token.S_COLON,expectedValue: ";"},
 
 		{expectedTokenType: token.IF, expectedValue: "if"},
 		{expectedTokenType: token.LP,expectedValue: "("},
@@ -209,7 +216,7 @@ func TestNextToken3(t *testing.T){
 		{expectedTokenType: token.IDENTIFIER, expectedValue: "val1"},
 		{expectedTokenType: token.ASSIGN , expectedValue: "="},
 		{expectedTokenType: token.INT, expectedValue: "7777"},
-		{expectedTokenType: token.SCOLON,expectedValue: ";"},
+		{expectedTokenType: token.S_COLON,expectedValue: ";"},
 		{expectedTokenType: token.RCB, expectedValue: "}"},
 
 		{expectedTokenType: token.ELSE, expectedValue: "else"},
@@ -217,8 +224,29 @@ func TestNextToken3(t *testing.T){
 		{expectedTokenType: token.IDENTIFIER, expectedValue: "val2"},
 		{expectedTokenType: token.ASSIGN , expectedValue: "="},
 		{expectedTokenType: token.INT, expectedValue: "7777"},
-		{expectedTokenType: token.SCOLON,expectedValue: ";"},
+		{expectedTokenType: token.S_COLON,expectedValue: ";"},
 		{expectedTokenType: token.RCB, expectedValue: "}"},
+
+		{expectedTokenType: token.INT, expectedValue: "10"},
+		{expectedTokenType: token.EQUAL, expectedValue: "=="},
+		{expectedTokenType: token.INT, expectedValue: "10"},
+		{expectedTokenType: token.S_COLON, expectedValue: ";"},
+
+		{expectedTokenType: token.INT, expectedValue: "10"},
+		{expectedTokenType: token.NOT_EQUAL, expectedValue: "!="},
+		{expectedTokenType: token.INT, expectedValue: "7"},
+		{expectedTokenType: token.S_COLON, expectedValue: ";"},
+
+		{expectedTokenType: token.INT, expectedValue: "10"},
+		{expectedTokenType: token.LT_OR_EQ, expectedValue: "<="},
+		{expectedTokenType: token.INT	, expectedValue: "20"},
+		{expectedTokenType: token.S_COLON, expectedValue: ";"},
+
+		{expectedTokenType: token.INT, expectedValue: "10"},
+		{expectedTokenType: token.GT_OR_EQ, expectedValue: ">="},
+		{expectedTokenType: token.INT	, expectedValue: "0"},
+		{expectedTokenType: token.S_COLON, expectedValue: ";"},
+
 	
 		
 	}

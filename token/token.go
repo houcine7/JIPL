@@ -33,6 +33,8 @@ var keywords = map[string]TokenType{
 	"break": BREAK,
 	"continue": CONTINUE,
 	"return": RETURN,
+	"true": TRUE,
+	"false": FALSE,
 }
 
 func GetIdentifierTokenType(identifier string) TokenType{

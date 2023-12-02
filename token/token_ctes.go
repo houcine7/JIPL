@@ -8,7 +8,7 @@ package token
  const (
 	// SPECIALS
 	ILLEGAL   = -1 // unknown token
-	FILEENDED = 0  //file ended
+	FILE_ENDED = 0  //file ended
 	
 	
 	// references  
@@ -24,15 +24,20 @@ package token
 	MINUS  = 42 // -
 	STAR   = 43 // *
 	SLASH  = 44 // /
-	EXMARK = 45 // !
+	EX_MARK = 45 // !
+	EQUAL   = 46 // ==
+	NOT_EQUAL = 47 // !=
 
+	/*Comparators operators*/
 	LT = 46 // <
 	GT = 47 // >
+	LT_OR_EQ = 48 // <=
+	GT_OR_EQ = 49 // >=
 
 
 	//DELIMITERS [20,39]
 	COMMA  = 20 // ,
-	SCOLON = 21 // ;
+	S_COLON = 21 // ;
 
 	LP = 22 // (
 	RP = 23 // )
@@ -48,4 +53,6 @@ package token
 	RETURN   = 104 // return statement toke
 	BREAK    = 105 // break token
 	CONTINUE = 106 // continue token
+	TRUE     = 107
+	FALSE    = 108
 )
