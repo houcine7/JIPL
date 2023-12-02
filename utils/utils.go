@@ -16,3 +16,6 @@ func IsDigit(char rune) bool{
 	}
 	return false
 }
+
+
+

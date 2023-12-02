@@ -52,12 +52,12 @@ func TestNextToken(t *testing.T) {
 
 
 func TestNextToken2(t *testing.T) {
-	MOCK1_TEST := `def val1 = 30;
-	def val2 = 3;
-	def add = function(x,y){
-		x+y;
+	MOCK1_TEST := `def val1 = 5;
+	def val2 = 10;
+	def add = function(x, y) {
+	x + y;
 	};
-	def result = add(val1,val2);`
+	def result = add(val1, val2);`
 
 	var tests = []struct {
 		expectedTokenType token.TokenType
@@ -98,11 +98,13 @@ func TestNextToken2(t *testing.T) {
 
 	for i,et :=range(tests) {
 		calculatedToken:= myLexer.NextToken()
-		log.Print(calculatedToken)
+		log.Println("------- TOKEN ---------")
+		log.Println(calculatedToken,calculatedToken.Type,calculatedToken.Value)
+		log.Println("----------------")
 		// test the token type
 
 		if et.expectedTokenType !=  calculatedToken.Type {
-			log.Fatalf("tests index %d -> tokenType wrong, expected:[%q] and got:[%q]",
+			log.Fatalf("tests index %d -> tokenType wrong, expected:[%d] and got:[%d]",
 			i,et.expectedTokenType,calculatedToken.Type)
 		}
 

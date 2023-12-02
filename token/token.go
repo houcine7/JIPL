@@ -50,8 +50,8 @@ const (
 * Create a new token helper function
 */
 
-func NewToken (tType TokenType, value rune) Token{
-	return Token{Type: tType , Value: string(value)};
+func NewToken (tType TokenType, value string) Token{
+	return Token{Type: tType , Value: value};
 }
 
 /*

@@ -20,7 +20,7 @@ type Lexer struct {
  */
 func InitLexer(input string) *Lexer {
 	l := &Lexer{input: input}
-	l.ReadChar() // READ FIRST CHAR 
+	l.readChar() // READ FIRST CHAR 
 	return l
 }
 
@@ -31,34 +31,46 @@ func InitLexer(input string) *Lexer {
 func (l *Lexer) NextToken() token.Token {
 	// var tokens []token.Token
 	var test token.Token
+	l.ignoreWhiteSpace()
+	fmt.Println(string(l.char),l.currentPos)
 
 	switch l.char{
 		case '=':
-			test = token.NewToken(token.ASSIGN,l.char);
+			test = token.NewToken(token.ASSIGN,string(l.char));
 		case '+':
-			test = token.NewToken(token.PLUS, l.char)
+			test = token.NewToken(token.PLUS, string(l.char))
 		case ')':
-			test = token.NewToken(token.RP,l.char)
+			test = token.NewToken(token.RP,string(l.char))
 		case '(':
-			test = token.NewToken(token.LP,l.char)
+			test = token.NewToken(token.LP,string(l.char))
 		case '{':
-			test = token.NewToken(token.LCB, l.char)
+			test = token.NewToken(token.LCB, string(l.char))
 		case '}':
-			test = token.NewToken(token.RCB, l.char)
+			test = token.NewToken(token.RCB, string(l.char))
 		case ',':
-			test = token.NewToken(token.CAMMA, l.char)
+			test = token.NewToken(token.CAMMA, string(l.char))
 		case ';':
-			test = token.NewToken(token.SCOLON, l.char)
+			test = token.NewToken(token.SCOLON, string(l.char))
 		case 0:
 			// program ends here 
-			test = token.NewToken(token.FILEENDED, 0)
+			test = token.NewToken(token.FILEENDED, string(rune(0)))
 		default:
-			
+			if utils.IsLetter(l.char)  {
+				ident := l.ReadIdentifier()
+				test = token.NewToken(token.GetIdentifierTokenType(ident),ident)
+				return test
+			}else if utils.IsDigit(l.char){
+				num := l.ReadNumber()
+				test = token.NewToken(token.INT,num)
+				return test // this prevents calling read char which is already done with the method ReadNumber()
+			}else {
+				test = token.NewToken(token.ILLEGAL,string(l.char))
+			}
 	}
 
 	fmt.Print(test)
 
-	l.ReadChar() // move to next char
+	l.readChar() // move to next char
 	return test
 }
 
@@ -66,7 +78,7 @@ func (l *Lexer) NextToken() token.Token {
 /*
 * This function give us the next character
 */
-func (l *Lexer) ReadChar(){
+func (l *Lexer) readChar(){
 	
 	if l.readPos >= utf8.RuneCount([]byte(l.input)){ // the number of runes in the string
 		l.char = 0 // SET THE CURRENT CHAR TO NUL CHARACTER (TO INDICATE THE TERMINATION OF THE STRING)
@@ -77,7 +89,6 @@ func (l *Lexer) ReadChar(){
 		l.readPos += size
 	} 
 }
-
 
 
 /*
@@ -93,9 +104,29 @@ func (l *Lexer) ReadIdentifier() string{
 	}
 
 	for utils.IsDigit(l.char) || utils.IsLetter(l.char)  {
-		l.ReadChar()
+		l.readChar()
 	}
-	return l.input[currPosition:l.readPos]
+	return l.input[currPosition:l.currentPos]
+}
+
+/*
+* this function reads the numbers 
+* starting with a digit and stops when it reaches a non digit value
+*/
+func (l *Lexer) ReadNumber() string {
+	currentPos := l.currentPos
+	for utils.IsDigit(l.char) {
+		l.readChar()
+	}
+	return l.input[currentPos:l.currentPos]
 }
 
 
+/*
+*  function to skip white space and break lines
+*/
+func (l *Lexer) ignoreWhiteSpace(){
+	if l.char ==' ' || l.char == '\t' || l.char == '\n' || l.char == '\r' {
+		l.readChar()
+	}
+}
