@@ -133,14 +133,18 @@ func TestNextToken3(t *testing.T){
 	
 	def val2 = 3;
 	def add = function(x, y) {
-		x + y;
+		return x + y;
 	};
 	
 	def result = add(val1, val2);
 	
 	!-*7/;
 
-	5 < 10;
+	if(val1 < val2) {
+		val1 = 7777;
+	} else {
+		val2=7777;
+	}
 	`
 
 	var tests = []struct {
@@ -169,6 +173,7 @@ func TestNextToken3(t *testing.T){
 		{expectedTokenType: token.IDENTIFIER, expectedValue: "y"},
 		{expectedTokenType: token.RP, expectedValue: ")"},
 		{expectedTokenType: token.LCB, expectedValue: "{"},
+		{expectedTokenType: token.RETURN, expectedValue: "return"},
 		{expectedTokenType: token.IDENTIFIER, expectedValue: "x"},
 		{expectedTokenType: token.PLUS, expectedValue: "+"},
 		{expectedTokenType: token.IDENTIFIER, expectedValue: "y"},
@@ -194,10 +199,28 @@ func TestNextToken3(t *testing.T){
 		{expectedTokenType: token.SLASH,expectedValue: "/"},
 		{expectedTokenType: token.SCOLON,expectedValue: ";"},
 
-		{expectedTokenType:  token.INT, expectedValue: "5"},
+		{expectedTokenType: token.IF, expectedValue: "if"},
+		{expectedTokenType: token.LP,expectedValue: "("},
+		{expectedTokenType: token.IDENTIFIER, expectedValue: "val1"},
 		{expectedTokenType: token.LT, expectedValue: "<"},
-		{expectedTokenType: token.INT, expectedValue: "10"},
+		{expectedTokenType: token.IDENTIFIER, expectedValue: "val2"},
+		{expectedTokenType: token.RP,expectedValue: ")"},
+		{expectedTokenType: token.LCB, expectedValue: "{"},
+		{expectedTokenType: token.IDENTIFIER, expectedValue: "val1"},
+		{expectedTokenType: token.ASSIGN , expectedValue: "="},
+		{expectedTokenType: token.INT, expectedValue: "7777"},
 		{expectedTokenType: token.SCOLON,expectedValue: ";"},
+		{expectedTokenType: token.RCB, expectedValue: "}"},
+
+		{expectedTokenType: token.ELSE, expectedValue: "else"},
+		{expectedTokenType: token.LCB, expectedValue: "{"},
+		{expectedTokenType: token.IDENTIFIER, expectedValue: "val2"},
+		{expectedTokenType: token.ASSIGN , expectedValue: "="},
+		{expectedTokenType: token.INT, expectedValue: "7777"},
+		{expectedTokenType: token.SCOLON,expectedValue: ";"},
+		{expectedTokenType: token.RCB, expectedValue: "}"},
+	
+		
 	}
 
 	myLexer := InitLexer(MOCK1_TEST)

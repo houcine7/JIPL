@@ -28,6 +28,11 @@ func NewToken (tType TokenType, value string) Token{
 var keywords = map[string]TokenType{
 	"function": FUNCTION,
 	"def": DEF,
+	"if": IF,
+	"else": ELSE,
+	"break": BREAK,
+	"continue": CONTINUE,
+	"return": RETURN,
 }
 
 func GetIdentifierTokenType(identifier string) TokenType{
