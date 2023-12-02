@@ -39,6 +39,18 @@ func (l *Lexer) NextToken() token.Token {
 			test = token.NewToken(token.ASSIGN,string(l.char));
 		case '+':
 			test = token.NewToken(token.PLUS, string(l.char))
+		case '-':
+			test = token.NewToken(token.MINUS,string(l.char))
+		case '/':
+			test = token.NewToken(token.SLASH,string(l.char))
+		case '*':
+			test = token.NewToken(token.STAR,string(l.char))
+		case '!':
+			test = token.NewToken(token.EXMARK,string(l.char))
+		case '<':
+			test = token.NewToken(token.LT,string(l.char))
+		case '>':
+			test = token.NewToken(token.GT,string(l.char))
 		case ')':
 			test = token.NewToken(token.RP,string(l.char))
 		case '(':
@@ -48,7 +60,7 @@ func (l *Lexer) NextToken() token.Token {
 		case '}':
 			test = token.NewToken(token.RCB, string(l.char))
 		case ',':
-			test = token.NewToken(token.CAMMA, string(l.char))
+			test = token.NewToken(token.COMMA, string(l.char))
 		case ';':
 			test = token.NewToken(token.SCOLON, string(l.char))
 		case 0:
@@ -126,7 +138,7 @@ func (l *Lexer) ReadNumber() string {
 *  function to skip white space and break lines
 */
 func (l *Lexer) ignoreWhiteSpace(){
-	if l.char ==' ' || l.char == '\t' || l.char == '\n' || l.char == '\r' {
+	for l.char ==' ' || l.char == '\t' || l.char == '\n' || l.char == '\r' {
 		l.readChar()
 	}
 }

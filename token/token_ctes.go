@@ -15,11 +15,19 @@ package token
 	INT        = 2 // int values
 
 	//OPERATORS  values [40,80]
-	ASSIGN = 40
-	PLUS   = 41
+	ASSIGN = 40 // =
+	PLUS   = 41 // +
+	MINUS  = 42 // -
+	STAR   = 43 // *
+	SLASH  = 44 // /
+	EXMARK = 45 // !
+
+	LT = 46 // <
+	GT = 47 // >
+
 
 	//DELIMITERS [20,39]
-	CAMMA  = 20 // ,
+	COMMA  = 20 // ,
 	SCOLON = 21 // ;
 
 	LP = 22 // (
