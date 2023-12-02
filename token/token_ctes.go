@@ -9,10 +9,14 @@ package token
 	// SPECIALS
 	ILLEGAL   = -1 // unknown token
 	FILEENDED = 0  //file ended
-
-	//Identifiers and literals [1,20]
-	IDENTIFIER = 1 // variables
+	
+	
+	// references  
+	IDENTIFIER = 1
+	
+	// literals [2,20]
 	INT        = 2 // int values
+	
 
 	//OPERATORS  values [40,80]
 	ASSIGN = 40 // =
@@ -37,6 +41,11 @@ package token
 	RCB = 25 // }
 
 	// KEYWORDS [100,110]
-	FUNCTION = 100
-	DEF      = 101 // a variable definition
+	FUNCTION = 100 // function keyword 
+	DEF      = 101 // an identifier definition
+	IF       = 102 // if token
+	ELSE     = 103 // else token
+	RETURN   = 104 // return statement toke
+	BREAK    = 105 // break token
+	CONTINUE = 106 // continue token
 )
