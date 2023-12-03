@@ -1,7 +1,6 @@
 package lexer
 
 import (
-	"fmt"
 	"unicode/utf8"
 
 	"github.com/houcine7/JIPL/token"
@@ -32,7 +31,6 @@ func (l *Lexer) NextToken() token.Token {
 	// var tokens []token.Token
 	var test token.Token
 	l.ignoreWhiteSpace()
-	fmt.Println(string(l.char),l.currentPos)
 
 	switch l.char{
 		case '=':
@@ -103,8 +101,6 @@ func (l *Lexer) NextToken() token.Token {
 				test = token.NewToken(token.ILLEGAL,string(l.char))
 			}
 	}
-
-	fmt.Print(test)
 
 	l.readChar() // move to next char
 	return test
