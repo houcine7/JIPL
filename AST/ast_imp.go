@@ -23,8 +23,6 @@ func (prog *Program) TokenLiteral() string{
 /*
 * Def statement Node (def x = add(1,2) - 1 + (10/5))
 */
-
-
 type Identifier struct{ // 
 	Token token.Token // token.IDENTIFIER token
 	Value string
