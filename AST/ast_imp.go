@@ -50,4 +50,4 @@ func (defSt *DefStatement) TokenLiteral() string{
 	return defSt.Token.Value;
 }
 // satisfies the statement interface 
-func (defSt *DefStatement) StatementNode() {}
+func (defSt *DefStatement) statementNode() {}
