@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"fmt"
 	"testing"
 
 	ast "github.com/houcine7/JIPL/AST"
@@ -11,20 +10,22 @@ import (
 func TestDefStatement(t *testing.T) {
 
 	input := `
-def num1 = 5;
-def num2 = 10;
-def foobar = 838383;
+def num1 = 13;
+def num2 = 0;
+def foobar = 5321;
 `
 	l := lexer.InitLexer(input)
-	fmt.Println("-----------------------")
-	fmt.Println("lexer", l)
+	
+	t.Log("-----------------------")
+	t.Log("lexer", l)
 	parser := InitParser(l)
-	fmt.Println("-----------------------")
-	fmt.Println("parser",parser)
+	t.Log("-----------------------")
+	t.Log("parser",parser)
 
 	program := parser.Parse()
 
-	fmt.Println(program)
+	// check parser errors 
+	checkParserErrors(parser,t)
 
 	if program==nil{
 		t.Fatalf("parse returned a nil value")
@@ -51,8 +52,29 @@ def foobar = 838383;
 			return
 		}
 	}
-
 }
+
+
+
+func checkParserErrors(p *Parser,t *testing.T){
+	errors := p.Errors()
+
+	if len(errors) ==0 {
+		t.Log("INFO: no ERRORS OCCURRED")
+		return
+	}
+
+	//
+	t.Log("-------PARSING ERRORS: --------")
+	t.Errorf("%d error found on the parser",len(errors))
+
+	for i,msg := range errors  {
+		t.Errorf("Parser index:%d has message %s",i,msg)
+	}
+
+	t.FailNow() // mark tests as failed and stop execution 
+} 
+
 
 func testDefStatement(t *testing.T, stm ast.Statement, name string) bool {
 	if stm.TokenLiteral() !="def" {
@@ -79,4 +101,5 @@ func testDefStatement(t *testing.T, stm ast.Statement, name string) bool {
 	
 	return true;
 }
+
 

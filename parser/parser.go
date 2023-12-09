@@ -16,10 +16,14 @@ type Parser struct {
 	lexer *lexer.Lexer // points to the lexer 
 	currToken token.Token // the current token in examination
 	peekedToken token.Token // the next token after the current one
+	errors []string
 }
 
 func InitParser(l *lexer.Lexer) *Parser{
-	p := &Parser{lexer: l}
+	p := &Parser{
+		lexer: l,
+		errors: []string{},
+	}
 
 	p.NextToken() // to peek the first token
 	p.NextToken() // first token in the currentToken
@@ -37,6 +41,16 @@ func (p *Parser) NextToken(){
 	p.currToken = p.peekedToken
 	p.peekedToken = p.lexer.NextToken()
 }
+
+/*
+* function to return the encountered errors 
+* while parsing
+*/
+
+func (p *Parser) Errors() []string{
+	return p.errors
+}
+
 /*
  This function is to parse a given program
 */
@@ -44,7 +58,7 @@ func (p *Parser) Parse() *ast.Program{
 	program := &ast.Program{}
 	program.Statements = []ast.Statement{};
 
-	for p.currToken.Type != token.FILE_ENDED {
+	for !p.currentTokenEquals(token.FILE_ENDED) {
 		stm := p.parseStmt()
 		//fmt.Println(stm.TokenLiteral())
 
@@ -80,15 +94,14 @@ func (p *Parser) parseDefStmt() *ast.DefStatement {
 	stm := &ast.DefStatement{Token: p.currToken}
 	
 	// syntax error's
-	if !p.expectedNextToken(token.IDENTIFIER){
+	if !p.expectedNextToken(token.NewToken(token.IDENTIFIER,"IDENT")){
 		return nil
 	}
-	fmt.Println("------HERE-----------")
 	stm.Name = &ast.Identifier{
 		Token: p.currToken,
 		Value: p.currToken.Value,
 	}
-	if !p.expectedNextToken(token.ASSIGN){
+	if !p.expectedNextToken(token.NewToken(token.ASSIGN,"=")){
 		return nil
 	}
 
@@ -113,10 +126,27 @@ func (p *Parser) peekTokenEquals(t token.TokenType) bool {
 * if it is returns true and advances the token
 * if not returns false
 */
-func (p *Parser) expectedNextToken(t token.TokenType) bool{
-	if p.peekTokenEquals(t){
+func (p *Parser) expectedNextToken(t token.Token) bool{
+	if p.peekTokenEquals(t.Type){
 		p.NextToken()
 		return true
 	}
+	// peek errors
+	p.peekedError(t)
 	return false
+}
+
+/*
+* function to peek Errors in next token
+* takes the peeked wrong token and adds error
+* message to the errors array of the parser
+*/
+func (p *Parser) peekedError(encounteredToken token.Token) {
+	
+	errorMessage := fmt.Sprintf("wrong next token type expected token is %s instead got %s",
+	encounteredToken.Value, p.peekedToken.Value)
+
+	// append message to the errors array
+	p.errors =append(p.errors, errorMessage)
+
 }

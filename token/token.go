@@ -17,7 +17,7 @@ type Token struct {
 * Create a new token helper function
 */
 
-func NewToken (tType TokenType, value string) Token{
+func NewToken(tType TokenType, value string) Token{
 	return Token{Type: tType , Value: value};
 }
 
