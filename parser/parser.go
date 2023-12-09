@@ -81,6 +81,8 @@ func (p *Parser) parseStmt() ast.Statement{
 	switch p.currToken.Type {
 	case token.DEF:
 		return p.parseDefStmt()
+	case token.RETURN:
+		return p.parserReturnStmt()
 	default:
 		return nil
 	}
@@ -89,7 +91,6 @@ func (p *Parser) parseStmt() ast.Statement{
 /*
 * function used to parse def statement
 */
-
 func (p *Parser) parseDefStmt() *ast.DefStatement {
 	stm := &ast.DefStatement{Token: p.currToken}
 	
@@ -110,8 +111,22 @@ func (p *Parser) parseDefStmt() *ast.DefStatement {
 	}
 	
 	return stm
+}
+
+func (p *Parser) parserReturnStmt() *ast.ReturnStatement {
+	stm := &ast.ReturnStatement{Token: p.currToken}
+
+	p.NextToken()
+
+	//TODO:
+	for !p.currentTokenEquals(token.S_COLON) {
+		p.NextToken()
+	}
+	
+	return stm
 
 }
+
 
 func (p *Parser) currentTokenEquals(t token.TokenType) bool{
 	return p.currToken.Type == t;
@@ -123,7 +138,7 @@ func (p *Parser) peekTokenEquals(t token.TokenType) bool {
 
 /*
 * function checks if the given token is the next token
-* if it is returns true and advances the token
+* returns true and advances the tokens pointers of the parser
 * if not returns false
 */
 func (p *Parser) expectedNextToken(t token.Token) bool{
@@ -148,5 +163,4 @@ func (p *Parser) peekedError(encounteredToken token.Token) {
 
 	// append message to the errors array
 	p.errors =append(p.errors, errorMessage)
-
 }

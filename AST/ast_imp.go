@@ -23,6 +23,22 @@ func (prog *Program) TokenLiteral() string{
 /*
 * Def statement Node (def x = add(1,2) - 1 + (10/5))
 */
+type DefStatement struct {
+	Token token.Token // toke.DEF token
+	Name *Identifier
+	Value Expression
+}
+// method satisfies the Node interface
+func (defSt *DefStatement) TokenLiteral() string{
+	return defSt.Token.Value;
+}
+// satisfies the statement interface 
+func (defSt *DefStatement) statementNode() {}
+
+
+/*
+* Identifier node as an expression node
+*/
 type Identifier struct{ // 
 	Token token.Token // token.IDENTIFIER token
 	Value string
@@ -38,16 +54,17 @@ func (ident *Identifier) TokenLiteral() string {
 //parts they does provide a value
 func (ident *Identifier) expressionNode() {}
 
-
-
-type DefStatement struct {
-	Token token.Token // toke.DEF token
-	Name *Identifier
-	Value Expression
+/*
+* return statement node 
+* return 5; || return f1(1,2); ==> return <expression>;
+*/
+type ReturnStatement struct{
+	Token token.Token // the token is "return"
+	ReturnValue Expression
 }
-// method satisfies the Node interface
-func (defSt *DefStatement) TokenLiteral() string{
-	return defSt.Token.Value;
+
+func (reStm *ReturnStatement) TokenLiteral() string{  // satisfies the node interface 
+	return reStm.Token.Value
 }
-// satisfies the statement interface 
-func (defSt *DefStatement) statementNode() {}
+func (reStm *ReturnStatement) statementNode() { // satisfies the statement interface
+}

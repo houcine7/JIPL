@@ -7,12 +7,15 @@ import (
 	"github.com/houcine7/JIPL/lexer"
 )
 
+/*TEST functions*/
+
+// test def statement
 func TestDefStatement(t *testing.T) {
 
 	input := `
 def num1 = 13;
-def num2 = 0;
-def foobar = 5321;
+def  total= 0;
+def a= 5321;
 `
 	l := lexer.InitLexer(input)
 	
@@ -27,21 +30,15 @@ def foobar = 5321;
 	// check parser errors 
 	checkParserErrors(parser,t)
 
-	if program==nil{
-		t.Fatalf("parse returned a nil value")
-	}
-
-	if len(program.Statements) !=3 {
-		t.Fatalf("the program.Statements doesn't not contain 3 statements, instead we got %d",
-		len(program.Statements))
-	}
+	//check is length of the program statement slice is 3 
+	checkIsProgramStmLengthValid(program,t,3)
 
 	tests := []struct{
 		expectedIdentifier string
 	}{
 		{"num1"},
-		{"num2"},
-		{"foobar"},
+		{"total"},
+		{"a"},
 	}
 
 	for i,t1 := range tests{
@@ -54,7 +51,44 @@ def foobar = 5321;
 	}
 }
 
+// test return statement 
+func TestReturnStatement(t *testing.T){
+	input :=`
+	return 545;
+	return 101232;
+	return 0;
+	`
 
+	l :=lexer.InitLexer(input)
+	parser := InitParser(l)
+
+	pr := parser.Parse()
+	
+	//check is length of the program statement slice is 3 
+	checkIsProgramStmLengthValid(pr, t,3)
+
+	for _,stm := range pr.Statements {
+		returnStm,ok := stm.(*ast.ReturnStatement)
+		if !ok {
+			t.Errorf("statement not *ast.ReturnStatement type got:%T",stm)
+			continue
+		}
+
+		if returnStm.TokenLiteral() !="return" {
+			t.Errorf("returnStatement token literal is not 'return' instead got: %s",
+			returnStm.TokenLiteral())
+		}
+
+	}
+}
+
+
+func checkIsProgramStmLengthValid(program *ast.Program,t *testing.T,length int){
+	if len(program.Statements) !=length {
+		t.Fatalf("the program.Statements doesn't not contain 3 statements, instead we got %d",
+		len(program.Statements))
+	}
+}
 
 func checkParserErrors(p *Parser,t *testing.T){
 	errors := p.Errors()
@@ -75,14 +109,13 @@ func checkParserErrors(p *Parser,t *testing.T){
 	t.FailNow() // mark tests as failed and stop execution 
 } 
 
-
 func testDefStatement(t *testing.T, stm ast.Statement, name string) bool {
 	if stm.TokenLiteral() !="def" {
 		t.Errorf("s.tokenLiteral is not 'def'. got instead:%q",stm.TokenLiteral())
 		return false
 	}
 
-	defStm, ok := stm.(*ast.DefStatement)
+	defStm, ok := stm.(*ast.DefStatement) // type assertion (casting if stm is of type *ast.Statement)
 
 	if !ok {
 		t.Errorf("s not *ast.DefStatement. got=%T", stm)
