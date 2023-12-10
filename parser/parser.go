@@ -14,10 +14,24 @@ import (
  */
 type Parser struct {
 	lexer *lexer.Lexer // points to the lexer 
+	errors []string // parser errors 
+
 	currToken token.Token // the current token in examination
 	peekedToken token.Token // the next token after the current one
-	errors []string
+	
+	prefixParseFuncs map[token.TokenType]prefixParse
+	infixParseFuncs map[token.TokenType]infixParse
 }
+
+/*
+ Types of expression parsing functions 
+*/
+type(
+	prefixParse func() ast.Expression
+	// takes param as the left operand of the infix operator
+	infixParse func(ast.Expression) ast.Expression
+)
+
 
 func InitParser(l *lexer.Lexer) *Parser{
 	p := &Parser{
@@ -163,4 +177,13 @@ func (p *Parser) peekedError(encounteredToken token.Token) {
 
 	// append message to the errors array
 	p.errors =append(p.errors, errorMessage)
+}
+
+// functions to add entries to the prefixParseFun and  infixParseFun
+func (p *Parser) addPrefixFn(tokenType token.TokenType,prefixF prefixParse){
+	p.prefixParseFuncs[tokenType] = prefixF
+}
+
+func (p *Parser) addInfixFn(tokenType token.TokenType, infixF infixParse){
+	p.infixParseFuncs[tokenType] = infixF
 }

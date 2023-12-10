@@ -82,6 +82,42 @@ func TestReturnStatement(t *testing.T){
 	}
 }
 
+// Expression tests
+func TestIdentifier(t *testing.T){
+	input :=`varName;`
+
+	lexer :=lexer.InitLexer(input)
+	parser := InitParser(lexer)
+	program := parser.Parse()
+
+	checkParserErrors(parser,t)
+	// check the length of the program
+	checkIsProgramStmLengthValid(program,t,1)
+
+	stm,ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("program.Statements[0] is not ast.ExpressionStatement .got=%T",
+	program.Statements[0])
+	}
+
+	ident,ok := stm.Expression.(*ast.Identifier)
+
+	if !ok {
+		t.Fatalf("Expression of type *ast.Identifier instead, got=%T",stm.Expression)
+	}
+
+	if ident.Value !="varName" {
+		t.Errorf("ident.Value expected=%s, and got=%s","varName",ident.Value)
+	}
+
+	if ident.TokenLiteral() !="varName"{
+		t.Errorf("ident.TokenLiteral is not %s. instead got=%s","foobar"
+		,ident.TokenLiteral())
+	}
+}
+
+
+
 func checkIsProgramStmLengthValid(program *ast.Program,t *testing.T,length int){
 	if len(program.Statements) !=length {
 		t.Fatalf("the program.Statements doesn't not contain 3 statements, instead we got %d",
