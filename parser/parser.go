@@ -122,7 +122,7 @@ func (p *Parser) parserReturnStmt() *ast.ReturnStatement {
 	for !p.currentTokenEquals(token.S_COLON) {
 		p.NextToken()
 	}
-	
+
 	return stm
 
 }

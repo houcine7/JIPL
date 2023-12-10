@@ -16,6 +16,7 @@ type Node interface{
 	* This will be used only for testing and debugging purposes 
 	*/
 	TokenLiteral() string  
+	ToString() string
 }
 
 /*

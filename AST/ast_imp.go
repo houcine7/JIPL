@@ -1,6 +1,10 @@
 package ast
 
-import "github.com/houcine7/JIPL/token"
+import (
+	"bytes"
+
+	"github.com/houcine7/JIPL/token"
+)
 
 /*
 * This node is the root of each AST tree
@@ -11,13 +15,23 @@ type Program struct {
 }
 
 func (prog *Program) TokenLiteral() string{
-	
 	if len(prog.Statements) > 0 { 
 		return prog.Statements[0].TokenLiteral()
 	}
-
 	return ""
 }
+
+func (prog *Program) ToString() string {
+	var bf bytes.Buffer
+
+	for _,stm := range prog.Statements {
+		bf.WriteString(stm.ToString())
+	}
+
+	return bf.String()
+}
+
+
 
 
 /*
@@ -29,11 +43,26 @@ type DefStatement struct {
 	Value Expression
 }
 // method satisfies the Node interface
-func (defSt *DefStatement) TokenLiteral() string{
-	return defSt.Token.Value;
+func (defStm *DefStatement) TokenLiteral() string{
+	return defStm.Token.Value;
+}
+// toString method from Node interface
+func (defStm *DefStatement) ToString() string{
+	var bf bytes.Buffer
+
+	bf.WriteString(defStm.TokenLiteral()+" ")
+	bf.WriteString(defStm.Name.ToString())
+	bf.WriteString(" = ")
+	if defStm.Value !=nil{
+		bf.WriteString(defStm.Value.ToString())
+	} 
+	bf.WriteString(";")
+	return bf.String()
 }
 // satisfies the statement interface 
-func (defSt *DefStatement) statementNode() {}
+func (defStm *DefStatement) statementNode() {}
+
+
 
 
 /*
@@ -49,10 +78,16 @@ func (ident *Identifier) TokenLiteral() string {
 	return ident.Token.Value;
 }
 
+func (ident *Identifier) ToString() string{
+	return ident.Value
+}
 // to imp Expression Node
 // even do in let identifiers are not expressions but in other 
 //parts they does provide a value
 func (ident *Identifier) expressionNode() {}
+
+
+
 
 /*
 * return statement node 
@@ -62,9 +97,44 @@ type ReturnStatement struct{
 	Token token.Token // the token is "return"
 	ReturnValue Expression
 }
-
+//Node interface methods 
 func (reStm *ReturnStatement) TokenLiteral() string{  // satisfies the node interface 
 	return reStm.Token.Value
 }
-func (reStm *ReturnStatement) statementNode() { // satisfies the statement interface
+
+func (resStm *ReturnStatement) ToString() string {
+	var bf bytes.Buffer
+	bf.WriteString(resStm.TokenLiteral())
+	if resStm.ReturnValue !=nil{
+		bf.WriteString(resStm.ReturnValue.ToString())
+	}
+	bf.WriteString(";")
+	return bf.String()
 }
+// statements imp
+func (reStm *ReturnStatement) statementNode() { } // satisfies the statement interface
+
+
+
+
+/*
+* Expressions statement node
+* they are wrappers that consists solely of one expression
+*/
+type ExpressionStatement struct{
+	Token token.Token
+	Expression Expression
+}
+// Node's interface methods 
+func (exStm *ExpressionStatement) TokenLiteral() string{
+	return exStm.Token.Value
+}
+func (exStm *ExpressionStatement) ToString() string{
+	var bf bytes.Buffer
+	if exStm.Expression !=nil {
+		bf.WriteString(exStm.Expression.ToString())
+	}
+	return bf.String()
+}
+
+func (exStm *ExpressionStatement) statementNode(){}

@@ -82,7 +82,6 @@ func TestReturnStatement(t *testing.T){
 	}
 }
 
-
 func checkIsProgramStmLengthValid(program *ast.Program,t *testing.T,length int){
 	if len(program.Statements) !=length {
 		t.Fatalf("the program.Statements doesn't not contain 3 statements, instead we got %d",
