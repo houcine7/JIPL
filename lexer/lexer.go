@@ -16,7 +16,7 @@ type Lexer struct {
 
 /*
 * Init a Lexer
- */
+*/
 func InitLexer(input string) *Lexer {
 	l := &Lexer{input: input}
 	l.readChar() // READ FIRST CHAR 

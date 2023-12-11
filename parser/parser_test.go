@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"testing"
 
 	ast "github.com/houcine7/JIPL/AST"
@@ -149,16 +150,61 @@ func TestIntegerLiteral(t *testing.T){
 		t.Errorf("the TokenLiteral value is not correct, expected=%s instead got=%s",
 	"81",intLiteral.TokenLiteral())
 	}
-
 }
 
+// prefix operators 
+func TestParsePrefixExp(t *testing.T){
+	tests := []struct{
+		input string
+		operator string
+		intOperand int
+	}{
+		{input :"!7;", operator :"!", intOperand: 7},
+		{input :"-42;", operator :"-", intOperand: 4},
+	}
+
+	for _,test :=range tests {
+		l :=lexer.InitLexer(test.input)
+		parser := InitParser(l)
+		fmt.Println("----------- Parser ---------",l)
+		pr := parser.Parse()
+
+		checkParserErrors(parser,t)
+
+		fmt.Println("Length of statements ", len(pr.Statements))
+
+		checkIsProgramStmLengthValid(pr,t,1)
+
+		stm,ok := pr.Statements[0].(*ast.ExpressionStatement)
+
+		if !ok {
+			t.Fatalf("program.statement[0] is not of type expressionStatement instead got=%T",
+			pr.Statements[0])
+		}
+
+		exp,ok := stm.Expression.(*ast.PrefixExpression) 
+
+		if !ok{
+			t.Fatalf("stm.Expression is not of type PrefixStatement instead got=%T",
+			stm.Expression)
+		}
+
+		if exp.Operator != test.operator {
+			t.Fatalf("exp Operator is not as expected %s, got=%s",
+			test.operator,exp.Operator)
+		}
+		if !testIntegerLiteral(t,exp.Right,test.intOperand){
+			return 
+		}
+	}
+}
 
 
 // Tests helper functions 
 func checkIsProgramStmLengthValid(program *ast.Program,t *testing.T,length int){
 	if len(program.Statements) !=length {
-		t.Fatalf("the program.Statements doesn't not contain 3 statements, instead we got %d",
-		len(program.Statements))
+		t.Fatalf("the program.Statements doesn't not contain %d  statements, instead we got %d",
+		length,len(program.Statements))
 	}
 }
 
@@ -207,4 +253,24 @@ func testDefStatement(t *testing.T, stm ast.Statement, name string) bool {
 	return true;
 }
 
+func testIntegerLiteral(t *testing.T, il ast.Expression , value int) bool{
+	intVal,ok :=il.(*ast.IntegerLiteral)
+
+	if !ok {
+		t.Errorf("il type is not as expected *ast.IntegerLiteral. got=%T",il)
+		return false
+	}
+
+	if intVal.Value !=value {
+		t.Errorf("intVal.val is not as expected %d. instead got %d",value,intVal.Value)
+		return false
+	}
+	
+	if intVal.TokenLiteral() != fmt.Sprintf("%d",value){
+		t.Errorf("intVal.TokenLiteral not equal to %d instead got %s",value,intVal.TokenLiteral())
+		return false
+	}
+	
+	return true
+}
 

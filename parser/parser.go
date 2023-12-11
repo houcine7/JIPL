@@ -147,7 +147,7 @@ func (p *Parser) parserReturnStmt() *ast.ReturnStatement {
 
 func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 	
-	// fmt.Println(p.currToken)
+	fmt.Println("------->",p.currToken)
 	stm := &ast.ExpressionStatement{Token: p.currToken}
 
 	// fmt.Println(p.parseExpression(token.IDENTIFIER))
@@ -166,6 +166,8 @@ func (p *Parser) parseExpression(weight int) ast.Expression{
 	prefix := p.prefixParseFuncs[p.currToken.Type]
 
 	if prefix ==nil {
+		// add error msg 
+		p.notFoundPrefixFunctionError(p.currToken)
 		return nil
 	}
 	leftExpression := prefix()
@@ -182,6 +184,7 @@ func (p *Parser) parserInt() ast.Expression {
 	val,err := strconv.ParseInt(p.currToken.Value,0,0)
 
 	if err !=nil {
+		fmt.Println(p.currToken)
 		errMsg := fmt.Sprintf("Parsing error, couldn't parse string %s to Integer value",
 		p.currToken.Value)
 		p.errors = append(p.errors, errMsg)
@@ -193,6 +196,10 @@ func (p *Parser) parserInt() ast.Expression {
 	return exp
 }
 
+func (p *Parser) notFoundPrefixFunctionError(t token.Token) {
+	msg :=fmt.Sprintf("no prefix function for the given tokenType={%d,%s} found",t.Type,t.Value)
+	p.errors = append(p.errors,msg)
+}
 
 
 

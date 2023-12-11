@@ -164,3 +164,30 @@ func (intLiteral *IntegerLiteral) ToString() string {
 	return intLiteral.Token.Value
 }
 
+
+/*
+	Prefix Expression Nodes
+	-5; !8787;
+*/
+type PrefixExpression struct {
+	Token token.Token
+	Operator string
+	Right Expression
+}
+
+func (prefixExp *PrefixExpression) TokenLiteral() string{
+	return prefixExp.Token.Value
+}
+
+func (prefixExp *PrefixExpression) ToString() string{
+	var bf bytes.Buffer
+
+	bf.WriteRune('(')
+	bf.WriteString(prefixExp.Operator)
+	bf.WriteString(prefixExp.Right.ToString())
+	bf.WriteRune(')')
+
+	return bf.String()
+}
+
+func (prefixExp *PrefixExpression) expressionNode() {}
