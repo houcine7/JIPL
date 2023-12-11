@@ -150,6 +150,8 @@ func TestNextToken3(t *testing.T){
 	10 != 7;
 	10 <= 20;
 	10 >= 0;
+	10++;
+	10--;
 	`
 
 	var tests = []struct {
@@ -247,6 +249,12 @@ func TestNextToken3(t *testing.T){
 		{expectedTokenType: token.INT	, expectedValue: "0"},
 		{expectedTokenType: token.S_COLON, expectedValue: ";"},
 
+		{expectedTokenType: token.INT, expectedValue: "10"},
+		{expectedTokenType: token.INCREMENT, expectedValue: "++"},
+		{expectedTokenType: token.S_COLON, expectedValue: ";"},
+		{expectedTokenType: token.INT, expectedValue: "10"},
+		{expectedTokenType: token.DECREMENT, expectedValue: "--"},
+		{expectedTokenType: token.S_COLON, expectedValue: ";"},
 	
 		
 	}

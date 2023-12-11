@@ -42,9 +42,21 @@ func (l *Lexer) NextToken() token.Token {
 				test = token.NewToken(token.ASSIGN,string(l.char));
 			}
 		case '+':
-			test = token.NewToken(token.PLUS, string(l.char))
+			if l.peek()=='+'{
+				prev := l.char
+				l.readChar()
+				test = token.NewToken(token.INCREMENT, string(prev)+ string(l.char))
+			}else{
+				test = token.NewToken(token.PLUS, string(l.char))
+			}
 		case '-':
-			test = token.NewToken(token.MINUS,string(l.char))
+			if l.peek()=='-' {
+				prev :=l.char
+				l.readChar()
+				test = token.NewToken(token.DECREMENT,string(l.char)+string(prev))
+			}else{
+				test = token.NewToken(token.MINUS,string(l.char))
+			}
 		case '/':
 			test = token.NewToken(token.SLASH,string(l.char))
 		case '*':

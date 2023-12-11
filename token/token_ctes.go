@@ -27,6 +27,8 @@ package token
 	EX_MARK = 45 // !
 	EQUAL   = 46 // ==
 	NOT_EQUAL = 47 // !=
+    INCREMENT = 50 // ++
+ 	DECREMENT = 51 // --
 
 	/*Comparators operators*/
 	LT = 46 // <
