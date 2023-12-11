@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"strconv"
 
 	ast "github.com/houcine7/JIPL/AST"
 	"github.com/houcine7/JIPL/lexer"
@@ -45,6 +46,7 @@ func InitParser(l *lexer.Lexer) *Parser{
 	// init ParseFunctions maps
 	p.prefixParseFuncs = make(map[token.TokenType]prefixParse)
 	p.addPrefixFn(token.IDENTIFIER,p.parseIdentifier)
+	p.addPrefixFn(token.INT,p.parserInt)
 
 	return p;
 }
@@ -79,9 +81,9 @@ func (p *Parser) Parse() *ast.Program{
 	for !p.currentTokenEquals(token.FILE_ENDED) {
 		stm := p.parseStmt()
 		//fmt.Println(stm.TokenLiteral())
-		if stm !=nil {
-			program.Statements =append(program.Statements, stm )
-		}
+		// if stm !=nil {
+		program.Statements =append(program.Statements, stm )
+		// }
 		// Advance with token
 		p.NextToken()
 	}
@@ -174,6 +176,29 @@ func (p *Parser) parseExpression(weight int) ast.Expression{
 func (p *Parser) parseIdentifier() ast.Expression{
 	return &ast.Identifier{Token: p.currToken,Value: p.currToken.Value}
 }
+
+func (p *Parser) parserInt() ast.Expression {
+	exp := &ast.IntegerLiteral{Token: p.currToken}
+	val,err := strconv.ParseInt(p.currToken.Value,0,0)
+
+	if err !=nil {
+		errMsg := fmt.Sprintf("Parsing error, couldn't parse string %s to Integer value",
+		p.currToken.Value)
+		p.errors = append(p.errors, errMsg)
+		return nil
+	}
+
+	exp.Value = int(val)
+
+	return exp
+}
+
+
+
+
+
+
+//Helper functions
 
 func (p *Parser) currentTokenEquals(t token.TokenType) bool{
 	return p.currToken.Type == t;

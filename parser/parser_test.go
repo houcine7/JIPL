@@ -116,6 +116,45 @@ func TestIdentifier(t *testing.T){
 	}
 }
 
+
+// Integer literals test
+func TestIntegerLiteral(t *testing.T){
+	input :="81;"
+
+	lexer := lexer.InitLexer(input)
+	parser := InitParser(lexer)
+	
+	pr :=parser.Parse()
+	checkParserErrors(parser,t)
+	checkIsProgramStmLengthValid(pr,t,1)
+
+	stm,ok := pr.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("program.statement[0] is not of type expressionStatement instead got=%T",
+	pr.Statements[0])
+	}
+
+	intLiteral,ok :=stm.Expression.(*ast.IntegerLiteral)
+	if !ok{
+		t.Fatalf("stm.Expression is not of type *ast.IntegerLiteral instead got=%T",
+	stm.Expression)
+	}
+
+	if intLiteral.Value != int(81){
+		t.Errorf("the Integer literal value is not correct, expected=%d instead got=%d",
+	81,intLiteral.Value)
+	}
+
+	if intLiteral.TokenLiteral() !="81" {
+		t.Errorf("the TokenLiteral value is not correct, expected=%s instead got=%s",
+	"81",intLiteral.TokenLiteral())
+	}
+
+}
+
+
+
+// Tests helper functions 
 func checkIsProgramStmLengthValid(program *ast.Program,t *testing.T,length int){
 	if len(program.Statements) !=length {
 		t.Fatalf("the program.Statements doesn't not contain 3 statements, instead we got %d",

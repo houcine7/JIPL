@@ -97,6 +97,7 @@ type ReturnStatement struct{
 	Token token.Token // the token is "return"
 	ReturnValue Expression
 }
+
 //Node interface methods 
 func (reStm *ReturnStatement) TokenLiteral() string{  // satisfies the node interface 
 	return reStm.Token.Value
@@ -111,6 +112,7 @@ func (resStm *ReturnStatement) ToString() string {
 	bf.WriteString(";")
 	return bf.String()
 }
+
 // statements imp
 func (reStm *ReturnStatement) statementNode() { } // satisfies the statement interface
 
@@ -129,6 +131,7 @@ type ExpressionStatement struct{
 func (exStm *ExpressionStatement) TokenLiteral() string{
 	return exStm.Token.Value
 }
+
 func (exStm *ExpressionStatement) ToString() string{
 	var bf bytes.Buffer
 	if exStm.Expression !=nil {
@@ -138,3 +141,26 @@ func (exStm *ExpressionStatement) ToString() string{
 }
 
 func (exStm *ExpressionStatement) statementNode(){}
+
+
+
+
+/*
+* Integer Literals Node
+* they can Occur in different type of expression's
+*/
+type IntegerLiteral struct {
+	Token token.Token
+	Value int // we do not specify int size to make it platform independent (32,64)
+}
+
+func (intLiteral *IntegerLiteral) TokenLiteral() string{
+	return intLiteral.Token.Value
+}
+
+func (intLiteral *IntegerLiteral) expressionNode() {}
+
+func (intLiteral *IntegerLiteral) ToString() string {
+	return intLiteral.Token.Value
+}
+
