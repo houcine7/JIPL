@@ -22,6 +22,7 @@ type Parser struct {
 	
 	prefixParseFuncs map[token.TokenType]prefixParse
 	infixParseFuncs map[token.TokenType]infixParse
+
 }
 
 /*
@@ -45,9 +46,11 @@ func InitParser(l *lexer.Lexer) *Parser{
 
 	// init ParseFunctions maps
 	p.prefixParseFuncs = make(map[token.TokenType]prefixParse)
+	// registering prefix parsing functions
 	p.addPrefixFn(token.IDENTIFIER,p.parseIdentifier)
-	p.addPrefixFn(token.INT,p.parserInt)
-
+	p.addPrefixFn(token.INT,p.parseInt)
+	p.addPrefixFn(token.EX_MARK,p.parsePrefixExpression)
+	p.addPrefixFn(token.MINUS,p.parsePrefixExpression)
 	return p;
 }
 
@@ -60,15 +63,6 @@ func InitParser(l *lexer.Lexer) *Parser{
 func (p *Parser) NextToken(){
 	p.currToken = p.peekedToken
 	p.peekedToken = p.lexer.NextToken()
-}
-
-/*
-* function to return the encountered errors 
-* while parsing
-*/
-
-func (p *Parser) Errors() []string{
-	return p.errors
 }
 
 /*
@@ -100,7 +94,7 @@ func (p *Parser) parseStmt() ast.Statement{
 	case token.DEF:
 		return p.parseDefStmt()
 	case token.RETURN:
-		return p.parserReturnStmt()
+		return p.parseReturnStmt()
 	// left are expression statement
 	default:
 		return p.parseExpressionStatement()
@@ -132,7 +126,7 @@ func (p *Parser) parseDefStmt() *ast.DefStatement {
 }
 
 // to parse Return statement
-func (p *Parser) parserReturnStmt() *ast.ReturnStatement {
+func (p *Parser) parseReturnStmt() *ast.ReturnStatement {
 	stm := &ast.ReturnStatement{Token: p.currToken}
 
 	p.NextToken()
@@ -179,7 +173,7 @@ func (p *Parser) parseIdentifier() ast.Expression{
 	return &ast.Identifier{Token: p.currToken,Value: p.currToken.Value}
 }
 
-func (p *Parser) parserInt() ast.Expression {
+func (p *Parser) parseInt() ast.Expression {
 	exp := &ast.IntegerLiteral{Token: p.currToken}
 	val,err := strconv.ParseInt(p.currToken.Value,0,0)
 
@@ -190,23 +184,39 @@ func (p *Parser) parserInt() ast.Expression {
 		p.errors = append(p.errors, errMsg)
 		return nil
 	}
-
 	exp.Value = int(val)
-
 	return exp
 }
 
+
+func (p *Parser) parsePrefixExpression() ast.Expression {
+	exp := &ast.PrefixExpression{
+		Token: p.currToken,
+		Operator: p.currToken.Value,
+	}
+
+	p.NextToken()
+	exp.Right = p.parseExpression(PREFIX)
+	return exp
+}
+
+
+
+// ERRORS 
 func (p *Parser) notFoundPrefixFunctionError(t token.Token) {
 	msg :=fmt.Sprintf("no prefix function for the given tokenType={%d,%s} found",t.Type,t.Value)
 	p.errors = append(p.errors,msg)
 }
-
-
-
+/*
+* function to return the encountered errors 
+* while parsing
+*/
+func (p *Parser) Errors() []string{
+	return p.errors
+}
 
 
 //Helper functions
-
 func (p *Parser) currentTokenEquals(t token.TokenType) bool{
 	return p.currToken.Type == t;
 }

@@ -160,7 +160,7 @@ func TestParsePrefixExp(t *testing.T){
 		intOperand int
 	}{
 		{input :"!7;", operator :"!", intOperand: 7},
-		{input :"-42;", operator :"-", intOperand: 4},
+		{input :"-42;", operator :"-", intOperand: 42},
 	}
 
 	for _,test :=range tests {
