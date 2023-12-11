@@ -111,12 +111,10 @@ func TestIdentifier(t *testing.T){
 	}
 
 	if ident.TokenLiteral() !="varName"{
-		t.Errorf("ident.TokenLiteral is not %s. instead got=%s","foobar"
-		,ident.TokenLiteral())
+		t.Errorf("ident.TokenLiteral is not %s. instead got=%s","foobar",
+		ident.TokenLiteral())
 	}
 }
-
-
 
 func checkIsProgramStmLengthValid(program *ast.Program,t *testing.T,length int){
 	if len(program.Statements) !=length {

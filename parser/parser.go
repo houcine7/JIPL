@@ -38,9 +38,13 @@ func InitParser(l *lexer.Lexer) *Parser{
 		lexer: l,
 		errors: []string{},
 	}
-
+	
 	p.NextToken() // to peek the first token
 	p.NextToken() // first token in the currentToken
+
+	// init ParseFunctions maps
+	p.prefixParseFuncs = make(map[token.TokenType]prefixParse)
+	p.addPrefixFn(token.IDENTIFIER,p.parseIdentifier)
 
 	return p;
 }
@@ -75,7 +79,6 @@ func (p *Parser) Parse() *ast.Program{
 	for !p.currentTokenEquals(token.FILE_ENDED) {
 		stm := p.parseStmt()
 		//fmt.Println(stm.TokenLiteral())
-
 		if stm !=nil {
 			program.Statements =append(program.Statements, stm )
 		}
@@ -90,18 +93,17 @@ func (p *Parser) Parse() *ast.Program{
 * a parser function to parse statements 
 *  and returns the parsed statement 
 */
-
 func (p *Parser) parseStmt() ast.Statement{
 	switch p.currToken.Type {
 	case token.DEF:
 		return p.parseDefStmt()
 	case token.RETURN:
 		return p.parserReturnStmt()
+	// left are expression statement
 	default:
-		return nil
+		return p.parseExpressionStatement()
 	}
 }
-
 /*
 * function used to parse def statement
 */
@@ -127,6 +129,7 @@ func (p *Parser) parseDefStmt() *ast.DefStatement {
 	return stm
 }
 
+// to parse Return statement
 func (p *Parser) parserReturnStmt() *ast.ReturnStatement {
 	stm := &ast.ReturnStatement{Token: p.currToken}
 
@@ -138,9 +141,39 @@ func (p *Parser) parserReturnStmt() *ast.ReturnStatement {
 	}
 
 	return stm
-
 }
 
+func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
+	
+	// fmt.Println(p.currToken)
+	stm := &ast.ExpressionStatement{Token: p.currToken}
+
+	// fmt.Println(p.parseExpression(token.IDENTIFIER))
+	stm.Expression = p.parseExpression(LOWEST)
+
+	// fmt.Println(stm)
+	if p.peekTokenEquals(token.S_COLON) {
+		p.NextToken()
+	}
+
+	return stm
+}
+
+
+func (p *Parser) parseExpression(weight int) ast.Expression{
+	prefix := p.prefixParseFuncs[p.currToken.Type]
+
+	if prefix ==nil {
+		return nil
+	}
+	leftExpression := prefix()
+	
+	return leftExpression
+}
+
+func (p *Parser) parseIdentifier() ast.Expression{
+	return &ast.Identifier{Token: p.currToken,Value: p.currToken.Value}
+}
 
 func (p *Parser) currentTokenEquals(t token.TokenType) bool{
 	return p.currToken.Type == t;
