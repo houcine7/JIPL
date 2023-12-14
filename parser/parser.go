@@ -76,9 +76,11 @@ func InitParser(l *lexer.Lexer) *Parser {
 
 	p.addALlInfixFn(infixParseTokens, p.parseInfixExpression)
 
-	fmt.Println("-------------------------")
-	fmt.Println("Map prefix fns is:", p.prefixParseFuncs)
-	fmt.Println("Map infix fns is", p.infixParseFuncs)
+	/*
+		fmt.Println("-------------------------")
+		fmt.Println("Map prefix fns is:", p.prefixParseFuncs)
+		fmt.Println("Map infix fns is", p.infixParseFuncs)
+	*/
 	return p
 }
 
@@ -169,7 +171,7 @@ func (p *Parser) parseReturnStmt() *ast.ReturnStatement {
 
 func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 
-	fmt.Println("------->", p.currToken)
+	//fmt.Println("------->", p.currToken)
 	stm := &ast.ExpressionStatement{Token: p.currToken}
 
 	// fmt.Println(p.parseExpression(token.IDENTIFIER))
@@ -183,7 +185,7 @@ func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 	return stm
 }
 
-func (p *Parser) parseExpression(weight int) ast.Expression {
+func (p *Parser) parseExpression(precedence int) ast.Expression {
 	prefix := p.prefixParseFuncs[p.currToken.Type]
 
 	if prefix == nil {
@@ -191,7 +193,20 @@ func (p *Parser) parseExpression(weight int) ast.Expression {
 		p.notFoundPrefixFunctionError(p.currToken)
 		return nil
 	}
+
 	leftExpression := prefix()
+
+	for !p.peekTokenEquals(token.S_COLON) && precedence < p.peekPrecedence() {
+
+		infix := p.infixParseFuncs[p.peekedToken.Type]
+		if infix == nil {
+			return leftExpression
+		}
+
+		p.NextToken()
+		//
+		leftExpression = infix(leftExpression)
+	}
 
 	return leftExpression
 }
@@ -233,10 +248,9 @@ func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 		Left:     left,
 	}
 
-	precedence := p.currentPrecedence()
+	prevPrecedence := p.currentPrecedence()
 	p.NextToken()
-
-	exp.Right = p.parseExpression(precedence)
+	exp.Right = p.parseExpression(prevPrecedence)
 
 	return exp
 
