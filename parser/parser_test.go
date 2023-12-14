@@ -18,15 +18,7 @@ def num1 = 13;
 def  total= 0;
 def a= 5321;
 `
-	l := lexer.InitLexer(input)
-
-	t.Log("-----------------------")
-	t.Log("lexer", l)
-	parser := InitParser(l)
-	t.Log("-----------------------")
-	t.Log("parser", parser)
-
-	program := parser.Parse()
+	program, parser := getProg(input)
 
 	// check parser errors
 	checkParserErrors(parser, t)
@@ -59,11 +51,7 @@ func TestReturnStatement(t *testing.T) {
 	return 101232;
 	return 0;
 	`
-
-	l := lexer.InitLexer(input)
-	parser := InitParser(l)
-
-	pr := parser.Parse()
+	pr, parser := getProg(input)
 
 	//check is length of the program statement slice is 3
 	checkIsProgramStmLengthValid(pr, t, 3)
@@ -87,9 +75,7 @@ func TestReturnStatement(t *testing.T) {
 func TestIdentifier(t *testing.T) {
 	input := `varName;`
 
-	lexer := lexer.InitLexer(input)
-	parser := InitParser(lexer)
-	program := parser.Parse()
+	program := getProg(input)
 
 	checkParserErrors(parser, t)
 	// check the length of the program
@@ -121,10 +107,8 @@ func TestIdentifier(t *testing.T) {
 func TestIntegerLiteral(t *testing.T) {
 	input := "81;"
 
-	lexer := lexer.InitLexer(input)
-	parser := InitParser(lexer)
+	pr, parser := getProg(input)
 
-	pr := parser.Parse()
 	checkParserErrors(parser, t)
 	checkIsProgramStmLengthValid(pr, t, 1)
 
@@ -163,10 +147,8 @@ func TestParsePrefixExp(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		l := lexer.InitLexer(test.input)
-		parser := InitParser(l)
-		fmt.Println("----------- Parser ---------", l)
-		pr := parser.Parse()
+
+		pr, parser := getProg(test.input)
 
 		checkParserErrors(parser, t)
 
@@ -233,11 +215,9 @@ func TestInfixExpression(t *testing.T) {
 
 	for _, test := range testsData {
 		//
-		fmt.Println(test)
-		lexer := lexer.InitLexer(test.input)
-		parser := InitParser(lexer)
-		pr := parser.Parse()
+		pr, parser := getProg(test.input)
 
+		checkParserErrors(parser, t)
 		checkIsProgramStmLengthValid(pr, t, 1)
 
 		stm, ok := pr.Statements[0].(*ast.ExpressionStatement)
@@ -263,6 +243,36 @@ func TestInfixExpression(t *testing.T) {
 			)
 		}
 
+	}
+}
+
+// tests for preceedence
+func TestPrecedenceOrderParsing(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected string
+	}{
+		{"-var1 * var2;", "((-var1)*var2)"},
+		{"!-var1;", "(!(-var1))"},
+		{"var1 + var2 + var3;", "((var1+var2)+var3)"},
+		{"var1 * var2 * var3;", "((var1*var2)*var3)"},
+		{"var1*var2/var3;", "((var1*var2)/var3)"},
+		{"var1 + var2/var3;", "(var1+(var2/var3))"},
+		{"var1 + var2 * var3 + var4 / var5 - var6;", "(((var1+(var2*var3))+(var4/var5))-var6)"},
+		//{"7+10; -1 * 5;", "(7+10)((-1)*5)"},
+		{"5>4 == 3<=4;", "((5>4)==(3<=4))"},
+		{"5>=4 != 15<7;", "((5>=4)!=(15<7))"},
+		{"3 + 4*5 == 3*1 + 4*5;", "((3+(4*5))==((3*1)+(4*5)))"},
+	}
+
+	for _, test := range tests {
+		prog, parser := getProg(test.input)
+		//checkIsProgramStmLengthValid(pr, t, 1)
+		checkParserErrors(parser, t)
+		ans := prog.ToString()
+		if ans != test.expected {
+			t.Fatalf("wrong restult occurred expected=%s and got=%s", test.expected, ans)
+		}
 	}
 }
 
@@ -338,4 +348,12 @@ func testIntegerLiteral(t *testing.T, intLit ast.Expression, value int) bool {
 	}
 
 	return true
+}
+
+func getProg(input string) (*ast.Program, *Parser) {
+	lexer := lexer.InitLexer(input)
+	parser := InitParser(lexer)
+	pr := parser.Parse()
+
+	return pr, parser
 }
