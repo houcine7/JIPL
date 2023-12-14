@@ -44,20 +44,23 @@ func InitParser(l *lexer.Lexer) *Parser {
 
 	// init ParseFunctions maps
 	p.prefixParseFuncs = make(map[token.TokenType]prefixParse)
+	p.infixParseFuncs = make(map[token.TokenType]infixParse)
+
 	// registering prefix parsing functions
 	p.addPrefixFn(token.IDENTIFIER, p.parseIdentifier)
 	p.addPrefixFn(token.INT, p.parseInt)
-
 	// prefix expression parser
+
 	prefixParseTokens := []token.TokenType{
 		token.EX_MARK,
 		token.MINUS,
 	}
+
 	p.addAllPrefixFn(prefixParseTokens, p.parsePrefixExpression)
 
 	// infix expresion parseres
 	infixParseTokens := []token.TokenType{
-		tokne.PLUS,
+		token.PLUS,
 		token.MINUS,
 		token.SLASH,
 		token.STAR,
@@ -73,6 +76,9 @@ func InitParser(l *lexer.Lexer) *Parser {
 
 	p.addALlInfixFn(infixParseTokens, p.parseInfixExpression)
 
+	fmt.Println("-------------------------")
+	fmt.Println("Map prefix fns is:", p.prefixParseFuncs)
+	fmt.Println("Map infix fns is", p.infixParseFuncs)
 	return p
 }
 
