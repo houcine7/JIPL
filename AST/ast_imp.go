@@ -112,6 +112,24 @@ func (resStm *ReturnStatement) ToString() string {
 func (reStm *ReturnStatement) statementNode() {} // satisfies the statement interface
 
 /*
+the ast node of boolean
+*/
+type BooleanExp struct {
+	Token token.Token
+	Value bool // the boolean value corresponds to bool
+}
+
+func (b *BooleanExp) TokenLiteral() string {
+	return b.Token.Value
+}
+
+func (b *BooleanExp) ToString() string {
+	return b.Token.Value
+}
+
+func (b *BooleanExp) expressionNode() {}
+
+/*
 * Expressions statement node
 * they are wrappers that consists solely of one expression
  */

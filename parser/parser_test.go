@@ -51,7 +51,7 @@ func TestReturnStatement(t *testing.T) {
 	return 101232;
 	return 0;
 	`
-	pr, parser := getProg(input)
+	pr, _ := getProg(input)
 
 	//check is length of the program statement slice is 3
 	checkIsProgramStmLengthValid(pr, t, 3)
@@ -72,10 +72,10 @@ func TestReturnStatement(t *testing.T) {
 }
 
 // Expression tests
-func TestIdentifier(t *testing.T) {
+func TestIdentifiers(t *testing.T) {
 	input := `varName;`
 
-	program := getProg(input)
+	program, parser := getProg(input)
 
 	checkParserErrors(parser, t)
 	// check the length of the program
@@ -87,20 +87,10 @@ func TestIdentifier(t *testing.T) {
 			program.Statements[0])
 	}
 
-	ident, ok := stm.Expression.(*ast.Identifier)
-
-	if !ok {
-		t.Fatalf("Expression of type *ast.Identifier instead, got=%T", stm.Expression)
+	if testIdentifier(t, stm.Expression, "varName") {
+		return
 	}
 
-	if ident.Value != "varName" {
-		t.Errorf("ident.Value expected=%s, and got=%s", "varName", ident.Value)
-	}
-
-	if ident.TokenLiteral() != "varName" {
-		t.Errorf("ident.TokenLiteral is not %s. instead got=%s", "foobar",
-			ident.TokenLiteral())
-	}
 }
 
 // Integer literals test
@@ -140,10 +130,12 @@ func TestParsePrefixExp(t *testing.T) {
 	tests := []struct {
 		input      string
 		operator   string
-		intOperand int
+		intOperand interface{}
 	}{
 		{input: "!7;", operator: "!", intOperand: 7},
 		{input: "-42;", operator: "-", intOperand: 42},
+		{input: "!false;", operator: "!", intOperand: false},
+		{input: "!true;", operator: "!", intOperand: true},
 	}
 
 	for _, test := range tests {
@@ -174,21 +166,20 @@ func TestParsePrefixExp(t *testing.T) {
 			t.Fatalf("exp Operator is not as expected %s, got=%s",
 				test.operator, exp.Operator)
 		}
-		if !testIntegerLiteral(t, exp.Right, test.intOperand) {
+		if !testLiteralExpression(t, exp.Right, test.intOperand) {
 			return
 		}
 	}
 }
 
 // Test infix Expression
-
 func TestInfixExpression(t *testing.T) {
 
 	testsData := []struct {
 		input    string
-		left     int
+		left     interface{}
 		operator string
-		right    int
+		right    any
 	}{
 		{
 			input: "12 + 5;", left: 12, operator: "+", right: 5,
@@ -210,6 +201,10 @@ func TestInfixExpression(t *testing.T) {
 			input: "12 == 5;", left: 12, operator: "==", right: 5,
 		}, {
 			input: "12 != 5;", left: 12, operator: "!=", right: 5,
+		}, {
+			input: "true==true;", left: true, operator: "==", right: true,
+		}, {
+			input: "true != false;", left: true, operator: "!=", right: false,
 		},
 	}
 
@@ -232,8 +227,8 @@ func TestInfixExpression(t *testing.T) {
 			t.Fatalf("stm.Expression type is not as expected insetead got= %T", stm.Expression)
 		}
 
-		if !testIntegerLiteral(t, exp.Left, test.left) ||
-			!testIntegerLiteral(t, exp.Right, test.right) {
+		if !testLiteralExpression(t, exp.Left, test.left) ||
+			!testLiteralExpression(t, exp.Right, test.right) {
 			return
 		}
 
@@ -263,6 +258,8 @@ func TestPrecedenceOrderParsing(t *testing.T) {
 		{"5>4 == 3<=4;", "((5>4)==(3<=4))"},
 		{"5>=4 != 15<7;", "((5>=4)!=(15<7))"},
 		{"3 + 4*5 == 3*1 + 4*5;", "((3+(4*5))==((3*1)+(4*5)))"},
+		{"true;", "true"},
+		{"3<5 == false;", "((3<5)==false)"},
 	}
 
 	for _, test := range tests {
@@ -275,6 +272,14 @@ func TestPrecedenceOrderParsing(t *testing.T) {
 		}
 	}
 }
+
+// test booleans
+/*func TestParseBoolean(t *testing.T){
+	tests := []struct{
+		input string
+		expected
+	}
+}*/
 
 // Tests helper functions
 func checkIsProgramStmLengthValid(program *ast.Program, t *testing.T, length int) {
@@ -329,7 +334,7 @@ func testDefStatement(t *testing.T, stm ast.Statement, name string) bool {
 	return true
 }
 
-func testIntegerLiteral(t *testing.T, intLit ast.Expression, value int) bool {
+func testIntegerLiteral(t *testing.T, intLit ast.Expression, value interface{}) bool {
 	intVal, ok := intLit.(*ast.IntegerLiteral)
 
 	if !ok {
@@ -350,10 +355,94 @@ func testIntegerLiteral(t *testing.T, intLit ast.Expression, value int) bool {
 	return true
 }
 
+func testIdentifier(t *testing.T, exp ast.Expression, value string) bool {
+
+	ident, ok := exp.(*ast.Identifier)
+
+	if !ok {
+		t.Fatalf("expression is not of type *ast.Identifier instead, got=%T", exp)
+		return false
+	}
+
+	if ident.Value != value {
+		t.Errorf("ident.Value expected=%s, and got=%s", value, ident.Value)
+		return false
+	}
+
+	if ident.TokenLiteral() != value {
+		t.Errorf("ident.TokenLiteral is not %s. instead got=%s", "foobar",
+			ident.TokenLiteral())
+		return false
+	}
+	return true
+}
+
+func testBoolean(t *testing.T, exp ast.Expression, val interface{}) bool {
+	boolexp, ok := exp.(*ast.BooleanExp)
+
+	if !ok {
+		t.Fatalf("expression is not of type *ast.BooleanExp instead, got=%T", exp)
+		return false
+	}
+
+	if boolexp.Value != val {
+		t.Errorf("boolexp.Value expected=%t, and got=%t", val, boolexp.Value)
+		return false
+	}
+
+	if boolexp.TokenLiteral() != fmt.Sprintf("%t", val) {
+		t.Errorf("ident.TokenLiteral is not %s. instead got=%s", "foobar",
+			boolexp.TokenLiteral())
+		return false
+	}
+
+	return true
+}
+
 func getProg(input string) (*ast.Program, *Parser) {
 	lexer := lexer.InitLexer(input)
 	parser := InitParser(lexer)
 	pr := parser.Parse()
 
 	return pr, parser
+}
+
+func testLiteralExpression(t *testing.T, exp ast.Expression, expected interface{}) bool {
+	switch val := expected.(type) {
+	case int:
+		return testIntegerLiteral(t, exp, val)
+	case string:
+		return testIdentifier(t, exp, val)
+	case bool:
+		return testBoolean(t, exp, val)
+	default:
+		t.Fatalf("type of expression %T not handled", val)
+		return false
+	}
+}
+
+func testInfixExpression(t *testing.T, exp ast.Expression, left interface{},
+	right interface{}, operator string) bool {
+
+	opExp, ok := exp.(*ast.InfixExpression)
+	if !ok {
+		t.Errorf("exp is not of type ast.Expression instead got:%T", opExp)
+		return false
+	}
+
+	if !testLiteralExpression(t, opExp.Left, left) {
+		return false
+	}
+
+	if opExp.Operator != operator {
+		t.Errorf("exp operator is not %s, instead got %s", operator, opExp.Operator)
+		return false
+	}
+
+	if !testLiteralExpression(t, opExp.Right, right) {
+		return false
+	}
+
+	return true
+
 }

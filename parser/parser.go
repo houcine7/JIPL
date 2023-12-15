@@ -49,8 +49,11 @@ func InitParser(l *lexer.Lexer) *Parser {
 	// registering prefix parsing functions
 	p.addPrefixFn(token.IDENTIFIER, p.parseIdentifier)
 	p.addPrefixFn(token.INT, p.parseInt)
+	p.addAllPrefixFn([]token.TokenType{
+		token.TRUE,
+		token.FALSE,
+	}, p.parseBoolen)
 	// prefix expression parser
-
 	prefixParseTokens := []token.TokenType{
 		token.EX_MARK,
 		token.MINUS,
@@ -81,6 +84,19 @@ func InitParser(l *lexer.Lexer) *Parser {
 		fmt.Println("Map prefix fns is:", p.prefixParseFuncs)
 		fmt.Println("Map infix fns is", p.infixParseFuncs)
 	*/
+	return p
+}
+
+func (p *Parser) printTrace(a ...any) {
+	const dots = ". . . . . . . . . . . . . . . . . . . . . . . . . . . . ."
+	const lnDots = len(dots)
+
+	fmt.Print(dots[0:4])
+	fmt.Println(a...)
+}
+
+func trace(msg string, p *Parser) *Parser {
+	p.printTrace(msg, "(")
 	return p
 }
 
@@ -171,6 +187,8 @@ func (p *Parser) parseReturnStmt() *ast.ReturnStatement {
 
 func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 
+	//debuggin puropos
+	defer trace("parse expression statements called..", p)
 	//fmt.Println("------->", p.currToken)
 	stm := &ast.ExpressionStatement{Token: p.currToken}
 
@@ -227,6 +245,15 @@ func (p *Parser) parseInt() ast.Expression {
 		return nil
 	}
 	exp.Value = int(val)
+	return exp
+}
+
+func (p *Parser) parseBoolen() ast.Expression {
+	exp := &ast.BooleanExp{
+		Token: p.currToken,
+		Value: p.currentTokenEquals(token.TRUE),
+	}
+
 	return exp
 }
 
