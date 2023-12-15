@@ -53,12 +53,12 @@ func InitParser(l *lexer.Lexer) *Parser {
 		token.TRUE,
 		token.FALSE,
 	}, p.parseBoolen)
+	p.addPrefixFn(token.LP, p.parseGroupExpression)
 	// prefix expression parser
 	prefixParseTokens := []token.TokenType{
 		token.EX_MARK,
 		token.MINUS,
 	}
-
 	p.addAllPrefixFn(prefixParseTokens, p.parsePrefixExpression)
 
 	// infix expresion parseres
@@ -185,6 +185,19 @@ func (p *Parser) parseReturnStmt() *ast.ReturnStatement {
 	return stm
 }
 
+// group expression
+func (p *Parser) parseGroupExpression() ast.Expression {
+	p.NextToken()
+	grpExp := p.parseExpression(LOWEST)
+
+	if !p.expectedNextToken(token.NewToken(token.RP, ")")) {
+		return nil
+	}
+	return grpExp
+
+}
+
+// expression statments parsing
 func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 
 	//debuggin puropos
@@ -307,9 +320,9 @@ func (p *Parser) peekTokenEquals(t token.TokenType) bool {
 }
 
 /*
-* function checks if the given token is the next token
-* returns true and advances the tokens pointers of the parser
-* if not returns false
+* function checks if the given token has the same type of the next token
+* it returns true and advances the tokens pointers of the parser
+* if not returns false and adds a parser error
  */
 func (p *Parser) expectedNextToken(t token.Token) bool {
 	if p.peekTokenEquals(t.Type) {
@@ -360,10 +373,10 @@ func (p *Parser) currentPrecedence() int {
 * takes the peeked wrong token and adds error
 * message to the errors array of the parser
  */
-func (p *Parser) peekedError(encounteredToken token.Token) {
+func (p *Parser) peekedError(expectedToken token.Token) {
 
 	errorMessage := fmt.Sprintf("wrong next token type expected token is %s instead got %s",
-		encounteredToken.Value, p.peekedToken.Value)
+		expectedToken.Value, p.peekedToken.Value)
 
 	// append message to the errors array
 	p.errors = append(p.errors, errorMessage)
