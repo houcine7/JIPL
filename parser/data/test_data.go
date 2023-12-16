@@ -90,4 +90,7 @@ var (
 	}
 
 	IfExpression = "if(m>=n) {m+1;} else{n+1;}"
+	FunctionExp  = "function test(pr1,pr2){pr1+pr2;}"
+	FunctionExp1 = "function test(){pr1+pr2;}"
+	FunctionExp2 = "function test(pr1,pr2){}"
 )

@@ -60,7 +60,7 @@ func InitParser(l *lexer.Lexer) *Parser {
 		token.MINUS,
 	}, p.parsePrefixExpression)
 	p.addPrefixFn(token.IF, p.parseIfExpression)
-
+	p.addPrefixFn(token.FUNCTION, p.parseFunctionExpression)
 	// infix expresion parseres
 	infixParseTokens := []token.TokenType{
 		token.PLUS,
@@ -168,6 +168,58 @@ func (p *Parser) parseDefStmt() *ast.DefStatement {
 	}
 
 	return stm
+}
+
+// to parse functionExpression
+func (p *Parser) parseFunctionExpression() ast.Expression {
+	exp := &ast.FunctionExp{Token: p.currToken}
+
+	if !p.expectedNextToken(token.NewToken(token.IDENTIFIER, "")) {
+		return nil
+	}
+	fmt.Println("------ in Identifier ----")
+	exp.Name = p.parseIdentifier().(*ast.Identifier)
+	if !p.expectedNextToken(token.NewToken(token.LP, "(")) {
+		return nil
+	}
+
+	fmt.Println("function.Name is ", exp.Name)
+	fmt.Println(p.currToken)
+
+	// fn params
+	exp.Parameters = p.parsePramas()
+
+	if !p.expectedNextToken(token.NewToken(token.LCB, "{")) {
+		return nil
+	}
+	// fn body should start with  {
+	exp.FnBody = p.parseBlocStatements()
+
+	return exp
+}
+
+func (p *Parser) parsePramas() []*ast.Identifier {
+	var params = []*ast.Identifier{}
+
+	if p.peekTokenEquals(token.RP) { // in case of no param
+		p.NextToken()
+		return params
+	}
+
+	p.NextToken() // advance to params p1,p2....
+	params = append(params, p.parseIdentifier().(*ast.Identifier))
+
+	for p.peekTokenEquals(token.COMMA) {
+		p.NextToken()
+		p.NextToken() //advance to next param
+		params = append(params, p.parseIdentifier().(*ast.Identifier))
+	}
+	//end of params
+	if !p.expectedNextToken(token.NewToken(token.RP, ")")) {
+		return nil
+	}
+
+	return params
 }
 
 // to parse Return statement

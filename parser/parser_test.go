@@ -37,8 +37,8 @@ func TestDefStatement(t *testing.T) {
 
 // test return statement
 func TestReturnStatement(t *testing.T) {
-	
-	input :=data.ReturnStm
+
+	input := data.ReturnStm
 	pr, _ := getProg(input)
 
 	//check is length of the program statement slice is 3
@@ -61,7 +61,7 @@ func TestReturnStatement(t *testing.T) {
 
 // Expression tests
 func TestIdentifiers(t *testing.T) {
-	input :=data.Identifier
+	input := data.Identifier
 
 	program, parser := getProg(input)
 
@@ -254,6 +254,33 @@ func TestIfExpression(t *testing.T) {
 	if !testInfixExpression(t, elsBody.Expression, "n", 1, "+") {
 		return
 	}
+}
+
+func TestParseFunctions(t *testing.T) {
+	input := data.FunctionExp2
+	pr, parser := getProg(input)
+	checkParserErrors(parser, t)
+	checkIsProgramStmLengthValid(pr, t, 1)
+
+	stm, ok := pr.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("pr.Statments[0] type is not *ast.ExpressionStatement instead got %T",
+			pr.Statements[0],
+		)
+	}
+
+	fnExp, ok := stm.Expression.(*ast.FunctionExp)
+	if !ok {
+		t.Fatalf("stm.Expression type is not *ast.FunctionExp instead got %T",
+			stm.Expression,
+		)
+	}
+
+	testLiteralExpression(t, fnExp.Name, "test")
+	testLiteralExpression(t, fnExp.Parameters[0], "pr1")
+	testLiteralExpression(t, fnExp.Parameters[1], "pr2")
+	fmt.Println("------------ function string ------------")
+	fmt.Println(fnExp.ToString())
 }
 
 // Tests helper functions

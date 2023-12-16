@@ -134,10 +134,10 @@ the ast node for function expressions
 (functoin definition are expressions)
 */
 type FunctionExp struct {
-	Token      token.Token // the function token used to represent functions
-	Name       *Identifier
-	Parameters []*Identifier
-	FnBody     *BlockStm
+	Token      token.Token   // the function token used to represent functions
+	Name       *Identifier   // the name of the functoin
+	Parameters []*Identifier // function parmas
+	FnBody     *BlockStm     // function body
 }
 
 // implments Node & expression interface
