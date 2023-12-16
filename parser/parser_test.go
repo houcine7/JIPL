@@ -6,6 +6,7 @@ import (
 
 	ast "github.com/houcine7/JIPL/AST"
 	"github.com/houcine7/JIPL/lexer"
+	"github.com/houcine7/JIPL/parser/data"
 )
 
 /*TEST functions*/
@@ -13,11 +14,7 @@ import (
 // test def statement
 func TestDefStatement(t *testing.T) {
 
-	input := `
-def num1 = 13;
-def  total= 0;
-def a= 5321;
-`
+	input := data.InputDefStm
 	program, parser := getProg(input)
 
 	// check parser errors
@@ -26,19 +23,13 @@ def a= 5321;
 	//check is length of the program statement slice is 3
 	checkIsProgramStmLengthValid(program, t, 3)
 
-	tests := []struct {
-		expectedIdentifier string
-	}{
-		{"num1"},
-		{"total"},
-		{"a"},
-	}
+	tests := data.DefStmExpected
 
 	for i, t1 := range tests {
 
 		stm := program.Statements[i]
 
-		if !testDefStatement(t, stm, t1.expectedIdentifier) {
+		if !testDefStatement(t, stm, t1.ExpectedIdentifier) {
 			return
 		}
 	}
@@ -46,11 +37,8 @@ def a= 5321;
 
 // test return statement
 func TestReturnStatement(t *testing.T) {
-	input := `
-	return 545;
-	return 101232;
-	return 0;
-	`
+	
+	input :=data.ReturnStm
 	pr, _ := getProg(input)
 
 	//check is length of the program statement slice is 3
@@ -73,7 +61,7 @@ func TestReturnStatement(t *testing.T) {
 
 // Expression tests
 func TestIdentifiers(t *testing.T) {
-	input := `varName;`
+	input :=data.Identifier
 
 	program, parser := getProg(input)
 
@@ -95,7 +83,7 @@ func TestIdentifiers(t *testing.T) {
 
 // Integer literals test
 func TestIntegerLiteral(t *testing.T) {
-	input := "81;"
+	input := data.IntegerLit
 
 	pr, parser := getProg(input)
 
@@ -127,20 +115,11 @@ func TestIntegerLiteral(t *testing.T) {
 
 // prefix operators
 func TestParsePrefixExp(t *testing.T) {
-	tests := []struct {
-		input      string
-		operator   string
-		intOperand interface{}
-	}{
-		{input: "!7;", operator: "!", intOperand: 7},
-		{input: "-42;", operator: "-", intOperand: 42},
-		{input: "!false;", operator: "!", intOperand: false},
-		{input: "!true;", operator: "!", intOperand: true},
-	}
+	tests := data.PrefixExpression
 
 	for _, test := range tests {
 
-		pr, parser := getProg(test.input)
+		pr, parser := getProg(test.Input)
 
 		checkParserErrors(parser, t)
 
@@ -162,11 +141,11 @@ func TestParsePrefixExp(t *testing.T) {
 				stm.Expression)
 		}
 
-		if exp.Operator != test.operator {
+		if exp.Operator != test.Operator {
 			t.Fatalf("exp Operator is not as expected %s, got=%s",
-				test.operator, exp.Operator)
+				test.Operator, exp.Operator)
 		}
-		if !testLiteralExpression(t, exp.Right, test.intOperand) {
+		if !testLiteralExpression(t, exp.Right, test.IntOperand) {
 			return
 		}
 	}
@@ -175,42 +154,11 @@ func TestParsePrefixExp(t *testing.T) {
 // Test infix Expression
 func TestInfixExpression(t *testing.T) {
 
-	testsData := []struct {
-		input    string
-		left     interface{}
-		operator string
-		right    any
-	}{
-		{
-			input: "12 + 5;", left: 12, operator: "+", right: 5,
-		}, {
-			input: "12 - 5;", left: 12, operator: "-", right: 5,
-		}, {
-			input: "12*5;", left: 12, operator: "*", right: 5,
-		}, {
-			input: "12/5;", left: 12, operator: "/", right: 5,
-		}, {
-			input: "12 < 5;", left: 12, operator: "<", right: 5,
-		}, {
-			input: "12 <= 5;", left: 12, operator: "<=", right: 5,
-		}, {
-			input: "12 > 5;", left: 12, operator: ">", right: 5,
-		}, {
-			input: "12 >= 5;", left: 12, operator: ">=", right: 5,
-		}, {
-			input: "12 == 5;", left: 12, operator: "==", right: 5,
-		}, {
-			input: "12 != 5;", left: 12, operator: "!=", right: 5,
-		}, {
-			input: "true==true;", left: true, operator: "==", right: true,
-		}, {
-			input: "true != false;", left: true, operator: "!=", right: false,
-		},
-	}
+	testsData := data.InfixExpression
 
 	for _, test := range testsData {
 		//
-		pr, parser := getProg(test.input)
+		pr, parser := getProg(test.Input)
 
 		checkParserErrors(parser, t)
 		checkIsProgramStmLengthValid(pr, t, 1)
@@ -227,13 +175,13 @@ func TestInfixExpression(t *testing.T) {
 			t.Fatalf("stm.Expression type is not as expected insetead got= %T", stm.Expression)
 		}
 
-		if !testLiteralExpression(t, exp.Left, test.left) ||
-			!testLiteralExpression(t, exp.Right, test.right) {
+		if !testLiteralExpression(t, exp.Left, test.Left) ||
+			!testLiteralExpression(t, exp.Right, test.Right) {
 			return
 		}
 
-		if exp.Operator != test.operator {
-			t.Fatalf("Operator is not as expected:%s, but instead got %s", test.operator,
+		if exp.Operator != test.Operator {
+			t.Fatalf("Operator is not as expected:%s, but instead got %s", test.Operator,
 				exp.Operator,
 			)
 		}
@@ -243,41 +191,21 @@ func TestInfixExpression(t *testing.T) {
 
 // tests for preceedence
 func TestPrecedenceOrderParsing(t *testing.T) {
-	tests := []struct {
-		input    string
-		expected string
-	}{
-		{"-var1 * var2;", "((-var1)*var2)"},
-		{"!-var1;", "(!(-var1))"},
-		{"var1 + var2 + var3;", "((var1+var2)+var3)"},
-		{"var1 * var2 * var3;", "((var1*var2)*var3)"},
-		{"var1*var2/var3;", "((var1*var2)/var3)"},
-		{"var1 + var2/var3;", "(var1+(var2/var3))"},
-		{"var1 + var2 * var3 + var4 / var5 - var6;", "(((var1+(var2*var3))+(var4/var5))-var6)"},
-		{"5>4 == 3<=4;", "((5>4)==(3<=4))"},
-		{"5>=4 != 15<7;", "((5>=4)!=(15<7))"},
-		{"3 + 4*5 == 3*1 + 4*5;", "((3+(4*5))==((3*1)+(4*5)))"},
-		{"true;", "true"},
-		{"3<5 == false;", "((3<5)==false)"},
-		{"1 +(7 + 0) +44;", "((1+(7+0))+44)"},
-		{"(7 + 7)*2;", "((7+7)*2)"},
-		{"-10/(2+3);", "((-10)/(2+3))"},
-		{"!(false != true);", "(!(false!=true))"},
-	}
+	tests := data.PrecedenceOrder
 
 	for _, test := range tests {
-		prog, parser := getProg(test.input)
+		prog, parser := getProg(test.Input)
 		//checkIsProgramStmLengthValid(pr, t, 1)
 		checkParserErrors(parser, t)
 		ans := prog.ToString()
-		if ans != test.expected {
-			t.Fatalf("wrong restult occurred expected=%s and got=%s", test.expected, ans)
+		if ans != test.Expected {
+			t.Fatalf("wrong restult occurred expected=%s and got=%s", test.Expected, ans)
 		}
 	}
 }
 
 func TestIfExpression(t *testing.T) {
-	input := "if(m>=n) {m+1;} else{n+1;}"
+	input := data.IfExpression
 	prog, parser := getProg(input)
 
 	checkParserErrors(parser, t)

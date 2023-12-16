@@ -130,6 +130,43 @@ func (b *BooleanExp) ToString() string {
 func (b *BooleanExp) expressionNode() {}
 
 /*
+the ast node for function expressions
+(functoin definition are expressions)
+*/
+type FunctionExp struct {
+	Token      token.Token // the function token used to represent functions
+	Name       *Identifier
+	Parameters []*Identifier
+	FnBody     *BlockStm
+}
+
+// implments Node & expression interface
+func (fnExp *FunctionExp) TokenLiteral() string {
+	return fnExp.Token.Value
+}
+
+func (fnExp *FunctionExp) expressionNode() {}
+
+func (fnExp *FunctionExp) ToString() string {
+	var bf bytes.Buffer
+
+	bf.WriteString(fnExp.TokenLiteral())
+	bf.WriteRune(' ')
+	bf.WriteString(fnExp.Name.ToString())
+	bf.WriteRune('(')
+
+	for idx, iden := range fnExp.Parameters {
+		bf.WriteString(iden.ToString())
+		if idx != len(fnExp.Parameters)-1 {
+			bf.WriteRune(',')
+		}
+	}
+	bf.WriteRune(')')
+	bf.WriteString(fnExp.FnBody.ToString())
+	return bf.String()
+}
+
+/*
 * Expressions statement node
 * they are wrappers that consists solely of one expression
  */
