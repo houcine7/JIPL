@@ -55,11 +55,11 @@ func InitParser(l *lexer.Lexer) *Parser {
 	}, p.parseBoolen)
 	p.addPrefixFn(token.LP, p.parseGroupExpression)
 	// prefix expression parser
-	prefixParseTokens := []token.TokenType{
+	p.addAllPrefixFn([]token.TokenType{
 		token.EX_MARK,
 		token.MINUS,
-	}
-	p.addAllPrefixFn(prefixParseTokens, p.parsePrefixExpression)
+	}, p.parsePrefixExpression)
+	p.addPrefixFn(token.IF, p.parseIfExpression)
 
 	// infix expresion parseres
 	infixParseTokens := []token.TokenType{
@@ -76,7 +76,6 @@ func InitParser(l *lexer.Lexer) *Parser {
 		token.LT_OR_EQ,
 		token.GT_OR_EQ,
 	}
-
 	p.addALlInfixFn(infixParseTokens, p.parseInfixExpression)
 
 	/*
@@ -88,7 +87,7 @@ func InitParser(l *lexer.Lexer) *Parser {
 }
 
 func (p *Parser) printTrace(a ...any) {
-	const dots = ". . . . . . . . . . . . . . . . . . . . . . . . . . . . ."
+	const dots = ". . . . . . . . . . . . . . . . . . . . . . "
 	const lnDots = len(dots)
 
 	fmt.Print(dots[0:4])
@@ -194,6 +193,57 @@ func (p *Parser) parseGroupExpression() ast.Expression {
 		return nil
 	}
 	return grpExp
+}
+
+// parser if expresssions
+func (p *Parser) parseIfExpression() ast.Expression {
+
+	exp := &ast.IfExpression{Token: p.currToken}
+
+	// going to ( token
+	if !p.expectedNextToken(token.NewToken(token.LP, "(")) {
+		return nil
+	}
+
+	//advances to token right after (
+	p.NextToken()
+	exp.Condition = p.parseExpression(LOWEST)
+
+	if !p.expectedNextToken(token.NewToken(token.RP, ")")) {
+		return nil
+	}
+	if !p.expectedNextToken(token.NewToken(token.LCB, "{")) {
+		return nil
+	}
+	exp.Body = p.parseBlocStatements()
+
+	if p.peekTokenEquals(token.ELSE) {
+		//advance currToken
+		p.NextToken()
+		if !p.expectedNextToken(token.NewToken(token.LCB, "{")) {
+			return nil
+		}
+		exp.ElseBody = p.parseBlocStatements()
+	}
+
+	return exp
+}
+
+func (p *Parser) parseBlocStatements() *ast.BlockStm {
+	blockStm := &ast.BlockStm{Token: p.currToken}
+	stms := []ast.Statement{}
+	p.NextToken()
+
+	for !p.currentTokenEquals(token.RCB) &&
+		!p.currentTokenEquals(token.FILE_ENDED) {
+		stm := p.parseStmt()
+		if stm != nil {
+			stms = append(stms, stm)
+		}
+		p.NextToken()
+	}
+	blockStm.Statements = stms
+	return blockStm
 
 }
 

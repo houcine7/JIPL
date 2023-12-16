@@ -254,7 +254,6 @@ func TestPrecedenceOrderParsing(t *testing.T) {
 		{"var1*var2/var3;", "((var1*var2)/var3)"},
 		{"var1 + var2/var3;", "(var1+(var2/var3))"},
 		{"var1 + var2 * var3 + var4 / var5 - var6;", "(((var1+(var2*var3))+(var4/var5))-var6)"},
-		//{"7+10; -1 * 5;", "(7+10)((-1)*5)"},
 		{"5>4 == 3<=4;", "((5>4)==(3<=4))"},
 		{"5>=4 != 15<7;", "((5>=4)!=(15<7))"},
 		{"3 + 4*5 == 3*1 + 4*5;", "((3+(4*5))==((3*1)+(4*5)))"},
@@ -277,13 +276,57 @@ func TestPrecedenceOrderParsing(t *testing.T) {
 	}
 }
 
-// test booleans
-/*func TestParseBoolean(t *testing.T){
-	tests := []struct{
-		input string
-		expected
+func TestIfExpression(t *testing.T) {
+	input := "if(m>=n) {m+1;} else{n+1;}"
+	prog, parser := getProg(input)
+
+	checkParserErrors(parser, t)
+	checkIsProgramStmLengthValid(prog, t, 1)
+
+	stm, ok := prog.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("pr.Statements[0] type is not as expected: *ast.Expression, got=%T", prog.Statements[0])
 	}
-}*/
+
+	ifExpr, ok := stm.Expression.(*ast.IfExpression)
+
+	fmt.Println("------------- IF statement string representation -----------")
+	fmt.Println(ifExpr.ToString())
+	fmt.Println("--------------------------")
+	if !ok {
+		t.Fatalf("stm.Expression type is not as expected: *ast.Expression, got=%T", ifExpr)
+	}
+
+	if !testInfixExpression(t, ifExpr.Condition, "m", "n", ">=") {
+		return
+	}
+
+	if len(ifExpr.Body.Statements) != 1 {
+		t.Fatalf("statements of if Expression body is more than expected %d, instead got %d", 1,
+			len(ifExpr.Body.Statements))
+	}
+
+	body, ok := ifExpr.Body.Statements[0].(*ast.ExpressionStatement)
+
+	if !ok {
+		t.Fatalf("ifExpr.Body.Statements[0] is not ast.ExpressionStatement. got=%T",
+			ifExpr.Body.Statements[0])
+	}
+
+	if !testInfixExpression(t, body.Expression, "m", 1, "+") {
+		return
+	}
+	elsBody, ok := ifExpr.ElseBody.Statements[0].(*ast.ExpressionStatement)
+
+	if !ok {
+		t.Fatalf("IfStm.ElseBody is not ast.ExpressionStatement. got=%T",
+			ifExpr.Body.Statements[0])
+	}
+
+	if !testInfixExpression(t, elsBody.Expression, "n", 1, "+") {
+		return
+	}
+}
 
 // Tests helper functions
 func checkIsProgramStmLengthValid(program *ast.Program, t *testing.T, length int) {

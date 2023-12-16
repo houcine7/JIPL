@@ -227,3 +227,63 @@ func (infixExp *InfixExpression) ToString() string {
 }
 
 func (infixExp *InfixExpression) expressionNode() {}
+
+/*
+  - If expression Nodes
+    implements node and expression Interfaces
+*/
+type IfExpression struct {
+	Token     token.Token // the if token (token.IF)
+	Condition Expression
+	Body      *BlockStm
+	ElseBody  *BlockStm
+}
+
+func (ifExp *IfExpression) expressionNode() {}
+func (ifExp *IfExpression) TokenLiteral() string {
+	return ifExp.Token.Value
+}
+
+func (ifExp *IfExpression) ToString() string {
+	var bf bytes.Buffer
+
+	bf.WriteString("if")
+	bf.WriteString(ifExp.Condition.ToString())
+	bf.WriteRune(' ')
+	bf.WriteString(ifExp.Body.ToString())
+
+	if ifExp.ElseBody != nil {
+		bf.WriteString("else")
+		bf.WriteString(ifExp.ElseBody.ToString())
+	}
+
+	return bf.String()
+}
+
+/*
+Block statments Node
+implements the node and statment Interfaces
+*/
+type BlockStm struct {
+	Token      token.Token // the { token the starting of if block
+	Statements []Statement
+}
+
+func (b *BlockStm) statementNode() {}
+func (b *BlockStm) TokenLiteral() string {
+	return b.Token.Value
+}
+func (b *BlockStm) ToString() string {
+
+	var bf bytes.Buffer
+
+	bf.WriteRune('{')
+
+	for _, st := range b.Statements {
+		bf.WriteString(st.ToString())
+	}
+
+	bf.WriteRune('}')
+
+	return bf.String()
+}
