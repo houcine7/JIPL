@@ -87,10 +87,15 @@ var (
 		{"(7 + 7)*2;", "((7+7)*2)"},
 		{"-10/(2+3);", "((-10)/(2+3))"},
 		{"!(false != true);", "(!(false!=true))"},
+		{"factorial(5);", "factorial(5)"},
+		{"1+pow(2*5)/4;", "(1+(pow((2*5))/4))"},
+		{"max(1,65,2*11,100/2,max(100,12*30))", "max(1,65,(2*11),(100/2),max(100,(12*30)))"},
 	}
 
 	IfExpression = "if(m>=n) {m+1;} else{n+1;}"
 	FunctionExp  = "function test(pr1,pr2){pr1+pr2;}"
 	FunctionExp1 = "function test(){pr1+pr2;}"
 	FunctionExp2 = "function test(pr1,pr2){}"
+
+	FunctionCall = "functionName(arg1,arg2);"
 )

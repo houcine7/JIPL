@@ -283,6 +283,38 @@ func TestParseFunctions(t *testing.T) {
 	fmt.Println(fnExp.ToString())
 }
 
+func TestFnCallExpression(t *testing.T) {
+
+	input := data.FunctionCall
+	pr, parser := getProg(input)
+
+	checkParserErrors(parser, t)
+	//check is length of the program statement slice is 3
+	checkIsProgramStmLengthValid(pr, t, 1)
+
+	stm, ok := pr.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("the pr.Stataments[0] is not of type *ast.ExpressionStatement. instead got %T",
+			pr.Statements[0])
+	}
+
+	fnCall, ok := stm.Expression.(*ast.FunctionCall)
+
+	fmt.Println("------------- function CALL string --------")
+	fmt.Println(fnCall.ToString())
+
+	if !ok {
+		t.Fatalf("the stm.Expression is not of type FunctionCall instead got %T",
+			stm.Expression)
+	}
+
+	testLiteralExpression(t, fnCall.Function, "functionName")
+	for i, argExp := range fnCall.Arguments {
+		testLiteralExpression(t, argExp, fmt.Sprintf("arg%d", i+1))
+	}
+
+}
+
 // Tests helper functions
 func checkIsProgramStmLengthValid(program *ast.Program, t *testing.T, length int) {
 	if len(program.Statements) != length {

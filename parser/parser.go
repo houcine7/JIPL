@@ -77,7 +77,7 @@ func InitParser(l *lexer.Lexer) *Parser {
 		token.GT_OR_EQ,
 	}
 	p.addALlInfixFn(infixParseTokens, p.parseInfixExpression)
-
+	p.addInfixFn(token.LP, p.parseFunctionCallExp)
 	/*
 		fmt.Println("-------------------------")
 		fmt.Println("Map prefix fns is:", p.prefixParseFuncs)
@@ -220,6 +220,41 @@ func (p *Parser) parsePramas() []*ast.Identifier {
 	}
 
 	return params
+}
+
+func (p *Parser) parseFunctionCallExp(fn ast.Expression) ast.Expression {
+	exp := &ast.FunctionCall{
+		Token:    p.currToken,
+		Function: fn,
+	}
+
+	exp.Arguments = p.parseFnArgs()
+
+	return exp
+}
+
+func (p *Parser) parseFnArgs() []ast.Expression {
+
+	var ans = []ast.Expression{}
+	if p.peekTokenEquals(token.RP) {
+		p.NextToken()
+		return ans
+	}
+
+	p.NextToken()
+	ans = append(ans, p.parseExpression(LOWEST))
+
+	for p.peekTokenEquals(token.COMMA) {
+		p.NextToken()
+		p.NextToken()
+		ans = append(ans, p.parseExpression(LOWEST))
+	}
+
+	if !p.expectedNextToken(token.NewToken(token.RP, ")")) {
+		return nil
+	}
+
+	return ans
 }
 
 // to parse Return statement
@@ -450,6 +485,8 @@ var precedences = map[token.TokenType]int{
 	token.MINUS: SUM,
 	token.SLASH: PRODUCT,
 	token.STAR:  PRODUCT,
+
+	token.LP: CALL,
 }
 
 // function to peekPrecedence

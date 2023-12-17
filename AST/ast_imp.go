@@ -166,6 +166,36 @@ func (fnExp *FunctionExp) ToString() string {
 	return bf.String()
 }
 
+// function invocation
+type FunctionCall struct {
+	Token     token.Token  // token '(' LP AST node constructs in infix pos fun()
+	Function  Expression   // identifier
+	Arguments []Expression // function call args
+}
+
+func (fnCall *FunctionCall) expressionNode() {}
+
+func (fnCall *FunctionCall) TokenLiteral() string {
+	return fnCall.Token.Value
+}
+
+func (fnCall *FunctionCall) ToString() string {
+	var bf bytes.Buffer
+	bf.WriteString(fnCall.Function.ToString())
+	bf.WriteRune('(')
+
+	for idx, arg := range fnCall.Arguments {
+		bf.WriteString(arg.ToString())
+		if idx != len(fnCall.Arguments)-1 {
+			bf.WriteRune(',')
+		}
+	}
+
+	bf.WriteRune(')')
+
+	return bf.String()
+}
+
 /*
 * Expressions statement node
 * they are wrappers that consists solely of one expression
