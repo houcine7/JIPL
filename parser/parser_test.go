@@ -29,9 +29,10 @@ func TestDefStatement(t *testing.T) {
 
 		stm := program.Statements[i]
 
-		if !testDefStatement(t, stm, t1.ExpectedIdentifier) {
+		if !testDefStatement(t, stm, t1.ExpectedIdentifier, t1.ExpectedValue) {
 			return
 		}
+
 	}
 }
 
@@ -39,12 +40,13 @@ func TestDefStatement(t *testing.T) {
 func TestReturnStatement(t *testing.T) {
 
 	input := data.ReturnStm
-	pr, _ := getProg(input)
+	expectReturnValue := data.ExpectedReturnValue
+	pr, parser := getProg(input)
 
-	//check is length of the program statement slice is 3
+	checkParserErrors(parser, t)
 	checkIsProgramStmLengthValid(pr, t, 3)
 
-	for _, stm := range pr.Statements {
+	for i, stm := range pr.Statements {
 		returnStm, ok := stm.(*ast.ReturnStatement)
 		if !ok {
 			t.Errorf("statement not *ast.ReturnStatement type got:%T", stm)
@@ -54,6 +56,9 @@ func TestReturnStatement(t *testing.T) {
 		if returnStm.TokenLiteral() != "return" {
 			t.Errorf("returnStatement token literal is not 'return' instead got: %s",
 				returnStm.TokenLiteral())
+		}
+		if !testLiteralExpression(t, returnStm.ReturnValue, expectReturnValue[i]) {
+			return
 		}
 
 	}
@@ -342,7 +347,7 @@ func checkParserErrors(p *Parser, t *testing.T) {
 	t.FailNow() // mark tests as failed and stop execution
 }
 
-func testDefStatement(t *testing.T, stm ast.Statement, name string) bool {
+func testDefStatement(t *testing.T, stm ast.Statement, name string, val int) bool {
 	if stm.TokenLiteral() != "def" {
 		t.Errorf("s.tokenLiteral is not 'def'. got instead:%q", stm.TokenLiteral())
 		return false
@@ -362,6 +367,10 @@ func testDefStatement(t *testing.T, stm ast.Statement, name string) bool {
 
 	if defStm.Name.Value != name {
 		t.Errorf("def Statement Name.Value not '%s'. got=%s", name, defStm.Name.Value)
+		return false
+	}
+
+	if !testLiteralExpression(t, defStm.Value, val) {
 		return false
 	}
 

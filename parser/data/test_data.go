@@ -8,10 +8,11 @@ var (
 	`
 	DefStmExpected = []struct {
 		ExpectedIdentifier string
+		ExpectedValue      int
 	}{
-		{"num1"},
-		{"total"},
-		{"a"},
+		{"num1", 13},
+		{"total", 0},
+		{"a", 5321},
 	}
 
 	ReturnStm = `
@@ -19,7 +20,8 @@ var (
 	return 101232;
 	return 0;
 	`
-	Identifier = `varName;`
+	ExpectedReturnValue = []int{545, 101232, 0}
+	Identifier          = `varName;`
 
 	IntegerLit = "81;"
 

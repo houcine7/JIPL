@@ -163,7 +163,11 @@ func (p *Parser) parseDefStmt() *ast.DefStatement {
 		return nil
 	}
 
-	for !p.currentTokenEquals(token.S_COLON) {
+	p.NextToken() // move to the expression after =
+
+	stm.Value = p.parseExpression(LOWEST)
+
+	for p.peekTokenEquals(token.S_COLON) {
 		p.NextToken()
 	}
 
@@ -262,9 +266,9 @@ func (p *Parser) parseReturnStmt() *ast.ReturnStatement {
 	stm := &ast.ReturnStatement{Token: p.currToken}
 
 	p.NextToken()
-
-	//TODO:
-	for !p.currentTokenEquals(token.S_COLON) {
+	stm.ReturnValue = p.parseExpression(LOWEST)
+	//
+	for p.peekTokenEquals(token.S_COLON) {
 		p.NextToken()
 	}
 
