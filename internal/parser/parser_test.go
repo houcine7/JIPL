@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	ast "github.com/houcine7/JIPL/AST"
-	"github.com/houcine7/JIPL/lexer"
-	"github.com/houcine7/JIPL/parser/data"
+	ast "github.com/houcine7/JIPL/internal/AST"
+	"github.com/houcine7/JIPL/internal/lexer"
+	"github.com/houcine7/JIPL/internal/parser/data"
 )
 
 /*TEST functions*/

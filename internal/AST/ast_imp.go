@@ -3,7 +3,7 @@ package ast
 import (
 	"bytes"
 
-	"github.com/houcine7/JIPL/token"
+	"github.com/houcine7/JIPL/internal/token"
 )
 
 /*
@@ -102,6 +102,7 @@ func (resStm *ReturnStatement) ToString() string {
 	var bf bytes.Buffer
 	bf.WriteString(resStm.TokenLiteral())
 	if resStm.ReturnValue != nil {
+		bf.WriteRune(' ')
 		bf.WriteString(resStm.ReturnValue.ToString())
 	}
 	bf.WriteString(";")

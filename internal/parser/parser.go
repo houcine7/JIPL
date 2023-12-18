@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strconv"
 
-	ast "github.com/houcine7/JIPL/AST"
-	"github.com/houcine7/JIPL/lexer"
-	"github.com/houcine7/JIPL/token"
+	ast "github.com/houcine7/JIPL/internal/AST"
+	"github.com/houcine7/JIPL/internal/lexer"
+	"github.com/houcine7/JIPL/internal/token"
 )
 
 /*
@@ -181,14 +181,14 @@ func (p *Parser) parseFunctionExpression() ast.Expression {
 	if !p.expectedNextToken(token.NewToken(token.IDENTIFIER, "")) {
 		return nil
 	}
-	fmt.Println("------ in Identifier ----")
+	//fmt.Println("------ in Identifier ----")
 	exp.Name = p.parseIdentifier().(*ast.Identifier)
 	if !p.expectedNextToken(token.NewToken(token.LP, "(")) {
 		return nil
 	}
 
-	fmt.Println("function.Name is ", exp.Name)
-	fmt.Println(p.currToken)
+	//fmt.Println("function.Name is ", exp.Name)
+	//fmt.Println(p.currToken)
 
 	// fn params
 	exp.Parameters = p.parsePramas()
@@ -342,7 +342,7 @@ func (p *Parser) parseBlocStatements() *ast.BlockStm {
 func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 
 	//debuggin puropos
-	defer trace("parse expression statements called..", p)
+	//defer trace("parse expression statements called..", p)
 	//fmt.Println("------->", p.currToken)
 	stm := &ast.ExpressionStatement{Token: p.currToken}
 
@@ -392,7 +392,7 @@ func (p *Parser) parseInt() ast.Expression {
 	val, err := strconv.ParseInt(p.currToken.Value, 0, 0)
 
 	if err != nil {
-		fmt.Println(p.currToken)
+		//fmt.Println(p.currToken)
 		errMsg := fmt.Sprintf("Parsing error, couldn't parse string %s to Integer value",
 			p.currToken.Value)
 		p.errors = append(p.errors, errMsg)

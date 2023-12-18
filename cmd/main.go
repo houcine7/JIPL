@@ -5,7 +5,7 @@ import (
 	"os"
 	"os/user"
 
-	repl "github.com/houcine7/JIPL/REPL"
+	repl "github.com/houcine7/JIPL/cmd/REPL"
 )
 
 func main() {

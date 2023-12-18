@@ -3,7 +3,7 @@ package ast
 import (
 	"testing"
 
-	"github.com/houcine7/JIPL/token"
+	"github.com/houcine7/JIPL/internal/token"
 )
 
 // test toString method

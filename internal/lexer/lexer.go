@@ -3,8 +3,8 @@ package lexer
 import (
 	"unicode/utf8"
 
-	"github.com/houcine7/JIPL/token"
-	"github.com/houcine7/JIPL/utils"
+	"github.com/houcine7/JIPL/internal/token"
+	"github.com/houcine7/JIPL/pkg/utils"
 )
 
 type Lexer struct {
