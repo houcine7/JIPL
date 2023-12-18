@@ -15,13 +15,13 @@ func TestToString(t *testing.T) {
 	program := &Program{
 		Statements: []Statement{
 			&DefStatement{
-				Token: token.NewToken(token.DEF, "def"),
+				Token: token.CreateToken(token.DEF, "def"),
 				Name: &Identifier{
-					Token: token.NewToken(token.IDENTIFIER, "var1"),
+					Token: token.CreateToken(token.IDENTIFIER, "var1"),
 					Value: "var1",
 				},
 				Value: &Identifier{
-					Token: token.NewToken(token.IDENTIFIER, "var2"),
+					Token: token.CreateToken(token.IDENTIFIER, "var2"),
 					Value: "var2",
 				},
 			},

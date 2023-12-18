@@ -261,6 +261,67 @@ func TestIfExpression(t *testing.T) {
 	}
 }
 
+func TestForLoopFunctions(t *testing.T) {
+	input := data.ForLoopTestSimple
+
+	pr, parser := getProg(input)
+
+	checkParserErrors(parser, t)
+
+	checkIsProgramStmLengthValid(pr, t, 1)
+
+	stm, ok := pr.Statements[0].(*ast.ExpressionStatement)
+
+	if !ok {
+		t.Fatalf("pr.Statments[0] type is not *ast.ExpressionStatement instead got %T",
+			pr.Statements[0],
+		)
+	}
+
+	exp, ok := stm.Expression.(*ast.ForLoopExpression)
+
+	if !ok {
+		t.Fatalf("*ast.FoorLoopExpression type is not *ast.ForLoopExpression instead got %T",
+			stm.Expression,
+		)
+	}
+
+	//initStm,ok := exp.InitStm.(*ast.DefStatement)
+
+	/*if !ok {
+			t.Fatalf("exp.InitStm is not of type *ast.DefStatement instead got %T",
+				exp.InitStm,
+			)
+	}*/
+
+	if !testDefStatement(t, exp.InitStm, "i", 0) {
+		return
+	}
+
+	if !testInfixExpression(t, exp.Condition, "i", 10, "<=") {
+		return
+	}
+
+	postFix, ok := exp.PostIteration.(*ast.PostfixExpression)
+
+	if !ok {
+		t.Fatalf("exp.PostIteration type is not *ast.PostfixExpression instead got %T",
+			exp.PostIteration,
+		)
+	}
+
+	if postFix.Operator != "++" {
+		t.Fatal("the operator of the postIteration is invalid")
+	}
+
+	if !testLiteralExpression(t, postFix.Left, "i") {
+		return
+	}
+
+	fmt.Println("---------- for blooock--------")
+	fmt.Println(exp.Body.ToString())
+}
+
 func TestParseFunctions(t *testing.T) {
 	input := data.FunctionExp2
 	pr, parser := getProg(input)

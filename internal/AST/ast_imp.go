@@ -297,6 +297,63 @@ func (infixExp *InfixExpression) ToString() string {
 func (infixExp *InfixExpression) expressionNode() {}
 
 /*
+For loop expressions Node
+for def i=0;i<7;i=i+1 {
+}
+*/
+type ForLoopExpression struct {
+	Token         token.Token // the 'for' token idencate for loop starting point
+	InitStm       Statement   // the initializaiton stm
+	Condition     Expression  // loop condition
+	PostIteration Expression  // the post iteration expression
+	Body          *BlockStm   // loop body that would be executed
+}
+
+func (forExp *ForLoopExpression) TokenLiteral() string {
+	return forExp.Token.Value
+}
+func (forExp *ForLoopExpression) expressionNode() {}
+func (forExp *ForLoopExpression) ToString() string {
+
+	var bf bytes.Buffer
+	bf.WriteString(forExp.TokenLiteral())
+	bf.WriteString(" (")
+	bf.WriteString(forExp.InitStm.ToString())
+	bf.WriteString("; ")
+	bf.WriteString(forExp.Condition.ToString())
+	bf.WriteString("; ")
+	bf.WriteString(forExp.PostIteration.ToString())
+	bf.WriteString(" )")
+
+	bf.WriteString(forExp.Body.ToString())
+	return bf.String()
+}
+
+/*
+	PostfixExpression Node
+*/
+
+type PostfixExpression struct {
+	Token    token.Token // token "INC , DEC (++,--)"
+	Operator string
+	Left     Expression
+}
+
+func (postfixExp *PostfixExpression) expressionNode() {}
+func (postfixExp *PostfixExpression) TokenLiteral() string {
+	return postfixExp.Token.Value
+}
+
+func (postfixExp *PostfixExpression) ToString() string {
+	var bf bytes.Buffer
+	bf.WriteRune('(')
+	bf.WriteString(postfixExp.Left.ToString())
+	bf.WriteString(postfixExp.Operator)
+	bf.WriteRune(')')
+	return bf.String()
+}
+
+/*
   - If expression Nodes
     implements node and expression Interfaces
 */

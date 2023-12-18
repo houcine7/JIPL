@@ -69,6 +69,13 @@ var (
 		},
 	}
 
+	ForLoopTestSimple = `for(def i=0;i<=10;i++){
+													cnt + 1;
+													if (cnt==0){
+														return cnt;
+													}
+											}`
+
 	PrecedenceOrder = []struct {
 		Input    string
 		Expected string
@@ -91,6 +98,7 @@ var (
 		{"!(false != true);", "(!(false!=true))"},
 		{"factorial(5);", "factorial(5)"},
 		{"1+pow(2*5)/4;", "(1+(pow((2*5))/4))"},
+		{"777++;", "(777++)"},
 		{"max(1,65,2*11,100/2,max(100,12*30))", "max(1,65,(2*11),(100/2),max(100,(12*30)))"},
 	}
 

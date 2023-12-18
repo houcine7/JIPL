@@ -39,13 +39,11 @@ func InitParser(l *lexer.Lexer) *Parser {
 		errors: []string{},
 	}
 
-	p.NextToken() // to peek the first token
-	p.NextToken() // first token in the currentToken
+	p.Next() // to peek the first token
+	p.Next() // first token in the currentToken
 
 	// init ParseFunctions maps
 	p.prefixParseFuncs = make(map[token.TokenType]prefixParse)
-	p.infixParseFuncs = make(map[token.TokenType]infixParse)
-
 	// registering prefix parsing functions
 	p.addPrefixFn(token.IDENTIFIER, p.parseIdentifier)
 	p.addPrefixFn(token.INT, p.parseInt)
@@ -61,7 +59,10 @@ func InitParser(l *lexer.Lexer) *Parser {
 	}, p.parsePrefixExpression)
 	p.addPrefixFn(token.IF, p.parseIfExpression)
 	p.addPrefixFn(token.FUNCTION, p.parseFunctionExpression)
+	p.addPrefixFn(token.FOR, p.parseForLoopExpression)
+
 	// infix expresion parseres
+	p.infixParseFuncs = make(map[token.TokenType]infixParse)
 	infixParseTokens := []token.TokenType{
 		token.PLUS,
 		token.MINUS,
@@ -78,6 +79,10 @@ func InitParser(l *lexer.Lexer) *Parser {
 	}
 	p.addALlInfixFn(infixParseTokens, p.parseInfixExpression)
 	p.addInfixFn(token.LP, p.parseFunctionCallExp)
+	p.addALlInfixFn([]token.TokenType{
+		token.DECREMENT,
+		token.INCREMENT,
+	}, p.parsePostFixExpression)
 	/*
 		fmt.Println("-------------------------")
 		fmt.Println("Map prefix fns is:", p.prefixParseFuncs)
@@ -104,7 +109,7 @@ Helper function to move the pointer of the token in the lexer
 reads the next token stores it on the peek but before store the previous
 peekedToken on currentToken
 */
-func (p *Parser) NextToken() {
+func (p *Parser) Next() {
 	p.currToken = p.peekedToken
 	p.peekedToken = p.lexer.NextToken()
 }
@@ -123,7 +128,7 @@ func (p *Parser) Parse() *ast.Program {
 		program.Statements = append(program.Statements, stm)
 		// }
 		// Advance with token
-		p.NextToken()
+		p.Next()
 	}
 
 	return program
@@ -152,38 +157,98 @@ func (p *Parser) parseDefStmt() *ast.DefStatement {
 	stm := &ast.DefStatement{Token: p.currToken}
 
 	// syntax error's
-	if !p.expectedNextToken(token.NewToken(token.IDENTIFIER, "IDENT")) {
+	if !p.expectedNextToken(token.CreateToken(token.IDENTIFIER, "IDENT")) {
 		return nil
 	}
 	stm.Name = &ast.Identifier{
 		Token: p.currToken,
 		Value: p.currToken.Value,
 	}
-	if !p.expectedNextToken(token.NewToken(token.ASSIGN, "=")) {
+	if !p.expectedNextToken(token.CreateToken(token.ASSIGN, "=")) {
 		return nil
 	}
 
-	p.NextToken() // move to the expression after =
+	p.Next() // move to the expression after =
 
 	stm.Value = p.parseExpression(LOWEST)
 
-	for p.peekTokenEquals(token.S_COLON) {
-		p.NextToken()
+	if p.peekTokenEquals(token.S_COLON) {
+		p.Next()
 	}
 
 	return stm
+}
+
+func (p *Parser) parseDefStmtInForLoop() *ast.DefStatement {
+	stm := &ast.DefStatement{Token: p.currToken}
+
+	// syntax error's
+	if !p.expectedNextToken(token.CreateToken(token.IDENTIFIER, "IDENT")) {
+		return nil
+	}
+	stm.Name = &ast.Identifier{
+		Token: p.currToken,
+		Value: p.currToken.Value,
+	}
+	if !p.expectedNextToken(token.CreateToken(token.ASSIGN, "=")) {
+		return nil
+	}
+
+	p.Next() // move to the expression after =
+
+	stm.Value = p.parseExpression(LOWEST)
+
+	return stm
+}
+
+// to parse for loop expressions
+func (p *Parser) parseForLoopExpression() ast.Expression {
+
+	exp := &ast.ForLoopExpression{Token: p.currToken}
+
+	if !p.expectedNextToken(token.CreateToken(token.LP, "(")) {
+		return nil
+	}
+	p.Next() // advance to init parseStmt
+	exp.InitStm = p.parseDefStmtInForLoop()
+
+	if !p.expectedNextToken(token.CreateToken(token.S_COLON, ";")) {
+		fmt.Println("HEEEERE")
+		return nil
+	}
+	p.Next() // advance to the condition expression
+	exp.Condition = p.parseExpression(LOWEST)
+
+	if !p.expectedNextToken(token.CreateToken(token.S_COLON, ";")) {
+		return nil
+	}
+
+	p.Next() // advance to post iteration
+	exp.PostIteration = p.parseExpression(LOWEST)
+
+	if !p.expectedNextToken(token.CreateToken(token.RP, ")")) {
+		return nil
+	}
+
+	if !p.expectedNextToken(token.CreateToken(token.LCB, "{")) {
+		return nil
+	}
+	exp.Body = p.parseBlocStatements()
+
+	return exp
+
 }
 
 // to parse functionExpression
 func (p *Parser) parseFunctionExpression() ast.Expression {
 	exp := &ast.FunctionExp{Token: p.currToken}
 
-	if !p.expectedNextToken(token.NewToken(token.IDENTIFIER, "")) {
+	if !p.expectedNextToken(token.CreateToken(token.IDENTIFIER, "")) {
 		return nil
 	}
 	//fmt.Println("------ in Identifier ----")
 	exp.Name = p.parseIdentifier().(*ast.Identifier)
-	if !p.expectedNextToken(token.NewToken(token.LP, "(")) {
+	if !p.expectedNextToken(token.CreateToken(token.LP, "(")) {
 		return nil
 	}
 
@@ -193,7 +258,7 @@ func (p *Parser) parseFunctionExpression() ast.Expression {
 	// fn params
 	exp.Parameters = p.parsePramas()
 
-	if !p.expectedNextToken(token.NewToken(token.LCB, "{")) {
+	if !p.expectedNextToken(token.CreateToken(token.LCB, "{")) {
 		return nil
 	}
 	// fn body should start with  {
@@ -206,20 +271,20 @@ func (p *Parser) parsePramas() []*ast.Identifier {
 	var params = []*ast.Identifier{}
 
 	if p.peekTokenEquals(token.RP) { // in case of no param
-		p.NextToken()
+		p.Next()
 		return params
 	}
 
-	p.NextToken() // advance to params p1,p2....
+	p.Next() // advance to params p1,p2....
 	params = append(params, p.parseIdentifier().(*ast.Identifier))
 
 	for p.peekTokenEquals(token.COMMA) {
-		p.NextToken()
-		p.NextToken() //advance to next param
+		p.Next()
+		p.Next() //advance to next param
 		params = append(params, p.parseIdentifier().(*ast.Identifier))
 	}
 	//end of params
-	if !p.expectedNextToken(token.NewToken(token.RP, ")")) {
+	if !p.expectedNextToken(token.CreateToken(token.RP, ")")) {
 		return nil
 	}
 
@@ -241,20 +306,20 @@ func (p *Parser) parseFnArgs() []ast.Expression {
 
 	var ans = []ast.Expression{}
 	if p.peekTokenEquals(token.RP) {
-		p.NextToken()
+		p.Next()
 		return ans
 	}
 
-	p.NextToken()
+	p.Next()
 	ans = append(ans, p.parseExpression(LOWEST))
 
 	for p.peekTokenEquals(token.COMMA) {
-		p.NextToken()
-		p.NextToken()
+		p.Next()
+		p.Next()
 		ans = append(ans, p.parseExpression(LOWEST))
 	}
 
-	if !p.expectedNextToken(token.NewToken(token.RP, ")")) {
+	if !p.expectedNextToken(token.CreateToken(token.RP, ")")) {
 		return nil
 	}
 
@@ -265,11 +330,11 @@ func (p *Parser) parseFnArgs() []ast.Expression {
 func (p *Parser) parseReturnStmt() *ast.ReturnStatement {
 	stm := &ast.ReturnStatement{Token: p.currToken}
 
-	p.NextToken()
+	p.Next()
 	stm.ReturnValue = p.parseExpression(LOWEST)
 	//
 	for p.peekTokenEquals(token.S_COLON) {
-		p.NextToken()
+		p.Next()
 	}
 
 	return stm
@@ -277,10 +342,10 @@ func (p *Parser) parseReturnStmt() *ast.ReturnStatement {
 
 // group expression
 func (p *Parser) parseGroupExpression() ast.Expression {
-	p.NextToken()
+	p.Next()
 	grpExp := p.parseExpression(LOWEST)
 
-	if !p.expectedNextToken(token.NewToken(token.RP, ")")) {
+	if !p.expectedNextToken(token.CreateToken(token.RP, ")")) {
 		return nil
 	}
 	return grpExp
@@ -292,26 +357,26 @@ func (p *Parser) parseIfExpression() ast.Expression {
 	exp := &ast.IfExpression{Token: p.currToken}
 
 	// going to ( token
-	if !p.expectedNextToken(token.NewToken(token.LP, "(")) {
+	if !p.expectedNextToken(token.CreateToken(token.LP, "(")) {
 		return nil
 	}
 
 	//advances to token right after (
-	p.NextToken()
+	p.Next()
 	exp.Condition = p.parseExpression(LOWEST)
 
-	if !p.expectedNextToken(token.NewToken(token.RP, ")")) {
+	if !p.expectedNextToken(token.CreateToken(token.RP, ")")) {
 		return nil
 	}
-	if !p.expectedNextToken(token.NewToken(token.LCB, "{")) {
+	if !p.expectedNextToken(token.CreateToken(token.LCB, "{")) {
 		return nil
 	}
 	exp.Body = p.parseBlocStatements()
 
 	if p.peekTokenEquals(token.ELSE) {
 		//advance currToken
-		p.NextToken()
-		if !p.expectedNextToken(token.NewToken(token.LCB, "{")) {
+		p.Next()
+		if !p.expectedNextToken(token.CreateToken(token.LCB, "{")) {
 			return nil
 		}
 		exp.ElseBody = p.parseBlocStatements()
@@ -323,7 +388,7 @@ func (p *Parser) parseIfExpression() ast.Expression {
 func (p *Parser) parseBlocStatements() *ast.BlockStm {
 	blockStm := &ast.BlockStm{Token: p.currToken}
 	stms := []ast.Statement{}
-	p.NextToken()
+	p.Next()
 
 	for !p.currentTokenEquals(token.RCB) &&
 		!p.currentTokenEquals(token.FILE_ENDED) {
@@ -331,7 +396,7 @@ func (p *Parser) parseBlocStatements() *ast.BlockStm {
 		if stm != nil {
 			stms = append(stms, stm)
 		}
-		p.NextToken()
+		p.Next()
 	}
 	blockStm.Statements = stms
 	return blockStm
@@ -351,7 +416,7 @@ func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 
 	// fmt.Println(stm)
 	if p.peekTokenEquals(token.S_COLON) {
-		p.NextToken()
+		p.Next()
 	}
 
 	return stm
@@ -375,7 +440,7 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 			return leftExpression
 		}
 
-		p.NextToken()
+		p.Next()
 		//
 		leftExpression = infix(leftExpression)
 	}
@@ -417,7 +482,7 @@ func (p *Parser) parsePrefixExpression() ast.Expression {
 		Operator: p.currToken.Value,
 	}
 
-	p.NextToken()
+	p.Next()
 	exp.Right = p.parseExpression(PREFIX)
 	return exp
 }
@@ -430,11 +495,20 @@ func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 	}
 
 	prevPrecedence := p.currentPrecedence()
-	p.NextToken()
+	p.Next()
 	exp.Right = p.parseExpression(prevPrecedence)
 
 	return exp
 
+}
+
+func (p *Parser) parsePostFixExpression(left ast.Expression) ast.Expression {
+	exp := &ast.PostfixExpression{
+		Token:    p.currToken,
+		Operator: p.currToken.Value,
+		Left:     left,
+	}
+	return exp
 }
 
 // ERRORS
@@ -467,30 +541,12 @@ func (p *Parser) peekTokenEquals(t token.TokenType) bool {
  */
 func (p *Parser) expectedNextToken(t token.Token) bool {
 	if p.peekTokenEquals(t.Type) {
-		p.NextToken()
+		p.Next()
 		return true
 	}
 	// peek errors
 	p.peekedError(t)
 	return false
-}
-
-// precedence map to map tokens with thier precedence
-var precedences = map[token.TokenType]int{
-	token.EQUAL:     EQUALS,
-	token.NOT_EQUAL: EQUALS,
-
-	token.LT:       LESS_OR_GREATER,
-	token.GT:       LESS_OR_GREATER,
-	token.LT_OR_EQ: LESS_OR_GREATER,
-	token.GT_OR_EQ: LESS_OR_GREATER,
-
-	token.PLUS:  SUM,
-	token.MINUS: SUM,
-	token.SLASH: PRODUCT,
-	token.STAR:  PRODUCT,
-
-	token.LP: CALL,
 }
 
 // function to peekPrecedence

@@ -7,17 +7,17 @@ import (
 	"github.com/houcine7/JIPL/internal/token"
 )
 
-//basic test
-func TestNextToken(t *testing.T) {
+// basic test
+func TestNext(t *testing.T) {
 	MOCK1_TEST := Mock0
 
-	var tests = NextTokenData0
+	var tests = NextData0
 	myLexer := InitLexer(MOCK1_TEST)
 
 	for i, et := range tests {
 
 		calculatedToken := myLexer.NextToken()
-		
+
 		log.Print(calculatedToken)
 		// test the token type
 
@@ -34,71 +34,64 @@ func TestNextToken(t *testing.T) {
 	}
 }
 
-
-func TestNextToken2(t *testing.T) {
+func TestNext2(t *testing.T) {
 	MOCK1_TEST := Mock1
 
-	var tests = NextTokenData1
+	var tests = NextData1
 	myLexer := InitLexer(MOCK1_TEST)
 
-
-	for i,et :=range(tests) {
-		calculatedToken:= myLexer.NextToken()
+	for i, et := range tests {
+		calculatedToken := myLexer.NextToken()
 		log.Println("------- TOKEN ---------")
-		log.Println(calculatedToken,calculatedToken.Type,calculatedToken.Value)
+		log.Println(calculatedToken, calculatedToken.Type, calculatedToken.Value)
 		log.Println("----------------")
 		// test the token type
 
-		if et.expectedTokenType !=  calculatedToken.Type {
+		if et.expectedTokenType != calculatedToken.Type {
 			log.Fatalf("tests index %d -> tokenType wrong, expected:[%d] and got:[%d]",
-			i,et.expectedTokenType,calculatedToken.Type)
+				i, et.expectedTokenType, calculatedToken.Type)
 		}
 
 		// test the token literal value
 		if et.expectedValue != calculatedToken.Value {
 			log.Fatalf("tests index %d -> token value is wrong, expected:[%q] and got:[%q]",
-			i,et.expectedValue,calculatedToken.Value)
+				i, et.expectedValue, calculatedToken.Value)
 		}
 	}
 }
 
-
-
-func TestNextToken3(t *testing.T){
+func TestNext3(t *testing.T) {
 	MOCK1_TEST := Mock2
 
-	var tests = NextTokenTestData
+	var tests = NextTestData
 
 	myLexer := InitLexer(MOCK1_TEST)
 
-
-	for i,et :=range(tests) {
-		calculatedToken:= myLexer.NextToken()
+	for i, et := range tests {
+		calculatedToken := myLexer.NextToken()
 		log.Println("------- TOKEN ---------")
-		log.Println(calculatedToken,calculatedToken.Type,calculatedToken.Value)
+		log.Println(calculatedToken, calculatedToken.Type, calculatedToken.Value)
 		log.Println("----------------")
 		// test the token type
 
-		if et.expectedTokenType !=  calculatedToken.Type {
+		if et.expectedTokenType != calculatedToken.Type {
 			log.Fatalf("tests index %d -> tokenType wrong, expected:[%d] and got:[%d]",
-			i,et.expectedTokenType,calculatedToken.Type)
+				i, et.expectedTokenType, calculatedToken.Type)
 		}
 
 		// test the token literal value
 		if et.expectedValue != calculatedToken.Value {
 			log.Fatalf("tests index %d -> token value is wrong, expected:[%q] and got:[%q]",
-			i,et.expectedValue,calculatedToken.Value)
+				i, et.expectedValue, calculatedToken.Value)
 		}
 	}
 }
 
-
-
-// Test data 
+// Test data
 var (
-	NextTokenTestData =[]struct {
+	NextTestData = []struct {
 		expectedTokenType token.TokenType
-		expectedValue string
+		expectedValue     string
 	}{
 		{expectedTokenType: token.DEF, expectedValue: "def"},
 		{expectedTokenType: token.IDENTIFIER, expectedValue: "val1"},
@@ -134,41 +127,41 @@ var (
 
 		{expectedTokenType: token.DEF, expectedValue: "def"},
 		{expectedTokenType: token.IDENTIFIER, expectedValue: "result"},
-		{expectedTokenType: token.ASSIGN , expectedValue: "="},
+		{expectedTokenType: token.ASSIGN, expectedValue: "="},
 		{expectedTokenType: token.IDENTIFIER, expectedValue: "add"},
-		{expectedTokenType: token.LP,expectedValue: "("},
+		{expectedTokenType: token.LP, expectedValue: "("},
 		{expectedTokenType: token.IDENTIFIER, expectedValue: "val1"},
 		{expectedTokenType: token.COMMA, expectedValue: ","},
 		{expectedTokenType: token.IDENTIFIER, expectedValue: "val2"},
-		{expectedTokenType: token.RP,expectedValue: ")"},
-		{expectedTokenType: token.S_COLON,expectedValue: ";"},
+		{expectedTokenType: token.RP, expectedValue: ")"},
+		{expectedTokenType: token.S_COLON, expectedValue: ";"},
 
 		{expectedTokenType: token.EX_MARK, expectedValue: "!"},
 		{expectedTokenType: token.MINUS, expectedValue: "-"},
-		{expectedTokenType: token.STAR,expectedValue: "*"},
+		{expectedTokenType: token.STAR, expectedValue: "*"},
 		{expectedTokenType: token.INT, expectedValue: "7"},
-		{expectedTokenType: token.SLASH,expectedValue: "/"},
-		{expectedTokenType: token.S_COLON,expectedValue: ";"},
+		{expectedTokenType: token.SLASH, expectedValue: "/"},
+		{expectedTokenType: token.S_COLON, expectedValue: ";"},
 
 		{expectedTokenType: token.IF, expectedValue: "if"},
-		{expectedTokenType: token.LP,expectedValue: "("},
+		{expectedTokenType: token.LP, expectedValue: "("},
 		{expectedTokenType: token.IDENTIFIER, expectedValue: "val1"},
 		{expectedTokenType: token.LT, expectedValue: "<"},
 		{expectedTokenType: token.IDENTIFIER, expectedValue: "val2"},
-		{expectedTokenType: token.RP,expectedValue: ")"},
+		{expectedTokenType: token.RP, expectedValue: ")"},
 		{expectedTokenType: token.LCB, expectedValue: "{"},
 		{expectedTokenType: token.IDENTIFIER, expectedValue: "val1"},
-		{expectedTokenType: token.ASSIGN , expectedValue: "="},
+		{expectedTokenType: token.ASSIGN, expectedValue: "="},
 		{expectedTokenType: token.INT, expectedValue: "7777"},
-		{expectedTokenType: token.S_COLON,expectedValue: ";"},
+		{expectedTokenType: token.S_COLON, expectedValue: ";"},
 		{expectedTokenType: token.RCB, expectedValue: "}"},
 
 		{expectedTokenType: token.ELSE, expectedValue: "else"},
 		{expectedTokenType: token.LCB, expectedValue: "{"},
 		{expectedTokenType: token.IDENTIFIER, expectedValue: "val2"},
-		{expectedTokenType: token.ASSIGN , expectedValue: "="},
+		{expectedTokenType: token.ASSIGN, expectedValue: "="},
 		{expectedTokenType: token.INT, expectedValue: "7777"},
-		{expectedTokenType: token.S_COLON,expectedValue: ";"},
+		{expectedTokenType: token.S_COLON, expectedValue: ";"},
 		{expectedTokenType: token.RCB, expectedValue: "}"},
 
 		{expectedTokenType: token.INT, expectedValue: "10"},
@@ -183,12 +176,12 @@ var (
 
 		{expectedTokenType: token.INT, expectedValue: "10"},
 		{expectedTokenType: token.LT_OR_EQ, expectedValue: "<="},
-		{expectedTokenType: token.INT	, expectedValue: "20"},
+		{expectedTokenType: token.INT, expectedValue: "20"},
 		{expectedTokenType: token.S_COLON, expectedValue: ";"},
 
 		{expectedTokenType: token.INT, expectedValue: "10"},
 		{expectedTokenType: token.GT_OR_EQ, expectedValue: ">="},
-		{expectedTokenType: token.INT	, expectedValue: "0"},
+		{expectedTokenType: token.INT, expectedValue: "0"},
 		{expectedTokenType: token.S_COLON, expectedValue: ";"},
 
 		{expectedTokenType: token.INT, expectedValue: "10"},
@@ -196,11 +189,10 @@ var (
 		{expectedTokenType: token.S_COLON, expectedValue: ";"},
 		{expectedTokenType: token.INT, expectedValue: "10"},
 		{expectedTokenType: token.DECREMENT, expectedValue: "--"},
-		{expectedTokenType: token.S_COLON, expectedValue: ";"},	
+		{expectedTokenType: token.S_COLON, expectedValue: ";"},
 	}
 
-
-	NextTokenData0 =[]struct {
+	NextData0 = []struct {
 		expectedTokenType token.TokenType
 		expectedValue     string
 	}{
@@ -214,10 +206,9 @@ var (
 		{expectedTokenType: token.S_COLON, expectedValue: ";"},
 	}
 
-
-	NextTokenData1 =[]struct {
+	NextData1 = []struct {
 		expectedTokenType token.TokenType
-		expectedValue string
+		expectedValue     string
 	}{
 		{expectedTokenType: token.DEF, expectedValue: "def"},
 		{expectedTokenType: token.IDENTIFIER, expectedValue: "val1"},
@@ -249,16 +240,15 @@ var (
 		{expectedTokenType: token.S_COLON, expectedValue: ";"},
 		{expectedTokenType: token.DEF, expectedValue: "def"},
 		{expectedTokenType: token.IDENTIFIER, expectedValue: "result"},
-		{expectedTokenType: token.ASSIGN , expectedValue: "="},
+		{expectedTokenType: token.ASSIGN, expectedValue: "="},
 		{expectedTokenType: token.IDENTIFIER, expectedValue: "add"},
-		{expectedTokenType: token.LP,expectedValue: "("},
+		{expectedTokenType: token.LP, expectedValue: "("},
 		{expectedTokenType: token.IDENTIFIER, expectedValue: "val1"},
 		{expectedTokenType: token.COMMA, expectedValue: ","},
 		{expectedTokenType: token.IDENTIFIER, expectedValue: "val2"},
-		{expectedTokenType: token.RP,expectedValue: ")"},
-		{expectedTokenType: token.S_COLON,expectedValue: ";"},	
+		{expectedTokenType: token.RP, expectedValue: ")"},
+		{expectedTokenType: token.S_COLON, expectedValue: ";"},
 	}
-
 
 	Mock2 = `def val1 = 30;
 	
@@ -285,7 +275,7 @@ var (
 	10--;
 	`
 
-	Mock1=`def val1 = 30;
+	Mock1 = `def val1 = 30;
 	def val2 = 3;
 	def add = function(x, y) {
 		x + y;

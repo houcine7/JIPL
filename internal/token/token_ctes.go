@@ -54,4 +54,5 @@ const (
 	CONTINUE = 106 // continue token
 	TRUE     = 107
 	FALSE    = 108
+	FOR      = 109
 )
