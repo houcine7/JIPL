@@ -7,6 +7,7 @@ import (
 
 	"github.com/houcine7/JIPL/internal/lexer"
 	"github.com/houcine7/JIPL/internal/parser"
+	"github.com/houcine7/JIPL/internal/runtime"
 )
 
 // REPL :Read --> Evaluate --> Print --> loop
@@ -18,14 +19,20 @@ import (
 * To interact with the user via terminal
  */
 
-const PROMPT = ">"
+const PROMPT = "🟢>"
 
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
 
-	fmt.Println("                    **********                 ")
-	fmt.Println("------------- Welcome to JIPL REPL ------------")
-	fmt.Println("                    **********                 ")
+	fmt.Println(`  _ _____ _____  _        
+      | |_   _|  __ \| |       
+      | | | | | |__) | |       
+  _   | | | | |  ___/| |       
+ | |__| |_| |_| |    | |____   
+  \____/|_____|_|    |______|  
+                             `)
+	fmt.Println("------------- Welcome to JIPL: you can begin coding now ------------")
+	fmt.Println("                                 👋                              ")
 
 	for {
 		fmt.Print(PROMPT)
@@ -46,14 +53,15 @@ func Start(in io.Reader, out io.Writer) {
 		errs := repParser.Errors()
 
 		if len(errs) != 0 {
-			io.WriteString(out, fmt.Sprintf("%d errors ❌❌ occurred while parsing your input \n", len(errs)))
+			io.WriteString(out, fmt.Sprintf("%d errors ❌ occurred while parsing your input \n", len(errs)))
 			for idx, e := range errs {
 				io.WriteString(out, fmt.Sprintf("error number:%d with message: %s \n", idx, e))
 			}
 			continue
 		}
 
-		io.WriteString(out, pr.ToString())
+		evaluated := runtime.Eval(pr)
+		io.WriteString(out, evaluated.ToString())
 		io.WriteString(out, "\n")
 
 	}
