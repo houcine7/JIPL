@@ -50,3 +50,9 @@ const (
 	T_BOOLEAN   = "BOOLEAN"
 	T_UNDEFINED = "UNDEFINED"
 )
+
+var (
+	TRUE      = &Boolean{Val: true}
+	FALSE     = &Boolean{Val: false}
+	UNDEFIEND = &Undefined{}
+)

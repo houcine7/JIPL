@@ -61,8 +61,9 @@ func Start(in io.Reader, out io.Writer) {
 		}
 
 		evaluated := runtime.Eval(pr)
-		io.WriteString(out, evaluated.ToString())
-		io.WriteString(out, "\n")
-
+		if evaluated != nil {
+			io.WriteString(out, evaluated.ToString())
+			io.WriteString(out, "\n")
+		}
 	}
 }
