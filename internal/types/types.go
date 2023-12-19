@@ -41,12 +41,12 @@ func (intObj *Integer) ToString() string {
 }
 
 func (intObj *Integer) GetType() TypeObj {
-	return T_ITNTEGER
+	return T_INTEGER
 }
 
 // cte of types
 const (
-	T_ITNTEGER  = "INTEGER"
+	T_INTEGER  = "INTEGER"
 	T_BOOLEAN   = "BOOLEAN"
 	T_UNDEFINED = "UNDEFINED"
 )

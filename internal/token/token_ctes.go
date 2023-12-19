@@ -27,6 +27,7 @@ const (
 	NOT_EQUAL = 47 // !=
 	INCREMENT = 50 // ++
 	DECREMENT = 51 // --
+	MODULO    = 56 // %
 
 	/*Comparators operators*/
 	LT       = 52 // <

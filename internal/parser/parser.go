@@ -68,6 +68,7 @@ func InitParser(l *lexer.Lexer) *Parser {
 		token.MINUS,
 		token.SLASH,
 		token.STAR,
+		token.MODULO,
 
 		token.EQUAL,
 		token.NOT_EQUAL,
@@ -213,7 +214,6 @@ func (p *Parser) parseForLoopExpression() ast.Expression {
 	exp.InitStm = p.parseDefStmtInForLoop()
 
 	if !p.expectedNextToken(token.CreateToken(token.S_COLON, ";")) {
-		fmt.Println("HEEEERE")
 		return nil
 	}
 	p.Next() // advance to the condition expression
@@ -222,7 +222,6 @@ func (p *Parser) parseForLoopExpression() ast.Expression {
 	if !p.expectedNextToken(token.CreateToken(token.S_COLON, ";")) {
 		return nil
 	}
-
 	p.Next() // advance to post iteration
 	exp.PostIteration = p.parseExpression(LOWEST)
 

@@ -58,6 +58,8 @@ func (l *Lexer) NextToken() token.Token {
 		}
 	case '/':
 		test = token.CreateToken(token.SLASH, string(l.char))
+	case '%':
+		test = token.CreateToken(token.MODULO, string(l.char))
 	case '*':
 		test = token.CreateToken(token.STAR, string(l.char))
 	case '!':
