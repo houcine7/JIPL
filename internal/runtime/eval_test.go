@@ -27,7 +27,8 @@ func getEvaluated(input string) types.ObjectJIPL {
 	l := lexer.InitLexer(input)
 	p := parser.InitParser(l)
 	program := p.Parse()
-	return Eval(program)
+	ev,_:=Eval(program)
+	return ev 
 }
 
 func testIntegerObject(t *testing.T, obj types.ObjectJIPL, expected int) {

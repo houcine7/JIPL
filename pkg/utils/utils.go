@@ -1,7 +1,7 @@
 package utils
 
 // check if the a given character is letter
-// support for _ in the name of identifiers
+// accept _ in the name of identifiers
 func IsLetter(char rune) bool{
 	if (char >= 'a' && char<='z') || (char >='A' && char <='Z') || char=='_'{
 		return true

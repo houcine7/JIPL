@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/houcine7/JIPL/internal/debug"
 	"github.com/houcine7/JIPL/internal/lexer"
 	"github.com/houcine7/JIPL/internal/parser"
 	"github.com/houcine7/JIPL/internal/runtime"
@@ -60,7 +61,12 @@ func Start(in io.Reader, out io.Writer) {
 			continue
 		}
 
-		evaluated := runtime.Eval(pr)
+		evaluated ,err:= runtime.Eval(pr)
+		if err != debug.NOERROR {
+			io.WriteString(out, fmt.Sprintf("error while evaluating your input: %s \n", err.Error()))
+			continue
+		}
+	
 		if evaluated != nil {
 			io.WriteString(out, evaluated.ToString())
 			io.WriteString(out, "\n")

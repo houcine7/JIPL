@@ -19,7 +19,20 @@ type Boolean struct {
 
 type Undefined struct{}
 
-// implementing OBjectJIPL interface by supporeted types
+type Return struct {
+	Val ObjectJIPL
+}
+
+
+
+// implementing OBjectJIPL interface by supported types
+func (ret *Return) ToString() string {
+	return ret.Val.ToString()
+}
+func (ret *Return) GetType() TypeObj {
+	return T_RETURN
+}
+
 func (und *Undefined) ToString() string {
 	return "undefined"
 }
@@ -44,11 +57,23 @@ func (intObj *Integer) GetType() TypeObj {
 	return T_INTEGER
 }
 
+
+
+func BoolToObJIPL(bl bool) ObjectJIPL{
+	if bl {
+		return TRUE 
+	}else{
+		return FALSE
+	}
+}
+
+
 // cte of types
 const (
 	T_INTEGER  = "INTEGER"
 	T_BOOLEAN   = "BOOLEAN"
 	T_UNDEFINED = "UNDEFINED"
+	T_RETURN   = "RETURN"
 )
 
 var (
