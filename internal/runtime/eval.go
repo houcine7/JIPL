@@ -31,8 +31,26 @@ func Eval(node ast.Node, ctx *types.Context) (types.ObjectJIPL, *debug.Error) {
 		return val,err
 	case *ast.Identifier:
 		return evalIdentifier(node,ctx)
+	case *ast.ForLoopExpression:
+		return evalForLoopExpression(node,ctx)
 	case *ast.IfExpression:
 		return evalIfExpression(node,ctx)
+	case *ast.FunctionExp :
+		ctx.Set(node.Name.Value,&types.Function{Name: node.Name.Value, Params: node.Parameters,
+							 Body: node.FnBody, Ctx: ctx})
+		return &types.Function{Name: node.Name.Value, Params: node.Parameters,
+			 Body: node.FnBody, Ctx: ctx},debug.NOERROR
+	case *ast.FunctionCall:
+		function,err := Eval(node.Function,ctx)
+		if err != debug.NOERROR {
+			return nil,err
+		}
+
+		args,err := evalExpressions(node.Arguments,ctx)
+		if err != debug.NOERROR {
+			return nil,err
+		}
+		return applyFunction(function,args)
 	case *ast.BlockStm:
 		return evalABlockStatements(node.Statements,ctx)
 	case *ast.IntegerLiteral:
@@ -54,6 +72,38 @@ func Eval(node ast.Node, ctx *types.Context) (types.ObjectJIPL, *debug.Error) {
 	}
 }
 
+func applyFunction(function types.ObjectJIPL, args []types.ObjectJIPL) (types.ObjectJIPL, *debug.Error) {
+	fn , ok := function.(*types.Function)
+	if !ok {
+		return nil,debug.NewError("not a function")
+	}
+	appendedCtx := appedCtx(fn,args)
+	eval,err := Eval(fn.Body,appendedCtx)
+
+	if err != debug.NOERROR {
+		return nil,err
+	}
+	
+	if eval,ok := eval.(*types.Return); ok {
+		return eval.Val,debug.NOERROR
+	}
+
+	return eval,debug.NOERROR
+}
+
+
+func appedCtx(fn *types.Function, args []types.ObjectJIPL) *types.Context {
+	
+	ctx := types.NewContextWithOuter(fn.Ctx)
+
+	for i, param := range fn.Params {
+		ctx.Set(param.Value, args[i])
+	}
+
+	return ctx
+
+}
+
 func Eval2(node ast.Node,ctx *types.Context) (types.ObjectJIPL,*debug.Error) {
 	switch node := node.(type) {
 	case *ast.Program:
@@ -65,9 +115,20 @@ func Eval2(node ast.Node,ctx *types.Context) (types.ObjectJIPL,*debug.Error) {
 	default:
 		return nil,debug.NewError("unknown node type")
 	}
+}
+
+func evalExpressions(node []ast.Expression, ctx *types.Context) ([]types.ObjectJIPL, *debug.Error) {
+	var result []types.ObjectJIPL
+	for _, exp := range node {
+		evaluated, err := Eval(exp, ctx)
+		
+		if err != debug.NOERROR {
+			return nil, err
+		}
+		result = append(result, evaluated)
 	}
-
-
+	return result, debug.NOERROR
+}
 
 
 func evalIdentifier(node *ast.Identifier,ctx *types.Context) (types.ObjectJIPL, *debug.Error) {
@@ -78,7 +139,6 @@ func evalIdentifier(node *ast.Identifier,ctx *types.Context) (types.ObjectJIPL, 
 	}
 	return val,debug.NOERROR
 }
-
 
 func evalIfExpression(ifExp *ast.IfExpression,ctx *types.Context) (types.ObjectJIPL , *debug.Error) {
 	condition , _ := Eval(ifExp.Condition,ctx)
@@ -91,11 +151,7 @@ func evalIfExpression(ifExp *ast.IfExpression,ctx *types.Context) (types.ObjectJ
 	return nil, debug.NewError("if condition is not a met  and no else body") 
 }
 
-
-func evalInfixExpression(operator string, leftOperand, rightOperand types.ObjectJIPL) (types.ObjectJIPL , *debug.Error) {
-	
-	// fmt.Println(leftOperand.ToString(),operator,rightOperand.ToString())
-	
+func evalInfixExpression(operator string, leftOperand, rightOperand types.ObjectJIPL) (types.ObjectJIPL , *debug.Error) {	
 	if leftOperand.GetType() == types.T_INTEGER &&
 	rightOperand.GetType() ==types.T_INTEGER {
 		return evalIntInfixExpression(operator,leftOperand,rightOperand)
@@ -108,8 +164,7 @@ func evalInfixExpression(operator string, leftOperand, rightOperand types.Object
 	}
 
 	return nil,debug.NewError(fmt.Sprintf("type mismatch: %s %s %s", leftOperand.GetType(), operator, rightOperand.GetType()))
-}
-	
+}	
 
 func evalBoolInfixExpression(operator string, left, right types.ObjectJIPL) (types.ObjectJIPL , *debug.Error){
 	boolObjRight := right.(*types.Boolean)
@@ -159,19 +214,40 @@ func evalIntInfixExpression(operator string, left, right types.ObjectJIPL)  (typ
 	}
 }
 
-
 func evalForLoopExpression(forLoop *ast.ForLoopExpression,ctx *types.Context)( types.ObjectJIPL, *debug.Error){
 	// the init statement
-	Eval(forLoop.InitStm,ctx)
+	
+	_, err :=Eval(forLoop.InitStm,ctx)
+	
+	if err != debug.NOERROR {
+		fmt.Println("error while evaluating the init statement",err)
+		return nil,err
+	}
+
 	// the condition
 	condition,_ := Eval(forLoop.Condition,ctx)
+
 	for condition == types.TRUE {
-		Eval(forLoop.Body,ctx)
-		Eval(forLoop.PostIteration,ctx)
-		condition,_ = Eval(forLoop.Condition,ctx)
+		iterationEval ,_ := Eval(forLoop.Body,ctx)
+		returnEval,ok := iterationEval.(*types.Return)
+		if ok {
+			return returnEval.Val ,debug.NOERROR
+		}
+
+		postEval ,_ := Eval(forLoop.PostIteration,ctx)
+		// update the value of the loop condition
+		postFix,ok:= forLoop.PostIteration.(*ast.PostfixExpression)
+		
+		if ok {
+			ctx.Set(postFix.Left.(*ast.Identifier).Value,
+			postEval)
+			condition,_ = Eval(forLoop.Condition,ctx)
+		}
 	}
 	return nil,debug.NOERROR
 }
+
+
 
 
 func evalPostfixExpression(operator string, operand types.ObjectJIPL) (types.ObjectJIPL, *debug.Error){
@@ -191,7 +267,6 @@ func evalIncrementPostfix(operand types.ObjectJIPL) (types.ObjectJIPL, *debug.Er
 	}
 	intObj := operand.(*types.Integer)
 	return &types.Integer{Val: intObj.Val+1},debug.NOERROR
-
 }
 
 func evalDecrementPostfix(operand types.ObjectJIPL) (types.ObjectJIPL, *debug.Error){
@@ -201,6 +276,7 @@ func evalDecrementPostfix(operand types.ObjectJIPL) (types.ObjectJIPL, *debug.Er
 	intObj := operand.(*types.Integer)
 	return &types.Integer{Val: intObj.Val-1},debug.NOERROR
 }
+
 func evalAllProgramStatements(stms []ast.Statement,ctx *types.Context)( types.ObjectJIPL , *debug.Error) {
 	var result types.ObjectJIPL
 	var err  *debug.Error = debug.NOERROR
@@ -234,7 +310,6 @@ func evalABlockStatements(stms []ast.Statement,ctx *types.Context) (types.Object
 	return result,debug.NOERROR
 }
 
-
 func evalPrefixExpression(operator string, operand types.ObjectJIPL) (types.ObjectJIPL, * debug.Error){
 	switch operator {
 	case "!":
@@ -264,6 +339,5 @@ func evalComplementPrefix(operand types.ObjectJIPL) ( types.ObjectJIPL, *debug.E
 	}
 
 	return types.TRUE,debug.NOERROR
-	
 }
 

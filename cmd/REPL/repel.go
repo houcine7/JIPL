@@ -12,9 +12,9 @@ import (
 	"github.com/houcine7/JIPL/internal/types"
 )
 
-// REPL :Read --> Evaluate --> Print --> loop
-//  the repl used to interact with users to read from console
-// and send to interpreter to evaluate then prints back the result
+// REPL
+//  the repl used to interact with users to read from it console
+// 	send to interpreter to evaluate then prints back the result
 
 /*
 * Function as the start method of the repl
@@ -23,7 +23,6 @@ import (
 
 const PROMPT = "🟢>"
 
-var GLOBAL_CONTEXT = types.NewContext()
 
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
@@ -64,6 +63,7 @@ func Start(in io.Reader, out io.Writer) {
 			continue
 		}
 
+		var GLOBAL_CONTEXT = types.NewContext()
 		
 		evaluated ,err:= runtime.Eval(pr,GLOBAL_CONTEXT)
 		if err != debug.NOERROR {
