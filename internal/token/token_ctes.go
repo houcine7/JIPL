@@ -28,6 +28,8 @@ const (
 	INCREMENT = 50 // ++
 	DECREMENT = 51 // --
 	MODULO    = 56 // %
+	AND 	 = 57 // &&
+	OR 		 = 58 // ||
 
 	/*Comparators operators*/
 	LT       = 52 // <

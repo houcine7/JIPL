@@ -66,10 +66,14 @@ func evalIfExpression(ifExp *ast.IfExpression) (types.ObjectJIPL , *debug.Error)
 
 
 func evalInfixExpression(operator string, leftOperand, rightOperand types.ObjectJIPL) (types.ObjectJIPL , *debug.Error) {
+	
+	// fmt.Println(leftOperand.ToString(),operator,rightOperand.ToString())
+	
 	if leftOperand.GetType() == types.T_INTEGER &&
 	rightOperand.GetType() ==types.T_INTEGER {
 		return evalIntInfixExpression(operator,leftOperand,rightOperand)
 	}
+
 	
 	if leftOperand.GetType() == types.T_BOOLEAN &&
 	rightOperand.GetType() ==types.T_BOOLEAN {
@@ -88,6 +92,10 @@ func evalBoolInfixExpression(operator string, left, right types.ObjectJIPL) (typ
 		return types.BoolToObJIPL(boolObjLeft.Val == boolObjRight.Val),debug.NOERROR
 	case "!=":
 		return types.BoolToObJIPL(boolObjLeft.Val != boolObjRight.Val),debug.NOERROR
+	case "&&":
+		return types.BoolToObJIPL(boolObjLeft.Val && boolObjRight.Val),debug.NOERROR
+	case "||":
+		return types.BoolToObJIPL(boolObjLeft.Val || boolObjRight.Val),debug.NOERROR
 	default:
 		return nil, debug.NewError("unknown operator")
 	}

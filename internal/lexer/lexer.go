@@ -40,6 +40,23 @@ func (l *Lexer) NextToken() token.Token {
 		} else {
 			test = token.CreateToken(token.ASSIGN, string(l.char))
 		}
+	case '&':
+		if l.peek() == '&' {
+			prev := l.char
+			l.readChar()
+			test = token.CreateToken(token.AND, string(prev)+string(l.char))
+		} else {
+			test = token.CreateToken(token.ILLEGAL, string(l.char))
+		}
+
+	case '|':
+		if l.peek() == '|' {
+			prev := l.char
+			l.readChar()
+			test = token.CreateToken(token.OR, string(prev)+string(l.char))
+		} else {
+			test = token.CreateToken(token.ILLEGAL, string(l.char))
+		}
 	case '+':
 		if l.peek() == '+' {
 			prev := l.char

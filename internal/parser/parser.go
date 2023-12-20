@@ -77,6 +77,8 @@ func InitParser(l *lexer.Lexer) *Parser {
 		token.GT,
 		token.LT_OR_EQ,
 		token.GT_OR_EQ,
+		token.AND,
+		token.OR,
 	}
 	p.addALlInfixFn(infixParseTokens, p.parseInfixExpression)
 	p.addInfixFn(token.LP, p.parseFunctionCallExp)
@@ -422,6 +424,8 @@ func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 }
 
 func (p *Parser) parseExpression(precedence int) ast.Expression {
+	
+	// fmt.Println("parse exp", p.currToken)
 	prefix := p.prefixParseFuncs[p.currToken.Type]
 
 	if prefix == nil {
@@ -493,6 +497,7 @@ func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 		Left:     left,
 	}
 
+	
 	prevPrecedence := p.currentPrecedence()
 	p.Next()
 	exp.Right = p.parseExpression(prevPrecedence)
