@@ -9,6 +9,7 @@ import (
 	"github.com/houcine7/JIPL/internal/lexer"
 	"github.com/houcine7/JIPL/internal/parser"
 	"github.com/houcine7/JIPL/internal/runtime"
+	"github.com/houcine7/JIPL/internal/types"
 )
 
 // REPL :Read --> Evaluate --> Print --> loop
@@ -21,6 +22,8 @@ import (
  */
 
 const PROMPT = "🟢>"
+
+var GLOBAL_CONTEXT = types.NewContext()
 
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
@@ -61,7 +64,8 @@ func Start(in io.Reader, out io.Writer) {
 			continue
 		}
 
-		evaluated ,err:= runtime.Eval(pr)
+		
+		evaluated ,err:= runtime.Eval(pr,GLOBAL_CONTEXT)
 		if err != debug.NOERROR {
 			io.WriteString(out, fmt.Sprintf("error while evaluating your input: %s \n", err.Error()))
 			continue

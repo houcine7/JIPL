@@ -8,44 +8,58 @@ import (
 	"github.com/houcine7/JIPL/internal/types"
 )
 
-func Eval(node ast.Node) (types.ObjectJIPL, *debug.Error) {
+
+
+func Eval(node ast.Node, ctx *types.Context) (types.ObjectJIPL, *debug.Error) {
 	switch node := node.(type) {
 	case *ast.Program:
-			return evalAllProgramStatements(node.Statements)
+			return evalAllProgramStatements(node.Statements,ctx)
 	case *ast.ExpressionStatement:
-			return Eval(node.Expression)
+			return Eval(node.Expression,ctx)
 	case *ast.ReturnStatement:
-		value,err := Eval(node.ReturnValue)
+		value,err := Eval(node.ReturnValue,ctx)
+		if err != debug.NOERROR {
+			return nil,err
+		}
 		return &types.Return{Val: value},err
+	case *ast.DefStatement: 
+		val ,err := Eval(node.Value,ctx)
+		if err != debug.NOERROR {
+			return nil,err
+		}
+		ctx.Set(node.Name.Value,val)
+		return val,err
+	case *ast.Identifier:
+		return evalIdentifier(node,ctx)
 	case *ast.IfExpression:
-		return evalIfExpression(node)
+		return evalIfExpression(node,ctx)
 	case *ast.BlockStm:
-		return evalABlockStatements(node.Statements)
+		return evalABlockStatements(node.Statements,ctx)
 	case *ast.IntegerLiteral:
 			return &types.Integer{Val: node.Value},debug.NOERROR
 	case *ast.BooleanExp:
 			return types.BoolToObJIPL(node.Value),debug.NOERROR
 	case *ast.PrefixExpression:
-		operand,_ := Eval(node.Right)
+		operand,_ := Eval(node.Right,ctx)
 		return evalPrefixExpression(node.Operator, operand)
 	case *ast.PostfixExpression:
-		operand, _:= Eval(node.Left)
+		operand, _:= Eval(node.Left,ctx)
 		return evalPostfixExpression(node.Operator, operand)
 	case *ast.InfixExpression:
-		leftOperand,_ := Eval(node.Left)
-		rightOperand,_ := Eval(node.Right)
+		leftOperand,_ := Eval(node.Left,ctx)
+		rightOperand,_ := Eval(node.Right,ctx)
 		return evalInfixExpression(node.Operator,leftOperand,rightOperand)
 	default:
 		return nil,debug.NewError("unknown ast node type")
 	}
 }
 
-func Eval2(node ast.Node) (types.ObjectJIPL,*debug.Error) {
+func Eval2(node ast.Node,ctx *types.Context) (types.ObjectJIPL,*debug.Error) {
 	switch node := node.(type) {
 	case *ast.Program:
-			return evalAllProgramStatements(node.Statements)
+			return evalAllProgramStatements(node.Statements,ctx )
 	case *ast.ExpressionStatement:
-			return Eval2(node.Expression)
+			return Eval2(node.Expression,ctx)
 	case *ast.IntegerLiteral:
 			return &types.Integer{Val: node.Value},debug.NOERROR
 	default:
@@ -53,13 +67,26 @@ func Eval2(node ast.Node) (types.ObjectJIPL,*debug.Error) {
 	}
 	}
 
-func evalIfExpression(ifExp *ast.IfExpression) (types.ObjectJIPL , *debug.Error) {
-	condition , _ := Eval(ifExp.Condition)
+
+
+
+func evalIdentifier(node *ast.Identifier,ctx *types.Context) (types.ObjectJIPL, *debug.Error) {
+	val,ok := ctx.Get(node.Value)
+	if !ok {
+		return nil, debug.NewError(fmt.Sprintf("identifier not found: %s",
+		 node.Value))
+	}
+	return val,debug.NOERROR
+}
+
+
+func evalIfExpression(ifExp *ast.IfExpression,ctx *types.Context) (types.ObjectJIPL , *debug.Error) {
+	condition , _ := Eval(ifExp.Condition,ctx)
 	if condition == types.TRUE {
-		return Eval(ifExp.Body)
+		return Eval(ifExp.Body,ctx)
 	}
 	if ifExp.ElseBody != nil {
-		return Eval(ifExp.ElseBody)
+		return Eval(ifExp.ElseBody,ctx)
 	}
 	return nil, debug.NewError("if condition is not a met  and no else body") 
 }
@@ -133,16 +160,15 @@ func evalIntInfixExpression(operator string, left, right types.ObjectJIPL)  (typ
 }
 
 
-
-func evalForLoopExpression(forLoop *ast.ForLoopExpression)( types.ObjectJIPL, *debug.Error){
+func evalForLoopExpression(forLoop *ast.ForLoopExpression,ctx *types.Context)( types.ObjectJIPL, *debug.Error){
 	// the init statement
-	Eval(forLoop.InitStm)
+	Eval(forLoop.InitStm,ctx)
 	// the condition
-	condition,_ := Eval(forLoop.Condition)
+	condition,_ := Eval(forLoop.Condition,ctx)
 	for condition == types.TRUE {
-		Eval(forLoop.Body)
-		Eval(forLoop.PostIteration)
-		condition,_ = Eval(forLoop.Condition)
+		Eval(forLoop.Body,ctx)
+		Eval(forLoop.PostIteration,ctx)
+		condition,_ = Eval(forLoop.Condition,ctx)
 	}
 	return nil,debug.NOERROR
 }
@@ -175,12 +201,12 @@ func evalDecrementPostfix(operand types.ObjectJIPL) (types.ObjectJIPL, *debug.Er
 	intObj := operand.(*types.Integer)
 	return &types.Integer{Val: intObj.Val-1},debug.NOERROR
 }
-func evalAllProgramStatements(stms []ast.Statement)( types.ObjectJIPL , *debug.Error) {
+func evalAllProgramStatements(stms []ast.Statement,ctx *types.Context)( types.ObjectJIPL , *debug.Error) {
 	var result types.ObjectJIPL
 	var err  *debug.Error = debug.NOERROR
 
 	for _, stm := range stms {		
-			result,err = Eval(stm)
+			result,err = Eval(stm,ctx)
 			if err != debug.NOERROR {
 				return nil, err
 			}
@@ -192,12 +218,12 @@ func evalAllProgramStatements(stms []ast.Statement)( types.ObjectJIPL , *debug.E
 	return result,debug.NOERROR
 }
 
-func evalABlockStatements(stms []ast.Statement) (types.ObjectJIPL , *debug.Error) {
+func evalABlockStatements(stms []ast.Statement,ctx *types.Context) (types.ObjectJIPL , *debug.Error) {
 	var result types.ObjectJIPL
 	var err  *debug.Error = debug.NOERROR
 
 	for _, stm := range stms {
-			result, err= Eval(stm)
+			result, err= Eval(stm,ctx)
 			if err != debug.NOERROR {
 				return nil, err
 			}
@@ -207,8 +233,6 @@ func evalABlockStatements(stms []ast.Statement) (types.ObjectJIPL , *debug.Error
 	}
 	return result,debug.NOERROR
 }
-
-
 
 
 func evalPrefixExpression(operator string, operand types.ObjectJIPL) (types.ObjectJIPL, * debug.Error){

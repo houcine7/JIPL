@@ -8,6 +8,16 @@ import (
 	"github.com/houcine7/JIPL/internal/types"
 )
 
+
+
+func TestDefEval(t *testing.T) {
+	input :=  defEval
+	for _, test := range input {
+		evaluated := getEvaluated(test.input)
+		testIntegerObject(t, evaluated, test.expected)
+	}
+}
+
 func TestIntegerEval(t *testing.T) {
 	testData := intTestData
 	for _, test := range testData {
@@ -15,7 +25,6 @@ func TestIntegerEval(t *testing.T) {
 		testIntegerObject(t, evaluated, test.expected)
 	}
 }
-
 
 func TestBooleanEval(t *testing.T) {
 	testData := boolInputData
@@ -41,7 +50,6 @@ func TestReturnEval(t *testing.T) {
 	}
 }
 
-
 func TestIfElseEval(t *testing.T) {
 	input := `
 	if (10 > 5) {
@@ -62,8 +70,6 @@ func TestIfElseEval(t *testing.T) {
 	}
 }
 
-
-
 ///
 func testBooleanObject(t *testing.T, evaluated types.ObjectJIPL, expected bool) {
 	boolObj, ok := evaluated.(*types.Boolean)
@@ -80,7 +86,8 @@ func getEvaluated(input string) types.ObjectJIPL {
 	l := lexer.InitLexer(input)
 	p := parser.InitParser(l)
 	program := p.Parse()
-	ev,_:=Eval(program)
+	ctx := types.NewContext()
+	ev,_:=Eval(program,ctx)
 	return ev 
 }
 
@@ -95,9 +102,6 @@ func testIntegerObject(t *testing.T, obj types.ObjectJIPL, expected int) {
 		t.Fatalf("the value of the integer object is not valid expected :%d and got %d", expected, intObj.Val)
 	}
 }
-
-
-
 
 // data
 var (
@@ -125,4 +129,14 @@ var (
 		{"7;", 7},
 	}
 
+	defEval  = []struct {
+		input    string
+		expected int
+	}{
+	{"def var1 = 0; var1;",0},
+	{"def var2 = 1; var2;",1},
+	{"def var3 = 5 * 4; var3;",20},
+	{"def var4 = 1;def var5 =2; var4+var5;",3},
+	{"def var6=1; def var7=7+var6; var7;",8},
+	}
 )

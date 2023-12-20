@@ -23,7 +23,28 @@ type Return struct {
 	Val ObjectJIPL
 }
 
+type Context struct {
+	Store map[string]ObjectJIPL
+	Outer *Context // for nested scopes
+}
 
+func (ctx *Context) Get(key string) (ObjectJIPL, bool) {
+	val, ok := ctx.Store[key]
+	if !ok && ctx.Outer != nil {
+		return ctx.Outer.Get(key)
+	}
+	return val, ok
+}
+
+func (ctx *Context) Set(key string, val ObjectJIPL) ObjectJIPL {
+	ctx.Store[key] = val
+	return val
+}
+
+
+func NewContext() *Context {
+	return &Context{Store: make(map[string]ObjectJIPL)}
+}
 
 // implementing OBjectJIPL interface by supported types
 func (ret *Return) ToString() string {
