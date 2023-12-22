@@ -9,24 +9,24 @@ It is also very easy to learn. It is a very simple language and is not very powe
 
 1. Clone the repo
 
-   ````
-   git clone```
+   ```
+   git clone
 
-   ````
+   ```
 
 2. cd to the repo
 
-   ````
-   cd JIPL```
+   ```
+   cd JIPL
 
-   ````
+   ```
 
 3. Run the main.go file
 
-   ````
-    go run ./cmd/main.go```
+   ```
+    go run ./cmd/main.go
 
-   ````
+   ```
 
 4. Now you can use JIPL in the terminal
 
@@ -75,4 +75,3 @@ It is also very easy to learn. It is a very simple language and is not very powe
          1. `for (initialization; condition; increment) { body ;}`
       2. example
          1. `for (def i = 0; i <= 10; i++) { if(i==3){return 3;}}`
-5.

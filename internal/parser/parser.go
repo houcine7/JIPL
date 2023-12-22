@@ -20,8 +20,8 @@ type Parser struct {
 	currToken   token.Token // the current token in examination
 	peekedToken token.Token // the next token after the current one
 
-	prefixParseFuncs map[token.TokenType]prefixParse
-	infixParseFuncs  map[token.TokenType]infixParse
+	prefixParseFuncs map[token.TokenType]prefixParse // function used for prefix parsing
+	infixParseFuncs  map[token.TokenType]infixParse // function used for infix parsing
 }
 
 /*
@@ -60,7 +60,7 @@ func InitParser(l *lexer.Lexer) *Parser {
 	p.addPrefixFn(token.IF, p.parseIfExpression)
 	p.addPrefixFn(token.FUNCTION, p.parseFunctionExpression)
 	p.addPrefixFn(token.FOR, p.parseForLoopExpression)
-
+	p.addPrefixFn(token.STRING, p.parseStringLit)
 	// infix expresion parseres
 	p.infixParseFuncs = make(map[token.TokenType]infixParse)
 	infixParseTokens := []token.TokenType{
@@ -133,7 +133,6 @@ func (p *Parser) Parse() *ast.Program {
 		// Advance with token
 		p.Next()
 	}
-
 	return program
 }
 
@@ -327,6 +326,12 @@ func (p *Parser) parseFnArgs() []ast.Expression {
 	return ans
 }
 
+// parse string lit
+func (p *Parser) parseStringLit() ast.Expression {
+	exp := &ast.StringLiteral{Token: p.currToken, Value: p.currToken.Value}
+	return exp
+}
+
 // to parse Return statement
 func (p *Parser) parseReturnStmt() *ast.ReturnStatement {
 	stm := &ast.ReturnStatement{Token: p.currToken}
@@ -352,7 +357,7 @@ func (p *Parser) parseGroupExpression() ast.Expression {
 	return grpExp
 }
 
-// parser if expresssions
+// parser if expressions
 func (p *Parser) parseIfExpression() ast.Expression {
 
 	exp := &ast.IfExpression{Token: p.currToken}

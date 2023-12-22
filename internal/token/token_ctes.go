@@ -15,6 +15,7 @@ const (
 
 	// literals [2,20]
 	INT = 2 // int values
+	STRING = 3 // string values
 
 	//OPERATORS  values [40,80]
 	ASSIGN    = 40 // =
@@ -46,6 +47,8 @@ const (
 
 	LCB = 24 // {
 	RCB = 25 // }
+
+	
 
 	// KEYWORDS [100,110]
 	FUNCTION = 100 // function keyword

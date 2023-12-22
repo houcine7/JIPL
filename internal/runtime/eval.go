@@ -55,6 +55,8 @@ func Eval(node ast.Node, ctx *types.Context) (types.ObjectJIPL, *debug.Error) {
 		return evalABlockStatements(node.Statements,ctx)
 	case *ast.IntegerLiteral:
 			return &types.Integer{Val: node.Value},debug.NOERROR
+	case *ast.StringLiteral:
+		return &types.String{Val: node.Value},debug.NOERROR
 	case *ast.BooleanExp:
 			return types.BoolToObJIPL(node.Value),debug.NOERROR
 	case *ast.PrefixExpression:
@@ -73,22 +75,25 @@ func Eval(node ast.Node, ctx *types.Context) (types.ObjectJIPL, *debug.Error) {
 }
 
 func applyFunction(function types.ObjectJIPL, args []types.ObjectJIPL) (types.ObjectJIPL, *debug.Error) {
-	fn , ok := function.(*types.Function)
-	if !ok {
+	//fn , ok := function.(*types.Function)
+	switch function := function.(type) {
+	case *types.Function:
+		appendedCtx := appedCtx(function,args)
+		eval,err := Eval(function.Body,appendedCtx)
+	
+		if err != debug.NOERROR {
+			return nil,err
+		}
+		
+		if eval,ok := eval.(*types.Return); ok {
+			return eval.Val,debug.NOERROR
+		}
+	case *types.BuiltIn:
+		return function.Fn(args...),debug.NOERROR
+	default:
 		return nil,debug.NewError("not a function")
 	}
-	appendedCtx := appedCtx(fn,args)
-	eval,err := Eval(fn.Body,appendedCtx)
-
-	if err != debug.NOERROR {
-		return nil,err
-	}
-	
-	if eval,ok := eval.(*types.Return); ok {
-		return eval.Val,debug.NOERROR
-	}
-
-	return eval,debug.NOERROR
+	return nil,debug.NewError("not a function")
 }
 
 
@@ -133,11 +138,15 @@ func evalExpressions(node []ast.Expression, ctx *types.Context) ([]types.ObjectJ
 
 func evalIdentifier(node *ast.Identifier,ctx *types.Context) (types.ObjectJIPL, *debug.Error) {
 	val,ok := ctx.Get(node.Value)
-	if !ok {
-		return nil, debug.NewError(fmt.Sprintf("identifier not found: %s",
-		 node.Value))
+	
+	if ok {
+		return val,debug.NOERROR
 	}
-	return val,debug.NOERROR
+	builtin,ok := builtins[node.Value]
+	if ok {
+	return builtin,debug.NOERROR
+	}
+	return nil,debug.NewError(fmt.Sprintf("identifier not found: %s", node.Value))
 }
 
 func evalIfExpression(ifExp *ast.IfExpression,ctx *types.Context) (types.ObjectJIPL , *debug.Error) {
@@ -163,9 +172,28 @@ func evalInfixExpression(operator string, leftOperand, rightOperand types.Object
 		return evalBoolInfixExpression(operator,leftOperand,rightOperand)
 	}
 
+	if leftOperand.GetType() == types.T_STRING &&
+	rightOperand.GetType() ==types.T_STRING	 {
+		return evlStringInfix(operator,leftOperand,rightOperand)
+	}
+
 	return nil,debug.NewError(fmt.Sprintf("type mismatch: %s %s %s", leftOperand.GetType(), operator, rightOperand.GetType()))
 }	
 
+func evlStringInfix(operator string, left, right types.ObjectJIPL) (types.ObjectJIPL , *debug.Error){
+	stringObjRight := right.(*types.String)
+	stringObjLeft := left.(*types.String)
+	switch operator {
+	case "+":
+		return &types.String{Val: stringObjLeft.Val + stringObjRight.Val},debug.NOERROR
+	case "==":
+		return types.BoolToObJIPL(stringObjLeft.Val == stringObjRight.Val),debug.NOERROR
+	case "!=":
+		return types.BoolToObJIPL(stringObjLeft.Val != stringObjRight.Val),debug.NOERROR
+	default:
+		return nil, debug.NewError("unknown operator")
+	}
+}
 func evalBoolInfixExpression(operator string, left, right types.ObjectJIPL) (types.ObjectJIPL , *debug.Error){
 	boolObjRight := right.(*types.Boolean)
 	boolObjLeft := left.(*types.Boolean)

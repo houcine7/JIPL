@@ -16,8 +16,6 @@ const (
 	PREFIX          // -a or !a
 	CALL            // hello(a)
 
-	
-
 	INCREMENT // -- ++
 )
 

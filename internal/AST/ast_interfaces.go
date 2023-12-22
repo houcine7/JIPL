@@ -25,7 +25,7 @@ type Node interface{
 * Expression nodes : does return a value
 */
 type Statement interface {
-	Node
+	Node 
 	statementNode()
 }
 type Expression interface {

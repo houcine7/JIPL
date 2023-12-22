@@ -18,6 +18,10 @@ type Integer struct {
 	Val int
 }
 
+
+type String struct {
+	Val string
+}
 type Boolean struct {
 	Val bool
 }
@@ -41,6 +45,16 @@ type Context struct {
 	Outer *Context // for nested scopes
 }
 
+type BuiltIn struct {
+	Fn func(args ...ObjectJIPL) ObjectJIPL
+}
+
+func (bi *BuiltIn) GetType() TypeObj {
+	return T_BUILTIN
+}
+func (bi *BuiltIn) ToString() string {
+	return "builtin function"
+}
 
 func NewContextWithOuter(outer *Context) *Context {
 	ctx := NewContext()
@@ -133,6 +147,13 @@ func BoolToObJIPL(bl bool) ObjectJIPL{
 	}
 }
 
+func (str *String) GetType() TypeObj {
+	return T_STRING
+}
+func (str *String) ToString() string {
+	return str.Val
+}
+
 
 // cte of types
 const (
@@ -141,6 +162,8 @@ const (
 	T_UNDEFINED = "UNDEFINED"
 	T_RETURN   = "RETURN"
 	T_FUNCTION = "FUNCTION"
+	T_STRING   = "STRING"
+	T_BUILTIN = "BUILTIN"
 )
 
 var (

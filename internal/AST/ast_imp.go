@@ -221,6 +221,21 @@ func (exStm *ExpressionStatement) ToString() string {
 
 func (exStm *ExpressionStatement) statementNode() {}
 
+
+// string literal node
+type StringLiteral struct {
+	Token token.Token
+	Value string
+}
+
+func (strLit *StringLiteral) TokenLiteral() string {
+	return strLit.Token.Value
+}
+func (strLit *StringLiteral) ToString() string {
+	return strLit.Token.Value
+}
+func (strLit *StringLiteral) expressionNode() {}
+
 /*
 * Integer Literals Node
 * they can Occur in different type of expression's

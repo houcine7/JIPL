@@ -55,6 +55,8 @@ func Start(in io.Reader, out io.Writer) {
 		pr := repParser.Parse()
 		errs := repParser.Errors()
 
+		fmt.Println(pr.ToString())
+
 		if len(errs) != 0 {
 			io.WriteString(out, fmt.Sprintf("%d errors ❌ occurred while parsing your input \n", len(errs)))
 			for idx, e := range errs {
