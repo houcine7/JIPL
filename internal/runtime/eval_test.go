@@ -8,10 +8,8 @@ import (
 	"github.com/houcine7/JIPL/internal/types"
 )
 
-
-
 func TestDefEval(t *testing.T) {
-	input :=  defEval
+	input := defEval
 	for _, test := range input {
 		evaluated := getEvaluated(test.input)
 		testIntegerObject(t, evaluated, test.expected)
@@ -34,7 +32,6 @@ func TestBooleanEval(t *testing.T) {
 		testBooleanObject(t, evaluated, test.expected)
 	}
 }
-
 
 func TestReturnEval(t *testing.T) {
 	input := "return 10;5454447;"
@@ -70,7 +67,7 @@ func TestIfElseEval(t *testing.T) {
 	}
 }
 
-///
+// /
 func testBooleanObject(t *testing.T, evaluated types.ObjectJIPL, expected bool) {
 	boolObj, ok := evaluated.(*types.Boolean)
 	if !ok {
@@ -87,8 +84,8 @@ func getEvaluated(input string) types.ObjectJIPL {
 	p := parser.InitParser(l)
 	program := p.Parse()
 	ctx := types.NewContext()
-	ev,_:=Eval(program,ctx)
-	return ev 
+	ev, _ := Eval(program, ctx)
+	return ev
 }
 
 func testIntegerObject(t *testing.T, obj types.ObjectJIPL, expected int) {
@@ -129,14 +126,14 @@ var (
 		{"7;", 7},
 	}
 
-	defEval  = []struct {
+	defEval = []struct {
 		input    string
 		expected int
 	}{
-	{"def var1 = 0; var1;",0},
-	{"def var2 = 1; var2;",1},
-	{"def var3 = 5 * 4; var3;",20},
-	{"def var4 = 1;def var5 =2; var4+var5;",3},
-	{"def var6=1; def var7=7+var6; var7;",8},
+		{"def var1 = 0; var1;", 0},
+		{"def var2 = 1; var2;", 1},
+		{"def var3 = 5 * 4; var3;", 20},
+		{"def var4 = 1;def var5 =2; var4+var5;", 3},
+		{"def var6=1; def var7=7+var6; var7;", 8},
 	}
 )

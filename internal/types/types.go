@@ -18,7 +18,6 @@ type Integer struct {
 	Val int
 }
 
-
 type String struct {
 	Val string
 }
@@ -33,12 +32,11 @@ type Return struct {
 }
 
 type Function struct {
-	Name string
+	Name   string
 	Params []*ast.Identifier
 	Body   *ast.BlockStm
 	Ctx    *Context
 }
-
 
 type Context struct {
 	Store map[string]ObjectJIPL
@@ -62,11 +60,10 @@ func NewContextWithOuter(outer *Context) *Context {
 	return ctx
 }
 
-
 func (ctx *Context) Get(key string) (ObjectJIPL, bool) {
 	val, ok := ctx.Store[key]
 	if !ok && ctx.Outer != nil {
-		// recursively search for the key 
+		// recursively search for the key
 		// in the outer context
 		return ctx.Outer.Get(key)
 	}
@@ -77,7 +74,6 @@ func (ctx *Context) Set(key string, val ObjectJIPL) ObjectJIPL {
 	ctx.Store[key] = val
 	return val
 }
-
 
 func NewContext() *Context {
 	return &Context{
@@ -137,12 +133,10 @@ func (intObj *Integer) GetType() TypeObj {
 	return T_INTEGER
 }
 
-
-
-func BoolToObJIPL(bl bool) ObjectJIPL{
+func BoolToObJIPL(bl bool) ObjectJIPL {
 	if bl {
-		return TRUE 
-	}else{
+		return TRUE
+	} else {
 		return FALSE
 	}
 }
@@ -154,16 +148,15 @@ func (str *String) ToString() string {
 	return str.Val
 }
 
-
 // cte of types
 const (
-	T_INTEGER  = "INTEGER"
+	T_INTEGER   = "INTEGER"
 	T_BOOLEAN   = "BOOLEAN"
 	T_UNDEFINED = "UNDEFINED"
-	T_RETURN   = "RETURN"
-	T_FUNCTION = "FUNCTION"
-	T_STRING   = "STRING"
-	T_BUILTIN = "BUILTIN"
+	T_RETURN    = "RETURN"
+	T_FUNCTION  = "FUNCTION"
+	T_STRING    = "STRING"
+	T_BUILTIN   = "BUILTIN"
 )
 
 var (

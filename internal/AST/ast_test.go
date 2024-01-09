@@ -6,10 +6,8 @@ import (
 	"github.com/houcine7/JIPL/internal/token"
 )
 
-// test toString method
 /*
-	for this test we are going to test this statement
-	def var1 = var2;
+def var1 = var2;
 */
 func TestToString(t *testing.T) {
 	program := &Program{

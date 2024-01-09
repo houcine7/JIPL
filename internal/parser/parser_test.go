@@ -286,14 +286,6 @@ func TestForLoopFunctions(t *testing.T) {
 		)
 	}
 
-	//initStm,ok := exp.InitStm.(*ast.DefStatement)
-
-	/*if !ok {
-			t.Fatalf("exp.InitStm is not of type *ast.DefStatement instead got %T",
-				exp.InitStm,
-			)
-	}*/
-
 	if !testDefStatement(t, exp.InitStm, "i", 0) {
 		return
 	}

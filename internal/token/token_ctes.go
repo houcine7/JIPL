@@ -1,10 +1,5 @@
 package token
 
-/*
-*As the first iteration OUR JIPL lang
-* will define limited tokens so we declare em
-* as constants
- */
 const (
 	// SPECIALS
 	ILLEGAL    = -1 // unknown token
@@ -14,7 +9,7 @@ const (
 	IDENTIFIER = 1
 
 	// literals [2,20]
-	INT = 2 // int values
+	INT    = 2 // int values
 	STRING = 3 // string values
 
 	//OPERATORS  values [40,80]
@@ -29,8 +24,8 @@ const (
 	INCREMENT = 50 // ++
 	DECREMENT = 51 // --
 	MODULO    = 56 // %
-	AND 	 = 57 // &&
-	OR 		 = 58 // ||
+	AND       = 57 // &&
+	OR        = 58 // ||
 
 	/*Comparators operators*/
 	LT       = 52 // <
@@ -47,8 +42,6 @@ const (
 
 	LCB = 24 // {
 	RCB = 25 // }
-
-	
 
 	// KEYWORDS [100,110]
 	FUNCTION = 100 // function keyword

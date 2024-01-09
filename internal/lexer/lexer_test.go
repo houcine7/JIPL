@@ -7,7 +7,6 @@ import (
 	"github.com/houcine7/JIPL/internal/token"
 )
 
-// basic test
 func TestNext(t *testing.T) {
 	MOCK1_TEST := Mock0
 

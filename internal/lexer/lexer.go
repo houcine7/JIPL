@@ -14,9 +14,6 @@ type Lexer struct {
 	char       rune   // the current char (byte as the binary representation of )
 }
 
-/*
-* Init a Lexer
- */
 func InitLexer(input string) *Lexer {
 	l := &Lexer{input: input}
 	l.readChar() // READ FIRST CHAR
@@ -27,7 +24,6 @@ func InitLexer(input string) *Lexer {
 * LEXER METHODS
  */
 func (l *Lexer) NextToken() token.Token {
-	// var tokens []token.Token
 	var tok token.Token
 	l.ignoreWhiteSpace()
 
@@ -134,7 +130,7 @@ func (l *Lexer) NextToken() token.Token {
 		}
 	}
 
-	l.readChar() // move to next char
+	l.readChar()
 	return tok
 }
 
@@ -144,7 +140,7 @@ func (l *Lexer) NextToken() token.Token {
  */
 func (l *Lexer) readChar() {
 
-	if l.readPos >= utf8.RuneCount([]byte(l.input)) { // the number of runes in the string
+	if l.readPos >= utf8.RuneCount([]byte(l.input)) {
 		l.char = 0 // SET THE CURRENT CHAR TO NUL CHARACTER (TO INDICATE THE TERMINATION OF THE STRING)
 	} else {
 		r, size := utf8.DecodeRuneInString(l.input[l.readPos:])
@@ -154,11 +150,10 @@ func (l *Lexer) readChar() {
 	}
 }
 
-
 // read string literals
 func (l *Lexer) ReadString() string {
 	currPosition := l.currentPos + 1
-	for  {
+	for {
 		l.readChar()
 		if l.char == '"' || l.char == 0 {
 			break
@@ -169,7 +164,6 @@ func (l *Lexer) ReadString() string {
 
 /*
 * This function peeks the next character
-* used in case of tokens that are compose of more than 2 tokens ( like "==" and "<=" ">=" and "!=")
  */
 
 func (l *Lexer) peek() rune {
@@ -182,14 +176,13 @@ func (l *Lexer) peek() rune {
 
 /*
 * 	this functions reads the identifiers and keywords
-*   starting with a letter and stops when it finds a non letter character
  */
 func (l *Lexer) ReadIdentifier() string {
 	currPosition := l.currentPos
 
 	//identifiers can't start with numbers
 	if currPosition == 0 && utils.IsDigit(l.char) {
-		return "" // this identifier is invalid
+		return ""
 	}
 
 	for utils.IsDigit(l.char) || utils.IsLetter(l.char) {
@@ -200,7 +193,6 @@ func (l *Lexer) ReadIdentifier() string {
 
 /*
 * this function reads the numbers
-* starting with a digit and stops when it reaches a non digit value
  */
 func (l *Lexer) ReadNumber() string {
 	currentPos := l.currentPos

@@ -9,27 +9,23 @@ import (
 	"github.com/houcine7/JIPL/internal/token"
 )
 
-/*
-* The parser struct defining the parser type
-* which is used to parse the tokens
- */
 type Parser struct {
 	lexer  *lexer.Lexer // points to the lexer
 	errors []string     // parser errors
 
 	currToken   token.Token // the current token in examination
-	peekedToken token.Token // the next token after the current one
+	peekedToken token.Token // the next token to parse
 
 	prefixParseFuncs map[token.TokenType]prefixParse // function used for prefix parsing
-	infixParseFuncs  map[token.TokenType]infixParse // function used for infix parsing
+	infixParseFuncs  map[token.TokenType]infixParse  // function used for infix parsing
 }
 
 /*
-Types of expression parsing functions
+types of expression parsing functions
 */
 type (
 	prefixParse func() ast.Expression
-	// takes param as the left operand of the infix operator
+	// takes param as the left operand of the infix operatoration
 	infixParse func(ast.Expression) ast.Expression
 )
 
@@ -52,7 +48,6 @@ func InitParser(l *lexer.Lexer) *Parser {
 		token.FALSE,
 	}, p.parseBoolen)
 	p.addPrefixFn(token.LP, p.parseGroupExpression)
-	// prefix expression parser
 	p.addAllPrefixFn([]token.TokenType{
 		token.EX_MARK,
 		token.MINUS,
@@ -61,6 +56,7 @@ func InitParser(l *lexer.Lexer) *Parser {
 	p.addPrefixFn(token.FUNCTION, p.parseFunctionExpression)
 	p.addPrefixFn(token.FOR, p.parseForLoopExpression)
 	p.addPrefixFn(token.STRING, p.parseStringLit)
+
 	// infix expresion parseres
 	p.infixParseFuncs = make(map[token.TokenType]infixParse)
 	infixParseTokens := []token.TokenType{
@@ -86,11 +82,6 @@ func InitParser(l *lexer.Lexer) *Parser {
 		token.DECREMENT,
 		token.INCREMENT,
 	}, p.parsePostFixExpression)
-	/*
-		fmt.Println("-------------------------")
-		fmt.Println("Map prefix fns is:", p.prefixParseFuncs)
-		fmt.Println("Map infix fns is", p.infixParseFuncs)
-	*/
 	return p
 }
 
@@ -108,9 +99,7 @@ func trace(msg string, p *Parser) *Parser {
 }
 
 /*
-Helper function to move the pointer of the token in the lexer
-reads the next token stores it on the peek but before store the previous
-peekedToken on currentToken
+Helper function to move the token pointers of the parser
 */
 func (p *Parser) Next() {
 	p.currToken = p.peekedToken
@@ -126,10 +115,7 @@ func (p *Parser) Parse() *ast.Program {
 
 	for !p.currentTokenEquals(token.FILE_ENDED) {
 		stm := p.parseStmt()
-		//fmt.Println(stm.TokenLiteral())
-		// if stm !=nil {
 		program.Statements = append(program.Statements, stm)
-		// }
 		// Advance with token
 		p.Next()
 	}
@@ -138,7 +124,6 @@ func (p *Parser) Parse() *ast.Program {
 
 /*
 * a parser function to parse statements
-*  and returns the parsed statement
  */
 func (p *Parser) parseStmt() ast.Statement {
 	switch p.currToken.Type {
@@ -246,14 +231,10 @@ func (p *Parser) parseFunctionExpression() ast.Expression {
 	if !p.expectedNextToken(token.CreateToken(token.IDENTIFIER, "")) {
 		return nil
 	}
-	//fmt.Println("------ in Identifier ----")
 	exp.Name = p.parseIdentifier().(*ast.Identifier)
 	if !p.expectedNextToken(token.CreateToken(token.LP, "(")) {
 		return nil
 	}
-
-	//fmt.Println("function.Name is ", exp.Name)
-	//fmt.Println(p.currToken)
 
 	// fn params
 	exp.Parameters = p.parsePramas()
@@ -412,15 +393,10 @@ func (p *Parser) parseBlocStatements() *ast.BlockStm {
 // expression statments parsing
 func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 
-	//debuggin puropos
-	//defer trace("parse expression statements called..", p)
-	//fmt.Println("------->", p.currToken)
 	stm := &ast.ExpressionStatement{Token: p.currToken}
 
-	// fmt.Println(p.parseExpression(token.IDENTIFIER))
 	stm.Expression = p.parseExpression(LOWEST)
 
-	// fmt.Println(stm)
 	if p.peekTokenEquals(token.S_COLON) {
 		p.Next()
 	}
@@ -429,8 +405,7 @@ func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 }
 
 func (p *Parser) parseExpression(precedence int) ast.Expression {
-	
-	// fmt.Println("parse exp", p.currToken)
+
 	prefix := p.prefixParseFuncs[p.currToken.Type]
 
 	if prefix == nil {
@@ -465,7 +440,6 @@ func (p *Parser) parseInt() ast.Expression {
 	val, err := strconv.ParseInt(p.currToken.Value, 0, 0)
 
 	if err != nil {
-		//fmt.Println(p.currToken)
 		errMsg := fmt.Sprintf("Parsing error, couldn't parse string %s to Integer value",
 			p.currToken.Value)
 		p.errors = append(p.errors, errMsg)
@@ -502,7 +476,6 @@ func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 		Left:     left,
 	}
 
-	
 	prevPrecedence := p.currentPrecedence()
 	p.Next()
 	exp.Right = p.parseExpression(prevPrecedence)
@@ -528,7 +501,6 @@ func (p *Parser) notFoundPrefixFunctionError(t token.Token) {
 
 /*
 * function to return the encountered errors
-* while parsing
  */
 func (p *Parser) Errors() []string {
 	return p.errors
@@ -545,8 +517,6 @@ func (p *Parser) peekTokenEquals(t token.TokenType) bool {
 
 /*
 * function checks if the given token has the same type of the next token
-* it returns true and advances the tokens pointers of the parser
-* if not returns false and adds a parser error
  */
 func (p *Parser) expectedNextToken(t token.Token) bool {
 	if p.peekTokenEquals(t.Type) {
@@ -558,7 +528,6 @@ func (p *Parser) expectedNextToken(t token.Token) bool {
 	return false
 }
 
-// function to peekPrecedence
 /* Function to peek precedence of the next token*/
 func (p *Parser) peekPrecedence() int {
 	if prec, ok := precedences[p.peekedToken.Type]; ok {
@@ -577,9 +546,7 @@ func (p *Parser) currentPrecedence() int {
 }
 
 /*
-* function to peek Errors in next token
-* takes the peeked wrong token and adds error
-* message to the errors array of the parser
+* function to add Error of wrong next token
  */
 func (p *Parser) peekedError(expectedToken token.Token) {
 

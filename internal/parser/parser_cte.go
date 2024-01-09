@@ -8,7 +8,7 @@ import (
 const (
 	_ int = iota
 	LOWEST
-	EQUALS          //==
+	EQUALS //==
 
 	LESS_OR_GREATER // > <
 	SUM             // +
@@ -29,15 +29,15 @@ var precedences = map[token.TokenType]int{
 	token.LT_OR_EQ: LESS_OR_GREATER,
 	token.GT_OR_EQ: LESS_OR_GREATER,
 
-	token.PLUS:  SUM,
-	token.MINUS: SUM,
-	token.SLASH: PRODUCT,
-	token.STAR:  PRODUCT,
+	token.PLUS:   SUM,
+	token.MINUS:  SUM,
+	token.SLASH:  PRODUCT,
+	token.STAR:   PRODUCT,
 	token.MODULO: PRODUCT,
 
 	token.AND: EQUALS,
-	token.OR: EQUALS,
-	
+	token.OR:  EQUALS,
+
 	token.LP: CALL,
 
 	token.INCREMENT: INCREMENT,

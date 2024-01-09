@@ -31,21 +31,16 @@ func (prog *Program) ToString() string {
 	return bf.String()
 }
 
-/*
-* Def statement Node (def x = add(1,2) - 1 + (10/5))
- */
 type DefStatement struct {
 	Token token.Token // toke.DEF token
 	Name  *Identifier
 	Value Expression
 }
 
-// method satisfies the Node interface
 func (defStm *DefStatement) TokenLiteral() string {
 	return defStm.Token.Value
 }
 
-// toString method from Node interface
 func (defStm *DefStatement) ToString() string {
 	var bf bytes.Buffer
 
@@ -59,18 +54,13 @@ func (defStm *DefStatement) ToString() string {
 	return bf.String()
 }
 
-// satisfies the statement interface
 func (defStm *DefStatement) statementNode() {}
 
-/*
-* Identifier node as an expression node
- */
 type Identifier struct { //
 	Token token.Token // token.IDENTIFIER token
 	Value string
 }
 
-// to imp Nodes
 func (ident *Identifier) TokenLiteral() string {
 	return ident.Token.Value
 }
@@ -79,22 +69,14 @@ func (ident *Identifier) ToString() string {
 	return ident.Value
 }
 
-// to imp Expression Node
-// even do in let identifiers are not expressions but in other
-// parts they does provide a value
 func (ident *Identifier) expressionNode() {}
 
-/*
-* return statement node
-* return 5; || return f1(1,2); ==> return <expression>;
- */
 type ReturnStatement struct {
 	Token       token.Token // the token is "return"
 	ReturnValue Expression
 }
 
-// Node interface methods
-func (reStm *ReturnStatement) TokenLiteral() string { // satisfies the node interface
+func (reStm *ReturnStatement) TokenLiteral() string {
 	return reStm.Token.Value
 }
 
@@ -109,12 +91,8 @@ func (resStm *ReturnStatement) ToString() string {
 	return bf.String()
 }
 
-// statements imp
-func (reStm *ReturnStatement) statementNode() {} // satisfies the statement interface
+func (reStm *ReturnStatement) statementNode() {}
 
-/*
-the ast node of boolean
-*/
 type BooleanExp struct {
 	Token token.Token
 	Value bool // the boolean value corresponds to bool
@@ -130,10 +108,6 @@ func (b *BooleanExp) ToString() string {
 
 func (b *BooleanExp) expressionNode() {}
 
-/*
-the ast node for function expressions
-(functoin definition are expressions)
-*/
 type FunctionExp struct {
 	Token      token.Token   // the function token used to represent functions
 	Name       *Identifier   // the name of the functoin
@@ -141,7 +115,6 @@ type FunctionExp struct {
 	FnBody     *BlockStm     // function body
 }
 
-// implments Node & expression interface
 func (fnExp *FunctionExp) TokenLiteral() string {
 	return fnExp.Token.Value
 }
@@ -167,7 +140,6 @@ func (fnExp *FunctionExp) ToString() string {
 	return bf.String()
 }
 
-// function invocation
 type FunctionCall struct {
 	Token     token.Token  // token '(' LP AST node constructs in infix pos fun()
 	Function  Expression   // identifier
@@ -197,16 +169,11 @@ func (fnCall *FunctionCall) ToString() string {
 	return bf.String()
 }
 
-/*
-* Expressions statement node
-* they are wrappers that consists solely of one expression
- */
 type ExpressionStatement struct {
 	Token      token.Token
 	Expression Expression
 }
 
-// Node's interface methods
 func (exStm *ExpressionStatement) TokenLiteral() string {
 	return exStm.Token.Value
 }
@@ -221,8 +188,6 @@ func (exStm *ExpressionStatement) ToString() string {
 
 func (exStm *ExpressionStatement) statementNode() {}
 
-
-// string literal node
 type StringLiteral struct {
 	Token token.Token
 	Value string
@@ -236,13 +201,9 @@ func (strLit *StringLiteral) ToString() string {
 }
 func (strLit *StringLiteral) expressionNode() {}
 
-/*
-* Integer Literals Node
-* they can Occur in different type of expression's
- */
 type IntegerLiteral struct {
 	Token token.Token
-	Value int // we do not specify int size to make it platform independent (32,64)
+	Value int
 }
 
 func (intLiteral *IntegerLiteral) TokenLiteral() string {
@@ -255,10 +216,6 @@ func (intLiteral *IntegerLiteral) ToString() string {
 	return intLiteral.Token.Value
 }
 
-/*
-Prefix Expression Nodes
--5; !8787;
-*/
 type PrefixExpression struct {
 	Token    token.Token // the prefix token
 	Operator string
@@ -282,10 +239,6 @@ func (prefixExp *PrefixExpression) ToString() string {
 
 func (prefixExp *PrefixExpression) expressionNode() {}
 
-/*
-Infix Expression Nodes
-left + right
-*/
 type InfixExpression struct {
 	Token    token.Token // the operator token
 	Right    Expression
@@ -311,11 +264,6 @@ func (infixExp *InfixExpression) ToString() string {
 
 func (infixExp *InfixExpression) expressionNode() {}
 
-/*
-For loop expressions Node
-for def i=0;i<7;i=i+1 {
-}
-*/
 type ForLoopExpression struct {
 	Token         token.Token // the 'for' token idencate for loop starting point
 	InitStm       Statement   // the initializaiton stm
@@ -344,12 +292,8 @@ func (forExp *ForLoopExpression) ToString() string {
 	return bf.String()
 }
 
-/*
-	PostfixExpression Node
-*/
-
 type PostfixExpression struct {
-	Token    token.Token // token "INC , DEC (++,--)"
+	Token    token.Token
 	Operator string
 	Left     Expression
 }
@@ -368,10 +312,6 @@ func (postfixExp *PostfixExpression) ToString() string {
 	return bf.String()
 }
 
-/*
-  - If expression Nodes
-    implements node and expression Interfaces
-*/
 type IfExpression struct {
 	Token     token.Token // the if token (token.IF)
 	Condition Expression
@@ -400,10 +340,6 @@ func (ifExp *IfExpression) ToString() string {
 	return bf.String()
 }
 
-/*
-Block statments Node
-implements the node and statment Interfaces
-*/
 type BlockStm struct {
 	Token      token.Token // the { token the starting of if block
 	Statements []Statement
