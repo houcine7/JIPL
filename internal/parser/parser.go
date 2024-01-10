@@ -82,9 +82,9 @@ func InitParser(l *lexer.Lexer) *Parser {
 		token.DECREMENT,
 		token.INCREMENT,
 	}, p.parsePostFixExpression)
+
 	return p
 }
-
 func (p *Parser) printTrace(a ...any) {
 	const dots = ". . . . . . . . . . . . . . . . . . . . . . "
 	const lnDots = len(dots)
@@ -380,9 +380,7 @@ func (p *Parser) parseBlocStatements() *ast.BlockStm {
 	for !p.currentTokenEquals(token.RCB) &&
 		!p.currentTokenEquals(token.FILE_ENDED) {
 		stm := p.parseStmt()
-		if stm != nil {
-			stms = append(stms, stm)
-		}
+		stms = append(stms, stm)
 		p.Next()
 	}
 	blockStm.Statements = stms
@@ -432,7 +430,14 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 }
 
 func (p *Parser) parseIdentifier() ast.Expression {
-	return &ast.Identifier{Token: p.currToken, Value: p.currToken.Value}
+	stm := &ast.Identifier{Token: p.currToken,
+		Value: p.currToken.Value}
+	if p.peekTokenEquals(token.ASSIGN) {
+		p.Next()
+		exp := p.parseAssignementExpr(stm)
+		return exp
+	}
+	return stm
 }
 
 func (p *Parser) parseInt() ast.Expression {
@@ -481,7 +486,6 @@ func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 	exp.Right = p.parseExpression(prevPrecedence)
 
 	return exp
-
 }
 
 func (p *Parser) parsePostFixExpression(left ast.Expression) ast.Expression {
@@ -490,6 +494,18 @@ func (p *Parser) parsePostFixExpression(left ast.Expression) ast.Expression {
 		Operator: p.currToken.Value,
 		Left:     left,
 	}
+	return exp
+}
+
+func (p *Parser) parseAssignementExpr(left *ast.Identifier) ast.Expression {
+	exp := &ast.AssignementExpression{
+		Token: p.currToken,
+		Left:  left,
+	}
+	p.Next() //  move to the right side
+
+	exp.AssignementValue = p.parseExpression(LOWEST)
+
 	return exp
 }
 

@@ -128,8 +128,6 @@ func TestParsePrefixExp(t *testing.T) {
 
 		checkParserErrors(parser, t)
 
-		fmt.Println("Length of statements ", len(pr.Statements))
-
 		checkIsProgramStmLengthValid(pr, t, 1)
 
 		stm, ok := pr.Statements[0].(*ast.ExpressionStatement)
@@ -223,9 +221,6 @@ func TestIfExpression(t *testing.T) {
 
 	ifExpr, ok := stm.Expression.(*ast.IfExpression)
 
-	fmt.Println("------------- IF statement string representation -----------")
-	fmt.Println(ifExpr.ToString())
-	fmt.Println("--------------------------")
 	if !ok {
 		t.Fatalf("stm.Expression type is not as expected: *ast.Expression, got=%T", ifExpr)
 	}
@@ -309,9 +304,6 @@ func TestForLoopFunctions(t *testing.T) {
 	if !testLiteralExpression(t, postFix.Left, "i") {
 		return
 	}
-
-	fmt.Println("---------- for blooock--------")
-	fmt.Println(exp.Body.ToString())
 }
 
 func TestParseFunctions(t *testing.T) {
@@ -337,8 +329,6 @@ func TestParseFunctions(t *testing.T) {
 	testLiteralExpression(t, fnExp.Name, "test")
 	testLiteralExpression(t, fnExp.Parameters[0], "pr1")
 	testLiteralExpression(t, fnExp.Parameters[1], "pr2")
-	fmt.Println("------------ function string ------------")
-	fmt.Println(fnExp.ToString())
 }
 
 func TestFnCallExpression(t *testing.T) {
@@ -358,9 +348,6 @@ func TestFnCallExpression(t *testing.T) {
 
 	fnCall, ok := stm.Expression.(*ast.FunctionCall)
 
-	fmt.Println("------------- function CALL string --------")
-	fmt.Println(fnCall.ToString())
-
 	if !ok {
 		t.Fatalf("the stm.Expression is not of type FunctionCall instead got %T",
 			stm.Expression)
@@ -370,6 +357,38 @@ func TestFnCallExpression(t *testing.T) {
 	for i, argExp := range fnCall.Arguments {
 		testLiteralExpression(t, argExp, fmt.Sprintf("arg%d", i+1))
 	}
+
+}
+
+func TestAssignExpr(t *testing.T) {
+	testData := data.AssignExp
+	pr, parser := getProg(testData.Input)
+
+	// check for parsing errors
+	checkParserErrors(parser, t)
+
+	// check for program length
+	checkIsProgramStmLengthValid(pr, t, 1)
+
+	stm, ok := pr.Statements[0].(*ast.ExpressionStatement)
+
+	if !ok {
+		t.Fatalf("the pr.Stataments[0] is not of type *ast.ExpressionStatement. instead got %T",
+			pr.Statements[0])
+	}
+
+	assignExp, ok := stm.Expression.(*ast.AssignementExpression)
+
+	if !ok {
+		t.Fatalf("the stm.Expression is not not of type *ast.AssignementExpression. instead got %T",
+			stm.Expression)
+	}
+
+	testIdentifier(t, assignExp.Left, testData.ExpectedIden)
+	testIntegerLiteral(t, assignExp.AssignementValue, testData.ExpectedVal)
+
+	fmt.Println("------------ assign expression String ------------")
+	fmt.Println(assignExp.ToString())
 
 }
 

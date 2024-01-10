@@ -102,6 +102,12 @@ type BlockStm struct {
 	Statements []Statement
 }
 
+type AssignementExpression struct {
+	Token            token.Token
+	Left             *Identifier
+	AssignementValue Expression
+}
+
 // Node implementation
 func (prog *Program) TokenLiteral() string {
 	if len(prog.Statements) > 0 {
@@ -333,17 +339,32 @@ func (ident *Identifier) ToString() string {
 	return ident.Value
 }
 
+func (assignExpr *AssignementExpression) TokenLiteral() string {
+	return assignExpr.Token.Value
+}
+
+func (assignExpr *AssignementExpression) ToString() string {
+
+	var bf bytes.Buffer
+	bf.WriteString(assignExpr.Left.ToString())
+	bf.WriteString(" = ")
+	bf.WriteString(assignExpr.AssignementValue.ToString())
+
+	return bf.String()
+}
+
 // expression implementaions
-func (postfixExp *PostfixExpression) expressionNode() {}
-func (forExp *ForLoopExpression) expressionNode()     {}
-func (infixExp *InfixExpression) expressionNode()     {}
-func (prefixExp *PrefixExpression) expressionNode()   {}
-func (strLit *StringLiteral) expressionNode()         {}
-func (intLiteral *IntegerLiteral) expressionNode()    {}
-func (fnCall *FunctionCall) expressionNode()          {}
-func (fnExp *FunctionExp) expressionNode()            {}
-func (b *BooleanExp) expressionNode()                 {}
-func (ident *Identifier) expressionNode()             {}
+func (postfixExp *PostfixExpression) expressionNode()     {}
+func (forExp *ForLoopExpression) expressionNode()         {}
+func (infixExp *InfixExpression) expressionNode()         {}
+func (prefixExp *PrefixExpression) expressionNode()       {}
+func (strLit *StringLiteral) expressionNode()             {}
+func (intLiteral *IntegerLiteral) expressionNode()        {}
+func (fnCall *FunctionCall) expressionNode()              {}
+func (fnExp *FunctionExp) expressionNode()                {}
+func (b *BooleanExp) expressionNode()                     {}
+func (ident *Identifier) expressionNode()                 {}
+func (assignExpr *AssignementExpression) expressionNode() {}
 
 // statemetns implmentations
 func (b *BlockStm) statementNode()                {}

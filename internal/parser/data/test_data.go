@@ -108,4 +108,14 @@ var (
 	FunctionExp2 = "function test(pr1,pr2){}"
 
 	FunctionCall = "functionName(arg1,arg2);"
+
+	AssignExp = struct {
+		Input        string
+		ExpectedVal  interface{}
+		ExpectedIden string
+	}{
+		"varname = 4645;",
+		4645,
+		"varname",
+	}
 )

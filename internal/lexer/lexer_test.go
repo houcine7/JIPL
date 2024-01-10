@@ -17,9 +17,7 @@ func TestNext(t *testing.T) {
 
 		calculatedToken := myLexer.NextToken()
 
-		log.Print(calculatedToken)
 		// test the token type
-
 		if et.expectedTokenType != calculatedToken.Type {
 			log.Fatalf("tests index %d -> tokenType wrong, expected:[%q] and got:[%q]",
 				i, et.expectedTokenType, calculatedToken.Type)
@@ -41,11 +39,7 @@ func TestNext2(t *testing.T) {
 
 	for i, et := range tests {
 		calculatedToken := myLexer.NextToken()
-		log.Println("------- TOKEN ---------")
-		log.Println(calculatedToken, calculatedToken.Type, calculatedToken.Value)
-		log.Println("----------------")
 		// test the token type
-
 		if et.expectedTokenType != calculatedToken.Type {
 			log.Fatalf("tests index %d -> tokenType wrong, expected:[%d] and got:[%d]",
 				i, et.expectedTokenType, calculatedToken.Type)
@@ -68,9 +62,6 @@ func TestNext3(t *testing.T) {
 
 	for i, et := range tests {
 		calculatedToken := myLexer.NextToken()
-		log.Println("------- TOKEN ---------")
-		log.Println(calculatedToken, calculatedToken.Type, calculatedToken.Value)
-		log.Println("----------------")
 		// test the token type
 
 		if et.expectedTokenType != calculatedToken.Type {

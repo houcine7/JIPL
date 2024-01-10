@@ -9,13 +9,13 @@ import (
 )
 
 func main() {
-	currUser, err := user.Current();
+	currUser, err := user.Current()
 
-	if err !=nil{
+	if err != nil {
 		panic(err)
 	}
 
-	fmt.Printf("Hello %s!, welcome to JIPL happy coding :)",currUser.Username)
+	fmt.Printf("Hello %s!, welcome to JIPL happy coding :)", currUser.Username)
 	fmt.Printf("Start typing JIPL code ...\n")
-	repl.Start(os.Stdin,os.Stdout)
+	repl.Start(os.Stdin, os.Stdout)
 }

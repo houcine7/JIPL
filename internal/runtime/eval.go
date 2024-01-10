@@ -147,6 +147,7 @@ func evalIfExpression(ifExp *ast.IfExpression, ctx *types.Context) (types.Object
 }
 
 func evalInfixExpression(operator string, leftOperand, rightOperand types.ObjectJIPL) (types.ObjectJIPL, *debug.Error) {
+
 	if leftOperand.GetType() == types.T_INTEGER &&
 		rightOperand.GetType() == types.T_INTEGER {
 		return evalIntInfixExpression(operator, leftOperand, rightOperand)

@@ -1,7 +1,6 @@
 package runtime
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/houcine7/JIPL/internal/lexer"
@@ -60,11 +59,6 @@ func TestIfElseEval(t *testing.T) {
 	if intObj.Val != 10 {
 		t.Fatalf("the value of the integer object is not valid expected :%d and got %d", 10, intObj.Val)
 	}
-}
-
-func TestClosures(t *testing.T) {
-	input := closuresTests
-	fmt.Println(input)
 }
 
 // ------------- TEST HELPERS  -----------------
