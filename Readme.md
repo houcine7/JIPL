@@ -1,32 +1,22 @@
-# JIPL : Just an Interpreted Programming Language
+# JIPL: Just an Interpreted Programming Language
 
 ## What is JIPL?
 
-JIPL is an interpreted programming language. It is written in Go and is very easy to use.
-It is also very easy to learn. It is a very simple language and is not very powerful. It is not meant to be used for large projects
+JIPL is an interpreted programming language, written in Go, that is easy to use and straightforward to learn. It is a simple language but may not be suitable for large projects.
 
-## How to use JIPL (With go installed)?
+## How to use JIPL (With Go installed)?
 
 1. Clone the repo
 
-   ```
-   git clone
+   ``` git clone ```
 
-   ```
+2. Cd to the repo
 
-2. cd to the repo
-
-   ```
-   cd JIPL
-
-   ```
+   ``` cd JIPL ```
 
 3. Run the main.go file
 
-   ```
-    go run ./cmd/main.go
-
-   ```
+   ``` go run ./cmd/main.go ```
 
 4. Now you can use JIPL in the terminal
 
@@ -38,6 +28,7 @@ It is also very easy to learn. It is a very simple language and is not very powe
       1. integers
       2. booleans
       3. undefined
+      4. strings
    2. defining variables
       1. integers
          1. syntax
@@ -51,7 +42,6 @@ It is also very easy to learn. It is a very simple language and is not very powe
             1. `def a = true`
 
 2. Functions
-
    1. syntax
       1. `function function_name(arguments) { function_body ;})`
    2. example
@@ -63,7 +53,6 @@ It is also very easy to learn. It is a very simple language and is not very powe
          1. `add(10,20);`
 
 3. If statements
-
    1. syntax
       1. `if (condition) { body ;} else { else_body ;}`
    2. example
