@@ -1,6 +1,7 @@
 package runtime
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/houcine7/JIPL/internal/lexer"
@@ -34,7 +35,7 @@ func TestBooleanEval(t *testing.T) {
 }
 
 func TestReturnEval(t *testing.T) {
-	input := "return 10;5454447;"
+	input := returnEvalTestData
 	evaluated := getEvaluated(input)
 	intObj, ok := evaluated.(*types.Integer)
 	if !ok {
@@ -48,13 +49,7 @@ func TestReturnEval(t *testing.T) {
 }
 
 func TestIfElseEval(t *testing.T) {
-	input := `
-	if (10 > 5) {
-		return 10;
-	} else {
-		return 5;
-	}
-	`
+	input := elseIfEvalTestData
 	evaluated := getEvaluated(input)
 	intObj, ok := evaluated.(*types.Integer)
 	if !ok {
@@ -67,7 +62,12 @@ func TestIfElseEval(t *testing.T) {
 	}
 }
 
-// /
+func TestClosures(t *testing.T) {
+	input := closuresTests
+	fmt.Println(input)
+}
+
+// ------------- TEST HELPERS  -----------------
 func testBooleanObject(t *testing.T, evaluated types.ObjectJIPL, expected bool) {
 	boolObj, ok := evaluated.(*types.Boolean)
 	if !ok {
@@ -136,4 +136,23 @@ var (
 		{"def var4 = 1;def var5 =2; var4+var5;", 3},
 		{"def var6=1; def var7=7+var6; var7;", 8},
 	}
+
+	elseIfEvalTestData = `
+	if (10 > 5) {
+		return 10;
+	} else {
+		return 5;
+	}
+	`
+	returnEvalTestData = "return 10;5454447;"
+
+	closuresTests = `
+	function outer() {
+			def a=777;
+			function inner() {
+					out(a)
+			}
+			return inner;
+	}
+	`
 )

@@ -2,7 +2,14 @@ package types
 
 type Context struct {
 	Store map[string]ObjectJIPL
-	Outer *Context // for nested scopes
+	Outer *Context // the outer scope
+}
+
+func NewContext() *Context {
+	return &Context{
+		Store: make(map[string]ObjectJIPL),
+		Outer: nil,
+	}
 }
 
 func NewContextWithOuter(outer *Context) *Context {
@@ -24,11 +31,4 @@ func (ctx *Context) Get(key string) (ObjectJIPL, bool) {
 func (ctx *Context) Set(key string, val ObjectJIPL) ObjectJIPL {
 	ctx.Store[key] = val
 	return val
-}
-
-func NewContext() *Context {
-	return &Context{
-		Store: make(map[string]ObjectJIPL),
-		Outer: nil,
-	}
 }

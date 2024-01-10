@@ -26,6 +26,7 @@ func Eval(node ast.Node, ctx *types.Context) (types.ObjectJIPL, *debug.Error) {
 			return nil, err
 		}
 		ctx.Set(node.Name.Value, val)
+
 		return val, err
 	case *ast.Identifier:
 		return evalIdentifier(node, ctx)
@@ -43,7 +44,6 @@ func Eval(node ast.Node, ctx *types.Context) (types.ObjectJIPL, *debug.Error) {
 		if err != debug.NOERROR {
 			return nil, err
 		}
-
 		args, err := evalExpressions(node.Arguments, ctx)
 		if err != debug.NOERROR {
 			return nil, err
@@ -73,28 +73,26 @@ func Eval(node ast.Node, ctx *types.Context) (types.ObjectJIPL, *debug.Error) {
 }
 
 func applyFunction(function types.ObjectJIPL, args []types.ObjectJIPL) (types.ObjectJIPL, *debug.Error) {
-	switch function := function.(type) {
+	switch fn := function.(type) {
 	case *types.Function:
-		appendedCtx := appedCtx(function, args)
-		eval, err := Eval(function.Body, appendedCtx)
 
+		appendedCtx := appedCtx(fn, args)
+
+		eval, err := Eval(fn.Body, appendedCtx)
 		if err != debug.NOERROR {
 			return nil, err
 		}
 
-		if eval, ok := eval.(*types.Return); ok {
-			return eval.Val, debug.NOERROR
-		}
+		return uwrapReturnValue(eval), debug.NOERROR
+		// No return statement for the fn body
 	case *types.BuiltIn:
-		return function.Fn(args...), debug.NOERROR
+		return fn.Fn(args...), debug.NOERROR
 	default:
-		return nil, debug.NewError("not a function")
+		return nil, debug.NewError("function not defined")
 	}
-	return nil, debug.NewError("not a function")
 }
 
 func appedCtx(fn *types.Function, args []types.ObjectJIPL) *types.Context {
-
 	ctx := types.NewContextWithOuter(fn.Ctx)
 
 	for i, param := range fn.Params {
@@ -102,20 +100,13 @@ func appedCtx(fn *types.Function, args []types.ObjectJIPL) *types.Context {
 	}
 
 	return ctx
-
 }
 
-func Eval2(node ast.Node, ctx *types.Context) (types.ObjectJIPL, *debug.Error) {
-	switch node := node.(type) {
-	case *ast.Program:
-		return evalAllProgramStatements(node.Statements, ctx)
-	case *ast.ExpressionStatement:
-		return Eval2(node.Expression, ctx)
-	case *ast.IntegerLiteral:
-		return &types.Integer{Val: node.Value}, debug.NOERROR
-	default:
-		return nil, debug.NewError("unknown node type")
+func uwrapReturnValue(obj types.ObjectJIPL) types.ObjectJIPL {
+	if returnVal, ok := obj.(*types.Return); ok {
+		return returnVal.Val
 	}
+	return types.UNDEFIEND
 }
 
 func evalExpressions(node []ast.Expression, ctx *types.Context) ([]types.ObjectJIPL, *debug.Error) {
@@ -152,7 +143,7 @@ func evalIfExpression(ifExp *ast.IfExpression, ctx *types.Context) (types.Object
 	if ifExp.ElseBody != nil {
 		return Eval(ifExp.ElseBody, ctx)
 	}
-	return nil, debug.NewError("if condition is not a met  and no else body")
+	return nil, debug.NOERROR
 }
 
 func evalInfixExpression(operator string, leftOperand, rightOperand types.ObjectJIPL) (types.ObjectJIPL, *debug.Error) {
@@ -313,7 +304,7 @@ func evalAllProgramStatements(stms []ast.Statement, ctx *types.Context) (types.O
 
 func evalABlockStatements(stms []ast.Statement, ctx *types.Context) (types.ObjectJIPL, *debug.Error) {
 	var result types.ObjectJIPL
-	var err *debug.Error = debug.NOERROR
+	var err = debug.NOERROR
 
 	for _, stm := range stms {
 		result, err = Eval(stm, ctx)
