@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	ast "github.com/houcine7/JIPL/internal/AST"
+	"github.com/houcine7/JIPL/internal/debug"
 )
 
 type TypeObj string
@@ -39,7 +40,7 @@ type Function struct {
 }
 
 type BuiltIn struct {
-	Fn func(args ...ObjectJIPL) ObjectJIPL
+	Fn func(args ...ObjectJIPL) (ObjectJIPL, *debug.Error)
 }
 
 // implementing OBjectJIPL interface by supported types

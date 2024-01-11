@@ -89,7 +89,7 @@ func applyFunction(function types.ObjectJIPL, args []types.ObjectJIPL) (types.Ob
 		return uwrapReturnValue(eval), debug.NOERROR
 		// No return statement for the fn body
 	case *types.BuiltIn:
-		return fn.Fn(args...), debug.NOERROR
+		return fn.Fn(args...)
 	default:
 		return nil, debug.NewError("function not defined")
 	}
@@ -291,7 +291,7 @@ func evalDecrementPostfix(operand types.ObjectJIPL) (types.ObjectJIPL, *debug.Er
 
 func evalAllProgramStatements(stms []ast.Statement, ctx *types.Context) (types.ObjectJIPL, *debug.Error) {
 	var result types.ObjectJIPL
-	var err *debug.Error = debug.NOERROR
+	var err = debug.NOERROR
 
 	for _, stm := range stms {
 		result, err = Eval(stm, ctx)
