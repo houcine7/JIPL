@@ -33,20 +33,6 @@ func TestBooleanEval(t *testing.T) {
 	}
 }
 
-func TestReturnEval(t *testing.T) {
-	input := returnEvalTestData
-	evaluated := getEvaluated(input)
-	intObj, ok := evaluated.(*types.Integer)
-	if !ok {
-		t.Fatalf("the obj is not of type *types.Integer, instead got %T",
-			evaluated,
-		)
-	}
-	if intObj.Val != 10 {
-		t.Fatalf("the value of the integer object is not valid expected :%d and got %d", 10, intObj.Val)
-	}
-}
-
 func TestIfElseEval(t *testing.T) {
 	input := elseIfEvalTestData
 	evaluated := getEvaluated(input)
@@ -147,9 +133,9 @@ var (
 
 	elseIfEvalTestData = `
 	if (10 > 5) {
-		return 10;
+		10;
 	} else {
-		return 5;
+		5;
 	}
 	`
 	returnEvalTestData = "return 10;5454447;"

@@ -20,9 +20,6 @@ func InitLexer(input string) *Lexer {
 	return l
 }
 
-/*
-* LEXER METHODS
- */
 func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
 	l.ignoreWhiteSpace()
@@ -114,7 +111,6 @@ func (l *Lexer) NextToken() token.Token {
 	case '"':
 		tok = token.CreateToken(token.STRING, l.ReadString())
 	case 0:
-		// program ends here
 		tok = token.CreateToken(token.FILE_ENDED, string(rune(0)))
 	default:
 		if utils.IsLetter(l.char) {
@@ -135,9 +131,6 @@ func (l *Lexer) NextToken() token.Token {
 }
 
 // HELPER FUNCTIONS
-/*
-* This function give us the next character
- */
 func (l *Lexer) readChar() {
 
 	if l.readPos >= utf8.RuneCount([]byte(l.input)) {
@@ -162,21 +155,13 @@ func (l *Lexer) ReadString() string {
 	return l.input[currPosition:l.currentPos]
 }
 
-/*
-* This function peeks the next character
- */
-
 func (l *Lexer) peek() rune {
-	// if we still in the input length range
 	if l.readPos >= utf8.RuneCount([]byte(l.input)) {
 		return 0
 	}
 	return rune(l.input[l.readPos])
 }
 
-/*
-* 	this functions reads the identifiers and keywords
- */
 func (l *Lexer) ReadIdentifier() string {
 	currPosition := l.currentPos
 
@@ -191,9 +176,6 @@ func (l *Lexer) ReadIdentifier() string {
 	return l.input[currPosition:l.currentPos]
 }
 
-/*
-* this function reads the numbers
- */
 func (l *Lexer) ReadNumber() string {
 	currentPos := l.currentPos
 	for utils.IsDigit(l.char) {
@@ -202,9 +184,6 @@ func (l *Lexer) ReadNumber() string {
 	return l.input[currentPos:l.currentPos]
 }
 
-/*
-*  function to skip white space and break lines
- */
 func (l *Lexer) ignoreWhiteSpace() {
 	for l.char == ' ' || l.char == '\t' || l.char == '\n' || l.char == '\r' {
 		l.readChar()

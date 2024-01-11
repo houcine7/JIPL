@@ -55,7 +55,7 @@ func Start(in io.Reader, out io.Writer) {
 		if len(errs) != 0 {
 			io.WriteString(out, fmt.Sprintf("%d errors ❌ occurred while parsing your input \n", len(errs)))
 			for idx, e := range errs {
-				io.WriteString(out, fmt.Sprintf("error number:%d with message: %s \n", idx, e))
+				io.WriteString(out, fmt.Sprintf("error number:%d with message: %s \n", idx, e.Message))
 			}
 			continue
 		}

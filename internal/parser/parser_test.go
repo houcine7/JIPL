@@ -412,8 +412,8 @@ func checkParserErrors(p *Parser, t *testing.T) {
 	t.Log("-------PARSING ERRORS: --------")
 	t.Errorf("%d error found on the parser", len(errors))
 
-	for i, msg := range errors {
-		t.Errorf("Parser index:%d has message %s", i, msg)
+	for i, err := range errors {
+		t.Errorf("Parser index:%d has message %s", i, err.Message)
 	}
 
 	t.FailNow() // mark tests as failed and stop execution

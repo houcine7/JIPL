@@ -11,13 +11,18 @@ import (
 
 type Parser struct {
 	lexer  *lexer.Lexer // points to the lexer
-	errors []string     // parser errors
+	errors []*Error     // parser errors
 
 	currToken   token.Token // the current token in examination
 	peekedToken token.Token // the next token to parse
 
 	prefixParseFuncs map[token.TokenType]prefixParse // function used for prefix parsing
 	infixParseFuncs  map[token.TokenType]infixParse  // function used for infix parsing
+}
+
+type Error struct {
+	Message string
+	Token   token.Token
 }
 
 /*
@@ -32,7 +37,7 @@ type (
 func InitParser(l *lexer.Lexer) *Parser {
 	p := &Parser{
 		lexer:  l,
-		errors: []string{},
+		errors: make([]*Error, 0),
 	}
 
 	p.Next() // to peek the first token
@@ -438,7 +443,7 @@ func (p *Parser) parseInt() ast.Expression {
 	if err != nil {
 		errMsg := fmt.Sprintf("Parsing error, couldn't parse string %s to Integer value",
 			p.currToken.Value)
-		p.errors = append(p.errors, errMsg)
+		p.errors = append(p.errors, &Error{Message: errMsg, Token: p.currToken})
 		return nil
 	}
 	exp.Value = int(val)
@@ -503,10 +508,10 @@ func (p *Parser) parseAssignementExpr(left *ast.Identifier) ast.Expression {
 // ERRORS
 func (p *Parser) notFoundPrefixFunctionError(t token.Token) {
 	msg := fmt.Sprintf("no prefix function for the given tokenType={%d,%s} found", t.Type, t.Value)
-	p.errors = append(p.errors, msg)
+	p.errors = append(p.errors, &Error{msg, t})
 }
 
-func (p *Parser) Errors() []string {
+func (p *Parser) Errors() []*Error {
 	return p.errors
 }
 
@@ -556,7 +561,7 @@ func (p *Parser) peekedError(expectedToken token.Token) {
 		expectedToken.Value, p.peekedToken.Value)
 
 	// append message to the errors array
-	p.errors = append(p.errors, errorMessage)
+	p.errors = append(p.errors, &Error{errorMessage, p.peekedToken})
 }
 
 // functions to add entries to the prefixParseFun and  infixParseFun
