@@ -15,6 +15,9 @@ func Eval(node ast.Node, ctx *types.Context) (types.ObjectJIPL, *debug.Error) {
 	case *ast.ExpressionStatement:
 		return Eval(node.Expression, ctx)
 	case *ast.ReturnStatement:
+		if ctx.Outer == nil {
+			return nil, debug.NewError("return statements can only be used insed a function") // TODO:  to be tested
+		}
 		value, err := Eval(node.ReturnValue, ctx)
 		if err != debug.NOERROR {
 			return nil, err

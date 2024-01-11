@@ -106,9 +106,6 @@ func (p *Parser) Next() {
 	p.peekedToken = p.lexer.NextToken()
 }
 
-/*
-This function is to parse a given program
-*/
 func (p *Parser) Parse() *ast.Program {
 	program := &ast.Program{}
 	program.Statements = []ast.Statement{}
@@ -122,9 +119,6 @@ func (p *Parser) Parse() *ast.Program {
 	return program
 }
 
-/*
-* a parser function to parse statements
- */
 func (p *Parser) parseStmt() ast.Statement {
 	switch p.currToken.Type {
 	case token.DEF:
@@ -307,13 +301,11 @@ func (p *Parser) parseFnArgs() []ast.Expression {
 	return ans
 }
 
-// parse string lit
 func (p *Parser) parseStringLit() ast.Expression {
 	exp := &ast.StringLiteral{Token: p.currToken, Value: p.currToken.Value}
 	return exp
 }
 
-// to parse Return statement
 func (p *Parser) parseReturnStmt() *ast.ReturnStatement {
 	stm := &ast.ReturnStatement{Token: p.currToken}
 
@@ -361,7 +353,6 @@ func (p *Parser) parseIfExpression() ast.Expression {
 	exp.Body = p.parseBlocStatements()
 
 	if p.peekTokenEquals(token.ELSE) {
-		//advance currToken
 		p.Next()
 		if !p.expectedNextToken(token.CreateToken(token.LCB, "{")) {
 			return nil
@@ -502,7 +493,7 @@ func (p *Parser) parseAssignementExpr(left *ast.Identifier) ast.Expression {
 		Token: p.currToken,
 		Left:  left,
 	}
-	p.Next() //  move to the right side
+	p.Next()
 
 	exp.AssignementValue = p.parseExpression(LOWEST)
 
@@ -515,9 +506,6 @@ func (p *Parser) notFoundPrefixFunctionError(t token.Token) {
 	p.errors = append(p.errors, msg)
 }
 
-/*
-* function to return the encountered errors
- */
 func (p *Parser) Errors() []string {
 	return p.errors
 }
@@ -549,11 +537,9 @@ func (p *Parser) peekPrecedence() int {
 	if prec, ok := precedences[p.peekedToken.Type]; ok {
 		return prec
 	}
-	// if not present retrun the lowset(default precedence)
 	return LOWEST
 }
 
-// to return the current precedence
 func (p *Parser) currentPrecedence() int {
 	if prec, ok := precedences[p.currToken.Type]; ok {
 		return prec
@@ -562,7 +548,7 @@ func (p *Parser) currentPrecedence() int {
 }
 
 /*
-* function to add Error of wrong next token
+* function to add Error of wrong type of token
  */
 func (p *Parser) peekedError(expectedToken token.Token) {
 
