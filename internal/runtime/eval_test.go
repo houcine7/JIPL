@@ -61,7 +61,21 @@ func TestIfElseEval(t *testing.T) {
 	}
 }
 
-// ------------- TEST HELPERS  -----------------
+func TestClosure(t *testing.T) {
+	input := closuresTests
+	evaluated := getEvaluated(input)
+
+	intObj, ok := evaluated.(*types.Integer)
+	if !ok {
+		t.Fatalf("the evalued object is not of type *types.Integer, instead go %T", evaluated)
+	}
+
+	if intObj.Val != 777 {
+		t.Fatalf("the value of intObj is no as expected. expected %d instead got %d", 777, intObj.Val)
+	}
+}
+
+// ------------- TEST HELPERS  --------------
 func testBooleanObject(t *testing.T, evaluated types.ObjectJIPL, expected bool) {
 	boolObj, ok := evaluated.(*types.Boolean)
 	if !ok {
@@ -94,7 +108,7 @@ func testIntegerObject(t *testing.T, obj types.ObjectJIPL, expected int) {
 	}
 }
 
-// data
+// --- TESTS DATA ---
 var (
 	boolInputData = []struct {
 		input    string
@@ -142,11 +156,15 @@ var (
 
 	closuresTests = `
 	function outer() {
+			out("outer function called");
 			def a=777;
 			function inner() {
-					out(a)
+					out("inner function called");
+					return a;
 			}
 			return inner;
 	}
+	def fn = outer();
+	fn();
 	`
 )
