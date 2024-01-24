@@ -180,6 +180,13 @@ var (
 		{expectedTokenType: token.INT, expectedValue: "10"},
 		{expectedTokenType: token.DECREMENT, expectedValue: "--"},
 		{expectedTokenType: token.S_COLON, expectedValue: ";"},
+
+		{expectedTokenType: token.RB, expectedValue: "["},
+		{expectedTokenType: token.INT, expectedValue: "2222"},
+		{expectedTokenType: token.COMMA, expectedValue: ","},
+		{expectedTokenType: token.INT, expectedValue: "7777"},
+		{expectedTokenType: token.LB, expectedValue: "]"},
+		{expectedTokenType: token.S_COLON, expectedValue: ";"},
 	}
 
 	NextData0 = []struct {
@@ -263,6 +270,7 @@ var (
 	10 >= 0;
 	10++;
 	10--;
+	[2222,7777];
 	`
 
 	Mock1 = `def val1 = 30;
