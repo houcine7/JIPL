@@ -61,6 +61,7 @@ func InitParser(l *lexer.Lexer) *Parser {
 	p.addPrefixFn(token.FUNCTION, p.parseFunctionExpression)
 	p.addPrefixFn(token.FOR, p.parseForLoopExpression)
 	p.addPrefixFn(token.STRING, p.parseStringLit)
+	p.addPrefixFn(token.LB, p.parseArrayLit)
 
 	// infix expresion parseres
 	p.infixParseFuncs = make(map[token.TokenType]infixParse)
@@ -503,6 +504,42 @@ func (p *Parser) parseAssignementExpr(left *ast.Identifier) ast.Expression {
 	exp.AssignementValue = p.parseExpression(LOWEST)
 
 	return exp
+}
+
+func (p *Parser) parseArrayLit() ast.Expression {
+
+	exp := &ast.ArrayLiteral{
+		Token: p.currToken,
+	}
+	p.Next()
+	exp.Values = p.parseArrayValues()
+
+	return exp
+}
+
+func (p *Parser) parseArrayValues() []ast.Expression {
+
+	var res = []ast.Expression{}
+
+	if p.currentTokenEquals(token.RB) {
+		p.Next() // an empty array
+		return res
+	}
+
+	res = append(res, p.parseExpression(LOWEST))
+
+	for p.peekTokenEquals(token.COMMA) {
+		p.Next()
+		p.Next()
+		res = append(res, p.parseExpression(LOWEST))
+	}
+
+	if !p.expectedNextToken(token.CreateToken(token.RB, "]")) {
+		return nil
+	}
+
+	return res
+
 }
 
 // ERRORS

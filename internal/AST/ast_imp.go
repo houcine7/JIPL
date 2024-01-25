@@ -108,6 +108,11 @@ type AssignementExpression struct {
 	AssignementValue Expression
 }
 
+type ArrayLiteral struct {
+	Token  token.Token //  the [ token starting the arrayLiteral
+	Values []Expression
+}
+
 // Node implementation
 func (prog *Program) TokenLiteral() string {
 	if len(prog.Statements) > 0 {
@@ -353,6 +358,22 @@ func (assignExpr *AssignementExpression) ToString() string {
 	return bf.String()
 }
 
+func (arr *ArrayLiteral) TokenLiteral() string {
+	return arr.Token.Value
+}
+
+func (arr *ArrayLiteral) ToString() string {
+	var bf bytes.Buffer
+	bf.WriteRune('[')
+	for i, exp := range arr.Values {
+		bf.WriteString(exp.ToString())
+		if i != len(arr.Values)-1 {
+			bf.WriteRune(',')
+		}
+	}
+	return bf.String()
+}
+
 // expression implementaions
 func (postfixExp *PostfixExpression) expressionNode()     {}
 func (forExp *ForLoopExpression) expressionNode()         {}
@@ -365,6 +386,7 @@ func (fnExp *FunctionExp) expressionNode()                {}
 func (b *BooleanExp) expressionNode()                     {}
 func (ident *Identifier) expressionNode()                 {}
 func (assignExpr *AssignementExpression) expressionNode() {}
+func (arr *ArrayLiteral) expressionNode()                 {}
 
 // statemetns implmentations
 func (b *BlockStm) statementNode()                {}

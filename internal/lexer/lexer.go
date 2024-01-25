@@ -105,9 +105,9 @@ func (l *Lexer) NextToken() token.Token {
 	case '}':
 		tok = token.CreateToken(token.RCB, string(l.char))
 	case '[':
-		tok = token.CreateToken(token.RB, string(l.char))
-	case ']':
 		tok = token.CreateToken(token.LB, string(l.char))
+	case ']':
+		tok = token.CreateToken(token.RB, string(l.char))
 	case ',':
 		tok = token.CreateToken(token.COMMA, string(l.char))
 	case ';':

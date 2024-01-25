@@ -42,8 +42,8 @@ const (
 
 	LCB = 24 // {
 	RCB = 25 // }
-	RB  = 26 // [
-	LB  = 27 // ]
+	RB  = 26 // ]
+	LB  = 27 // [
 
 	// KEYWORDS [100,110]
 	FUNCTION = 100 // function keyword

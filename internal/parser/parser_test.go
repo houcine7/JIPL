@@ -392,6 +392,30 @@ func TestAssignExpr(t *testing.T) {
 
 }
 
+func TestParseArraysLit(t *testing.T) {
+	input := data.Arrays
+	pr, parser := getProg(input)
+
+	checkParserErrors(parser, t)
+	checkIsProgramStmLengthValid(pr, t, 1)
+
+	stm, ok := pr.Statements[0].(*ast.ExpressionStatement)
+
+	if !ok {
+		t.Fatalf("the pr.stamtemtns[0] is not of type *ast.Expression instead go %T", stm)
+	}
+
+	arrLit, ok := stm.Expression.(*ast.ArrayLiteral)
+	if !ok {
+		t.Fatalf("the stm.Expression is not of type *ast.ArrayList, instead got %T", arrLit)
+	}
+
+	testIntegerLiteral(t, arrLit.Values[0], 1)
+	testInfixExpression(t, arrLit.Values[1], 8, 12, "-")
+	testIntegerLiteral(t, arrLit.Values[2], 7)
+
+}
+
 // Tests helper functions
 func checkIsProgramStmLengthValid(program *ast.Program, t *testing.T, length int) {
 	if len(program.Statements) != length {

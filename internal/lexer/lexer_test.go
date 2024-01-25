@@ -181,11 +181,11 @@ var (
 		{expectedTokenType: token.DECREMENT, expectedValue: "--"},
 		{expectedTokenType: token.S_COLON, expectedValue: ";"},
 
-		{expectedTokenType: token.RB, expectedValue: "["},
+		{expectedTokenType: token.LB, expectedValue: "["},
 		{expectedTokenType: token.INT, expectedValue: "2222"},
 		{expectedTokenType: token.COMMA, expectedValue: ","},
 		{expectedTokenType: token.INT, expectedValue: "7777"},
-		{expectedTokenType: token.LB, expectedValue: "]"},
+		{expectedTokenType: token.RB, expectedValue: "]"},
 		{expectedTokenType: token.S_COLON, expectedValue: ";"},
 	}
 
