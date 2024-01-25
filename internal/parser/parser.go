@@ -277,34 +277,10 @@ func (p *Parser) parseFunctionCallExp(fn ast.Expression) ast.Expression {
 		Token:    p.currToken,
 		Function: fn,
 	}
-
-	exp.Arguments = p.parseFnArgs()
+	p.Next()
+	exp.Arguments = p.parseExpressionList(token.CreateToken(token.RP, ")"))
 
 	return exp
-}
-
-func (p *Parser) parseFnArgs() []ast.Expression {
-
-	var ans = []ast.Expression{}
-	if p.peekTokenEquals(token.RP) {
-		p.Next()
-		return ans
-	}
-
-	p.Next()
-	ans = append(ans, p.parseExpression(LOWEST))
-
-	for p.peekTokenEquals(token.COMMA) {
-		p.Next()
-		p.Next()
-		ans = append(ans, p.parseExpression(LOWEST))
-	}
-
-	if !p.expectedNextToken(token.CreateToken(token.RP, ")")) {
-		return nil
-	}
-
-	return ans
 }
 
 func (p *Parser) parseStringLit() ast.Expression {
@@ -512,16 +488,15 @@ func (p *Parser) parseArrayLit() ast.Expression {
 		Token: p.currToken,
 	}
 	p.Next()
-	exp.Values = p.parseArrayValues()
+	exp.Values = p.parseExpressionList(token.CreateToken(token.RB, "]"))
 
 	return exp
 }
 
-func (p *Parser) parseArrayValues() []ast.Expression {
-
+func (p *Parser) parseExpressionList(t token.Token) []ast.Expression {
 	var res = []ast.Expression{}
 
-	if p.currentTokenEquals(token.RB) {
+	if p.currentTokenEquals(t.Type) {
 		p.Next() // an empty array
 		return res
 	}
@@ -534,7 +509,7 @@ func (p *Parser) parseArrayValues() []ast.Expression {
 		res = append(res, p.parseExpression(LOWEST))
 	}
 
-	if !p.expectedNextToken(token.CreateToken(token.RB, "]")) {
+	if !p.expectedNextToken(t) {
 		return nil
 	}
 

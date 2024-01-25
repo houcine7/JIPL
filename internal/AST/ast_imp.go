@@ -113,6 +113,12 @@ type ArrayLiteral struct {
 	Values []Expression
 }
 
+type IndexExpression struct {
+	Token token.Token // [ token
+	Left  Expression
+	Index Expression
+}
+
 // Node implementation
 func (prog *Program) TokenLiteral() string {
 	if len(prog.Statements) > 0 {
@@ -374,6 +380,18 @@ func (arr *ArrayLiteral) ToString() string {
 	return bf.String()
 }
 
+func (indexExp *IndexExpression) ToString() string {
+	var bf bytes.Buffer
+	bf.WriteString(indexExp.Left.ToString())
+	bf.WriteRune('[')
+	bf.WriteString(indexExp.Index.ToString())
+	bf.WriteRune(']')
+	return bf.String()
+}
+func (indexExp *IndexExpression) TokenLiteral() string {
+	return indexExp.Token.Value
+}
+
 // expression implementaions
 func (postfixExp *PostfixExpression) expressionNode()     {}
 func (forExp *ForLoopExpression) expressionNode()         {}
@@ -387,6 +405,7 @@ func (b *BooleanExp) expressionNode()                     {}
 func (ident *Identifier) expressionNode()                 {}
 func (assignExpr *AssignementExpression) expressionNode() {}
 func (arr *ArrayLiteral) expressionNode()                 {}
+func (indexExp *IndexExpression) expressionNode()         {}
 
 // statemetns implmentations
 func (b *BlockStm) statementNode()                {}
