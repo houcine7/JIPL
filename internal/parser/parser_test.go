@@ -377,7 +377,7 @@ func TestAssignExpr(t *testing.T) {
 			pr.Statements[0])
 	}
 
-	assignExp, ok := stm.Expression.(*ast.AssignementExpression)
+	assignExp, ok := stm.Expression.(*ast.AssignmentExpression)
 
 	if !ok {
 		t.Fatalf("the stm.Expression is not not of type *ast.AssignementExpression. instead got %T",
@@ -385,7 +385,7 @@ func TestAssignExpr(t *testing.T) {
 	}
 
 	testIdentifier(t, assignExp.Left, testData.ExpectedIden)
-	testIntegerLiteral(t, assignExp.AssignementValue, testData.ExpectedVal)
+	testIntegerLiteral(t, assignExp.AssignmentValue, testData.ExpectedVal)
 
 	fmt.Println("------------ assign expression String ------------")
 	fmt.Println(assignExp.ToString())
@@ -411,10 +411,37 @@ func TestParseArraysLit(t *testing.T) {
 	}
 
 	testIntegerLiteral(t, arrLit.Values[0], 1)
-	testInfixExpression(t, arrLit.Values[1], 8, 12, "-")
+	testInfixExpression(t, arrLit.Values[1], 12, 8, "-")
 	testIntegerLiteral(t, arrLit.Values[2], 7)
 
 }
+
+/*func TestArrayIndexExp(t *testing.T) {
+	input := data.ArrayIndex
+
+	pr, parser := getProg(input)
+
+	checkParserErrors(parser, t)
+	checkIsProgramStmLengthValid(pr, t, 1)
+
+	stm, ok := pr.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("the pr.stamtemtns[0] is not of type *ast.Expression instead go %T", stm)
+	}
+
+	arrIdx, ok := stm.Expression.(*ast.IndexExpression)
+	if !ok {
+		t.Fatalf("the stm.Expression is not of type *ast.IndexExpression instead go %T", arrIdx)
+	}
+
+	if !testIdentifier(t, arrIdx.Left, "nums") {
+		return
+	}
+
+	if !testInfixExpression(t, arrIdx.Index, 7, 4, "-") {
+		return
+	}
+}*/
 
 // Tests helper functions
 func checkIsProgramStmLengthValid(program *ast.Program, t *testing.T, length int) {

@@ -119,5 +119,6 @@ var (
 		"varname",
 	}
 
-	Arrays = "[1,8-12,7]"
+	Arrays     = "[1,12 - 8 ,7]"
+	ArrayIndex = "nums[7-4];"
 )

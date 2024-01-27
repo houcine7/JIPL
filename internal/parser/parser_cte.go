@@ -16,6 +16,8 @@ const (
 	PREFIX          // -a or !a
 	CALL            // hello(a)
 
+	INDEX // [ array indexing
+
 	INCREMENT // -- ++
 )
 
@@ -42,4 +44,6 @@ var precedences = map[token.TokenType]int{
 
 	token.INCREMENT: INCREMENT,
 	token.DECREMENT: INCREMENT,
+
+	token.LB: INDEX,
 }

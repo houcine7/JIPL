@@ -102,10 +102,10 @@ type BlockStm struct {
 	Statements []Statement
 }
 
-type AssignementExpression struct {
+type AssignmentExpression struct {
 	Token            token.Token
 	Left             *Identifier
-	AssignementValue Expression
+	AssignmentValue Expression
 }
 
 type ArrayLiteral struct {
@@ -350,16 +350,16 @@ func (ident *Identifier) ToString() string {
 	return ident.Value
 }
 
-func (assignExpr *AssignementExpression) TokenLiteral() string {
+func (assignExpr *AssignmentExpression) TokenLiteral() string {
 	return assignExpr.Token.Value
 }
 
-func (assignExpr *AssignementExpression) ToString() string {
+func (assignExpr *AssignmentExpression) ToString() string {
 
 	var bf bytes.Buffer
 	bf.WriteString(assignExpr.Left.ToString())
 	bf.WriteString(" = ")
-	bf.WriteString(assignExpr.AssignementValue.ToString())
+	bf.WriteString(assignExpr.AssignmentValue.ToString())
 
 	return bf.String()
 }
@@ -403,7 +403,7 @@ func (fnCall *FunctionCall) expressionNode()              {}
 func (fnExp *FunctionExp) expressionNode()                {}
 func (b *BooleanExp) expressionNode()                     {}
 func (ident *Identifier) expressionNode()                 {}
-func (assignExpr *AssignementExpression) expressionNode() {}
+func (assignExpr *AssignmentExpression) expressionNode() {}
 func (arr *ArrayLiteral) expressionNode()                 {}
 func (indexExp *IndexExpression) expressionNode()         {}
 

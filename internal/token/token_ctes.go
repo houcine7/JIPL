@@ -2,58 +2,59 @@ package token
 
 const (
 	// SPECIALS
-	ILLEGAL    = -1 // unknown token
-	FILE_ENDED = 0  //file ended
+	_          TokenType = iota
+	ILLEGAL              // unknown token
+	FILE_ENDED           //file ended
 
 	// references
-	IDENTIFIER = 1
+	IDENTIFIER
 
-	// literals [2,20]
-	INT    = 2 // int values
-	STRING = 3 // string values
+	// literals [2,]
+	INT    // int values
+	STRING // string values
 
 	//OPERATORS  values [40,80]
-	ASSIGN    = 40 // =
-	PLUS      = 41 // +
-	MINUS     = 42 // -
-	STAR      = 43 // *
-	SLASH     = 44 // /
-	EX_MARK   = 45 // !
-	EQUAL     = 46 // ==
-	NOT_EQUAL = 47 // !=
-	INCREMENT = 50 // ++
-	DECREMENT = 51 // --
-	MODULO    = 56 // %
-	AND       = 57 // &&
-	OR        = 58 // ||
+	ASSIGN    // =
+	PLUS      // +
+	MINUS     // -
+	STAR      // *
+	SLASH     // /
+	EX_MARK   // !
+	EQUAL     // ==
+	NOT_EQUAL // !=
+	INCREMENT // ++
+	DECREMENT // --
+	MODULO    // %
+	AND       // &&
+	OR        // ||
 
 	/*Comparators operators*/
-	LT       = 52 // <
-	GT       = 53 // >
-	LT_OR_EQ = 54 // <=
-	GT_OR_EQ = 55 // >=
+	LT       // <
+	GT       // >
+	LT_OR_EQ // <=
+	GT_OR_EQ // >=
 
 	//DELIMITERS [20,39]
-	COMMA   = 20 // ,
-	S_COLON = 21 // ;
+	COMMA   // ,
+	S_COLON // ;
 
-	LP = 22 // (
-	RP = 23 // )
+	LP // (
+	RP // )
 
-	LCB = 24 // {
-	RCB = 25 // }
-	RB  = 26 // ]
-	LB  = 27 // [
+	LCB // {
+	RCB // }
+	RB  // ]
+	LB  // [
 
 	// KEYWORDS [100,110]
-	FUNCTION = 100 // function keyword
-	DEF      = 101 // an identifier definition
-	IF       = 102 // if token
-	ELSE     = 103 // else token
-	RETURN   = 104 // return statement toke
-	BREAK    = 105 // break token
-	CONTINUE = 106 // continue token
-	TRUE     = 107
-	FALSE    = 108
-	FOR      = 109
+	FUNCTION // function keyword
+	DEF      // an identifier definition
+	IF       // if token
+	ELSE     // else token
+	RETURN   // return statement toke
+	BREAK    // break token
+	CONTINUE // continue token
+	TRUE
+	FALSE
+	FOR
 )

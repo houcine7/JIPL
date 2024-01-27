@@ -30,7 +30,7 @@ types of expression parsing functions
 */
 type (
 	prefixParse func() ast.Expression
-	// takes param as the left operand of the infix operatoration
+	// takes param as the left operand of the infix operation
 	infixParse func(ast.Expression) ast.Expression
 )
 
@@ -51,7 +51,7 @@ func InitParser(l *lexer.Lexer) *Parser {
 	p.addAllPrefixFn([]token.TokenType{
 		token.TRUE,
 		token.FALSE,
-	}, p.parseBoolen)
+	}, p.parseBoolean)
 	p.addPrefixFn(token.LP, p.parseGroupExpression)
 	p.addAllPrefixFn([]token.TokenType{
 		token.EX_MARK,
@@ -63,7 +63,7 @@ func InitParser(l *lexer.Lexer) *Parser {
 	p.addPrefixFn(token.STRING, p.parseStringLit)
 	p.addPrefixFn(token.LB, p.parseArrayLit)
 
-	// infix expresion parseres
+	// infix expression parser functions
 	p.infixParseFuncs = make(map[token.TokenType]infixParse)
 	infixParseTokens := []token.TokenType{
 		token.PLUS,
@@ -88,6 +88,7 @@ func InitParser(l *lexer.Lexer) *Parser {
 		token.DECREMENT,
 		token.INCREMENT,
 	}, p.parsePostFixExpression)
+	p.addInfixFn(token.RB, p.parseIndexExp)
 
 	return p
 }
@@ -181,7 +182,7 @@ func (p *Parser) parseDefStmtInForLoop() *ast.DefStatement {
 		return nil
 	}
 
-	p.Next() // move to the expression after =
+	p.Next()
 
 	stm.Value = p.parseExpression(LOWEST)
 
@@ -277,7 +278,6 @@ func (p *Parser) parseFunctionCallExp(fn ast.Expression) ast.Expression {
 		Token:    p.currToken,
 		Function: fn,
 	}
-	p.Next()
 	exp.Arguments = p.parseExpressionList(token.CreateToken(token.RP, ")"))
 
 	return exp
@@ -407,7 +407,7 @@ func (p *Parser) parseIdentifier() ast.Expression {
 		Value: p.currToken.Value}
 	if p.peekTokenEquals(token.ASSIGN) {
 		p.Next()
-		exp := p.parseAssignementExpr(stm)
+		exp := p.parseAssignmentExpr(stm)
 		return exp
 	}
 	return stm
@@ -427,7 +427,7 @@ func (p *Parser) parseInt() ast.Expression {
 	return exp
 }
 
-func (p *Parser) parseBoolen() ast.Expression {
+func (p *Parser) parseBoolean() ast.Expression {
 	exp := &ast.BooleanExp{
 		Token: p.currToken,
 		Value: p.currentTokenEquals(token.TRUE),
@@ -470,24 +470,23 @@ func (p *Parser) parsePostFixExpression(left ast.Expression) ast.Expression {
 	return exp
 }
 
-func (p *Parser) parseAssignementExpr(left *ast.Identifier) ast.Expression {
-	exp := &ast.AssignementExpression{
+func (p *Parser) parseAssignmentExpr(left *ast.Identifier) ast.Expression {
+	exp := &ast.AssignmentExpression{
 		Token: p.currToken,
 		Left:  left,
 	}
-	p.Next()
 
-	exp.AssignementValue = p.parseExpression(LOWEST)
+	p.Next()
+	exp.AssignmentValue = p.parseExpression(LOWEST)
 
 	return exp
 }
 
 func (p *Parser) parseArrayLit() ast.Expression {
-
 	exp := &ast.ArrayLiteral{
-		Token: p.currToken,
+		Token: p.currToken, 
 	}
-	p.Next()
+	fmt.Println("------- parse array --------> ", p.currToken)
 	exp.Values = p.parseExpressionList(token.CreateToken(token.RB, "]"))
 
 	return exp
@@ -496,24 +495,45 @@ func (p *Parser) parseArrayLit() ast.Expression {
 func (p *Parser) parseExpressionList(t token.Token) []ast.Expression {
 	var res = []ast.Expression{}
 
-	if p.currentTokenEquals(t.Type) {
-		p.Next() // an empty array
-		return res
+	if p.peekTokenEquals(t.Type) {
+		p.Next()
+		return res  // an empty array
 	}
 
+	p.Next()
 	res = append(res, p.parseExpression(LOWEST))
-
+	fmt.Println("-------List exp--------> ", p.currToken)
 	for p.peekTokenEquals(token.COMMA) {
 		p.Next()
 		p.Next()
+		fmt.Println("-------List exp--------> ", p.currToken)
 		res = append(res, p.parseExpression(LOWEST))
 	}
 
+	fmt.Println("---------------> ", p.currToken)
 	if !p.expectedNextToken(t) {
 		return nil
 	}
 
 	return res
+
+}
+
+func (p *Parser) parseIndexExp(left ast.Expression) ast.Expression {
+
+	exp := &ast.IndexExpression{
+		Token: p.currToken,
+		Left:  left,
+	}
+
+	p.Next()
+	exp.Index = p.parseExpression(LOWEST)
+
+	if !p.expectedNextToken(token.CreateToken(token.RB, "]")) {
+		return nil
+	}
+
+	return exp
 
 }
 
@@ -538,6 +558,7 @@ func (p *Parser) peekTokenEquals(t token.TokenType) bool {
 
 /*
 * function checks if the given token has the same type of the next token
+*  advances the parser if true if not it adds parsing errors
  */
 func (p *Parser) expectedNextToken(t token.Token) bool {
 	if p.peekTokenEquals(t.Type) {
