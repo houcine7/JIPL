@@ -120,5 +120,5 @@ var (
 	}
 
 	Arrays     = "[1,12 - 8 ,7]"
-	ArrayIndex = "nums[7-4];"
+	ArrayIndex = "nums[7-4]"
 )

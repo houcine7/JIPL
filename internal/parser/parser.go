@@ -88,7 +88,7 @@ func InitParser(l *lexer.Lexer) *Parser {
 		token.DECREMENT,
 		token.INCREMENT,
 	}, p.parsePostFixExpression)
-	p.addInfixFn(token.RB, p.parseIndexExp)
+	p.addInfixFn(token.LB, p.parseIndexExp)
 
 	return p
 }
@@ -484,9 +484,9 @@ func (p *Parser) parseAssignmentExpr(left *ast.Identifier) ast.Expression {
 
 func (p *Parser) parseArrayLit() ast.Expression {
 	exp := &ast.ArrayLiteral{
-		Token: p.currToken, 
+		Token: p.currToken,
 	}
-	fmt.Println("------- parse array --------> ", p.currToken)
+
 	exp.Values = p.parseExpressionList(token.CreateToken(token.RB, "]"))
 
 	return exp
@@ -497,20 +497,19 @@ func (p *Parser) parseExpressionList(t token.Token) []ast.Expression {
 
 	if p.peekTokenEquals(t.Type) {
 		p.Next()
-		return res  // an empty array
+		return res // an empty array
 	}
 
 	p.Next()
 	res = append(res, p.parseExpression(LOWEST))
-	fmt.Println("-------List exp--------> ", p.currToken)
+
 	for p.peekTokenEquals(token.COMMA) {
 		p.Next()
 		p.Next()
-		fmt.Println("-------List exp--------> ", p.currToken)
+
 		res = append(res, p.parseExpression(LOWEST))
 	}
 
-	fmt.Println("---------------> ", p.currToken)
 	if !p.expectedNextToken(t) {
 		return nil
 	}

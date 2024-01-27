@@ -416,7 +416,7 @@ func TestParseArraysLit(t *testing.T) {
 
 }
 
-/*func TestArrayIndexExp(t *testing.T) {
+func TestArrayIndexExp(t *testing.T) {
 	input := data.ArrayIndex
 
 	pr, parser := getProg(input)
@@ -441,7 +441,7 @@ func TestParseArraysLit(t *testing.T) {
 	if !testInfixExpression(t, arrIdx.Index, 7, 4, "-") {
 		return
 	}
-}*/
+}
 
 // Tests helper functions
 func checkIsProgramStmLengthValid(program *ast.Program, t *testing.T, length int) {
