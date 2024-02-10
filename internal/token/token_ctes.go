@@ -57,4 +57,5 @@ const (
 	TRUE
 	FALSE
 	FOR
+	CLASS // class keyword
 )
