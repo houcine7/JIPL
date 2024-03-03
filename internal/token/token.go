@@ -28,6 +28,7 @@ var keywords = map[string]TokenType{
 	"def":      DEF,
 	"if":       IF,
 	"else":     ELSE,
+	"class":    CLASS,
 }
 
 func GetIdentifierTokenType(identifier string) TokenType {

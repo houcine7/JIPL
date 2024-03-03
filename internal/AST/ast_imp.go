@@ -103,8 +103,8 @@ type BlockStm struct {
 }
 
 type AssignmentExpression struct {
-	Token            token.Token
-	Left             *Identifier
+	Token           token.Token
+	Left            *Identifier
 	AssignmentValue Expression
 }
 
@@ -117,6 +117,13 @@ type IndexExpression struct {
 	Token token.Token // [ token
 	Left  Expression
 	Index Expression
+}
+
+type ClassLiteral struct {
+	Token       token.Token
+	Constructor FunctionExp
+	DataMembers []Expression
+	Methods     []FunctionExp
 }
 
 // Node implementation
@@ -393,19 +400,19 @@ func (indexExp *IndexExpression) TokenLiteral() string {
 }
 
 // expression implementaions
-func (postfixExp *PostfixExpression) expressionNode()     {}
-func (forExp *ForLoopExpression) expressionNode()         {}
-func (infixExp *InfixExpression) expressionNode()         {}
-func (prefixExp *PrefixExpression) expressionNode()       {}
-func (strLit *StringLiteral) expressionNode()             {}
-func (intLiteral *IntegerLiteral) expressionNode()        {}
-func (fnCall *FunctionCall) expressionNode()              {}
-func (fnExp *FunctionExp) expressionNode()                {}
-func (b *BooleanExp) expressionNode()                     {}
-func (ident *Identifier) expressionNode()                 {}
+func (postfixExp *PostfixExpression) expressionNode()    {}
+func (forExp *ForLoopExpression) expressionNode()        {}
+func (infixExp *InfixExpression) expressionNode()        {}
+func (prefixExp *PrefixExpression) expressionNode()      {}
+func (strLit *StringLiteral) expressionNode()            {}
+func (intLiteral *IntegerLiteral) expressionNode()       {}
+func (fnCall *FunctionCall) expressionNode()             {}
+func (fnExp *FunctionExp) expressionNode()               {}
+func (b *BooleanExp) expressionNode()                    {}
+func (ident *Identifier) expressionNode()                {}
 func (assignExpr *AssignmentExpression) expressionNode() {}
-func (arr *ArrayLiteral) expressionNode()                 {}
-func (indexExp *IndexExpression) expressionNode()         {}
+func (arr *ArrayLiteral) expressionNode()                {}
+func (indexExp *IndexExpression) expressionNode()        {}
 
 // statemetns implmentations
 func (b *BlockStm) statementNode()                {}

@@ -138,6 +138,16 @@ func (p *Parser) parseStmt() ast.Statement {
 	}
 }
 
+// func (p *Parser) parseClass() *ast.DefStatement {
+// 	exp := &ast.DefStatement{
+// 		Token: p.currToken,
+// 		Value: nil,
+// 	}
+//
+// 	return exp
+//
+// }
+
 /*
 * function used to parse def statement
  */

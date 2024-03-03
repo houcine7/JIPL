@@ -46,7 +46,7 @@ const (
 	RB  // ]
 	LB  // [
 
-	// KEYWORDS [100,110]
+	// KEYWORDS
 	FUNCTION // function keyword
 	DEF      // an identifier definition
 	IF       // if token
@@ -57,5 +57,6 @@ const (
 	TRUE
 	FALSE
 	FOR
-	CLASS // class keyword
+
+	CLASS // the class key word to create a class
 )
