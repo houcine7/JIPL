@@ -166,8 +166,35 @@ func (p *Parser) parseClass() *ast.ClassLiteral {
 	}
 
 	if p.peekTokenEquals(token.CONSTRUCTOR) {
-
+		exp.Constructor = p.parseConstructor(exp.ClassName)
 	}
+
+	for p.peekTokenEquals(token.FUNCTION) {
+		m := p.parseFunctionExpression()
+		methods = append(methods, m.(*ast.FunctionExp))
+	}
+
+	exp.Methods, exp.DataMembers = methods, fields
+	return exp
+}
+
+func (p *Parser) parseConstructor(className *ast.Identifier) *ast.FunctionExp {
+	exp := &ast.FunctionExp{
+		Token: p.currToken,
+		Name:  className,
+	}
+
+	if !p.expectedNextToken(token.CreateToken(token.LP, "(")) {
+		return nil
+	}
+
+	exp.Parameters = p.parsePramas() // this parses til the curr token is (
+
+	if !p.expectedNextToken(token.CreateToken(token.LCB, "{")) {
+		return nil
+	}
+
+	exp.FnBody = p.parseBlocStatements()
 
 	return exp
 }

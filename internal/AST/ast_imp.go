@@ -124,7 +124,7 @@ type ClassLiteral struct {
 	ClassName   *Identifier
 	Constructor *FunctionExp
 	DataMembers []*DefStatement
-	Methods     []FunctionExp
+	Methods     []*FunctionExp
 }
 
 // Node implementation
