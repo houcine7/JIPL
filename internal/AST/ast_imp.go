@@ -121,8 +121,9 @@ type IndexExpression struct {
 
 type ClassLiteral struct {
 	Token       token.Token
-	Constructor FunctionExp
-	DataMembers []Expression
+	ClassName   *Identifier
+	Constructor *FunctionExp
+	DataMembers []*DefStatement
 	Methods     []FunctionExp
 }
 
@@ -399,6 +400,14 @@ func (indexExp *IndexExpression) TokenLiteral() string {
 	return indexExp.Token.Value
 }
 
+func (class *ClassLiteral) TokenLiteral() string {
+	return class.Token.Value
+}
+
+func (class *ClassLiteral) ToString() string {
+	return "TODO: IMPLEMENT TO STRING FOR THE CLASS NODE"
+}
+
 // expression implementaions
 func (postfixExp *PostfixExpression) expressionNode()    {}
 func (forExp *ForLoopExpression) expressionNode()        {}
@@ -413,6 +422,7 @@ func (ident *Identifier) expressionNode()                {}
 func (assignExpr *AssignmentExpression) expressionNode() {}
 func (arr *ArrayLiteral) expressionNode()                {}
 func (indexExp *IndexExpression) expressionNode()        {}
+func (class *ClassLiteral) expressionNode()              {}
 
 // statemetns implmentations
 func (b *BlockStm) statementNode()                {}

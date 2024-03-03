@@ -18,17 +18,18 @@ func CreateToken(tType TokenType, value string) Token {
 *  The keywords map of our tokenizer
  */
 var keywords = map[string]TokenType{
-	"break":    BREAK,
-	"continue": CONTINUE,
-	"return":   RETURN,
-	"true":     TRUE,
-	"false":    FALSE,
-	"for":      FOR,
-	"function": FUNCTION,
-	"def":      DEF,
-	"if":       IF,
-	"else":     ELSE,
-	"class":    CLASS,
+	"break":       BREAK,
+	"continue":    CONTINUE,
+	"return":      RETURN,
+	"true":        TRUE,
+	"false":       FALSE,
+	"for":         FOR,
+	"function":    FUNCTION,
+	"def":         DEF,
+	"if":          IF,
+	"else":        ELSE,
+	"class":       CLASS,
+	"constructor": CONSTRUCTOR,
 }
 
 func GetIdentifierTokenType(identifier string) TokenType {

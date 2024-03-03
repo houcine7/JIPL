@@ -138,15 +138,39 @@ func (p *Parser) parseStmt() ast.Statement {
 	}
 }
 
-// func (p *Parser) parseClass() *ast.DefStatement {
-// 	exp := &ast.DefStatement{
-// 		Token: p.currToken,
-// 		Value: nil,
-// 	}
-//
-// 	return exp
-//
-// }
+func (p *Parser) parseClass() *ast.ClassLiteral {
+
+	exp := &ast.ClassLiteral{
+		Token: p.currToken, // the class key word
+	}
+
+	if !p.expectedNextToken(token.CreateToken(token.IDENTIFIER, "IDEN")) {
+		return nil
+	}
+
+	exp.ClassName = &ast.Identifier{
+		Token: p.currToken,
+		Value: p.currToken.Value,
+	}
+
+	if !p.expectedNextToken(token.CreateToken(token.LCB, "{")) {
+		return nil
+	}
+
+	var fields []*ast.DefStatement
+	var methods []*ast.FunctionExp
+
+	for p.peekTokenEquals(token.DEF) {
+		st := p.parseDefStmt()
+		fields = append(fields, st)
+	}
+
+	if p.peekTokenEquals(token.CONSTRUCTOR) {
+
+	}
+
+	return exp
+}
 
 /*
 * function used to parse def statement
