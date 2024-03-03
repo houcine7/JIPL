@@ -58,6 +58,6 @@ const (
 	FALSE
 	FOR
 
-	CLASS       // the class key word to create a CLASS
-	CONSTRUCTOR // the constructor keyword for classes
+	CLASS       // the class key word to create a class
+	CONSTRUCTOR // constructor keyword
 )
