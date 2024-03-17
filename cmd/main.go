@@ -17,5 +17,6 @@ func main() {
 
 	fmt.Printf("Hello %s!, welcome to JIPL happy coding :)", currUser.Username)
 	fmt.Printf("Start typing JIPL code ...\n")
+
 	repl.Start(os.Stdin, os.Stdout)
 }
