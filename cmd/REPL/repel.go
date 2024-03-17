@@ -17,7 +17,7 @@ import (
 
 // REPL
 /*
-* Function to start method the repl
+* Function to start the repl
  */
 
 const PROMPT = "🟢>_"
@@ -27,6 +27,7 @@ var ctx = types.NewContext()
 const (
 	enableCpuPr = true
 	enableMemPr = true
+	isDebugging = false
 )
 
 func Start(in io.Reader, out io.Writer) {
@@ -82,7 +83,10 @@ func Start(in io.Reader, out io.Writer) {
 		}
 
 		afterParsing := time.Since(start)
-		fmt.Printf("parsing step for %s took %s \n", line, afterParsing)
+
+		if isDebugging {
+			fmt.Printf("parsing step for %s took %s \n", line, afterParsing)
+		}
 
 		evaluated, err := runtime.Eval(pr, ctx)
 		if err != debug.NOERROR {
@@ -90,7 +94,9 @@ func Start(in io.Reader, out io.Writer) {
 			continue
 		}
 
-		fmt.Printf("expression evaluations  step for %s took %s \n", line, afterParsing)
+		if isDebugging {
+			fmt.Printf("expression evaluations  step for %s took %s \n", line, afterParsing)
+		}
 
 		if evaluated != nil {
 			io.WriteString(out, evaluated.ToString())
@@ -107,6 +113,5 @@ func Start(in io.Reader, out io.Writer) {
 			pprof.WriteHeapProfile(f)
 			f.Close()
 		}
-
 	}
 }
