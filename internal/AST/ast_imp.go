@@ -78,7 +78,7 @@ type InfixExpression struct {
 
 type ForLoopExpression struct {
 	Token         token.Token // the 'for' token idencate for loop starting point
-	InitStm       Statement   // the initializaiton stm
+	InitStm       Statement   // the initialization stm
 	Condition     Expression  // loop condition
 	PostIteration Expression  // the post iteration expression
 	Body          *BlockStm   // loop body that would be executed

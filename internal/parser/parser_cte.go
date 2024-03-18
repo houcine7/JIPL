@@ -21,7 +21,7 @@ const (
 	INCREMENT // -- ++
 )
 
-// precedence map to map tokens with thier precedence
+// precedence map to map tokens with their precedence
 var precedences = map[token.TokenType]int{
 	token.EQUAL:     EQUALS,
 	token.NOT_EQUAL: EQUALS,

@@ -422,7 +422,7 @@ func (p *Parser) parseBlocStatements() *ast.BlockStm {
 
 }
 
-// expression statments parsing
+// expression statements parsing
 func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 
 	stm := &ast.ExpressionStatement{Token: p.currToken}
