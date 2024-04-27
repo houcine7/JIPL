@@ -59,6 +59,7 @@ func InitParser(l *lexer.Lexer) *Parser {
 	}, p.parsePrefixExpression)
 	p.addPrefixFn(token.IF, p.parseIfExpression)
 	p.addPrefixFn(token.FUNCTION, p.parseFunctionExpression)
+	p.addPrefixFn(token.CLASS, p.parseClass)
 	p.addPrefixFn(token.FOR, p.parseForLoopExpression)
 	p.addPrefixFn(token.STRING, p.parseStringLit)
 	p.addPrefixFn(token.LB, p.parseArrayLit)
@@ -138,7 +139,7 @@ func (p *Parser) parseStmt() ast.Statement {
 	}
 }
 
-func (p *Parser) parseClass() *ast.ClassLiteral {
+func (p *Parser) parseClass() ast.Expression {
 
 	exp := &ast.ClassLiteral{
 		Token: p.currToken, // the class key word
@@ -161,15 +162,18 @@ func (p *Parser) parseClass() *ast.ClassLiteral {
 	var methods []*ast.FunctionExp
 
 	for p.peekTokenEquals(token.DEF) {
+		p.Next()
 		st := p.parseDefStmt()
 		fields = append(fields, st)
 	}
 
 	if p.peekTokenEquals(token.CONSTRUCTOR) {
+		p.Next()
 		exp.Constructor = p.parseConstructor(exp.ClassName)
 	}
 
 	for p.peekTokenEquals(token.FUNCTION) {
+		p.Next()
 		m := p.parseFunctionExpression()
 		methods = append(methods, m.(*ast.FunctionExp))
 	}

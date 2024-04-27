@@ -122,7 +122,7 @@ var (
 	Arrays     = "[1,12 - 8 ,7]"
 	ArrayIndex = "nums[7-4]"
 
-	ClassExp = `class helloworld() {
+	ClassExp = `class helloworld {
 		
 		def var1= 444;
 		def var2=777;

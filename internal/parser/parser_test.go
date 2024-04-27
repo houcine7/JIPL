@@ -443,23 +443,22 @@ func TestArrayIndexExp(t *testing.T) {
 	}
 }
 
-// func TestClassExpression(t *testing.T) {
-// 	input := data.ClassExp
-//
-// 	pr, parser := getProg(input)
-//
-// 	checkParserErrors(parser, t)
-// 	checkIsProgramStmLengthValid(pr, t, 1)
-//
-// 	stm, ok := pr.Statements[0].(*ast.ExpressionStatement)
-//
-// 	if !ok {
-// 		t.Fatalf("pr.Statements[0] is not of type *ast.ExpressionStatements instead got %T ", stm)
-// 	}
-//
-// 	fmt.Printf("program is %s", pr.ToString())
-//
-// }
+func TestClassExpression(t *testing.T) {
+	input := data.ClassExp
+
+	pr, parser := getProg(input)
+
+	checkParserErrors(parser, t)
+	checkIsProgramStmLengthValid(pr, t, 1)
+
+	stm, ok := pr.Statements[0].(*ast.ExpressionStatement)
+
+	if !ok {
+		t.Fatalf("pr.Statements[0] is not of type *ast.ExpressionStatements instead got %T ", stm)
+	}
+
+	fmt.Printf("program is %s", pr.ToString())
+}
 
 // Tests helper functions
 func checkIsProgramStmLengthValid(program *ast.Program, t *testing.T, length int) {
