@@ -175,7 +175,7 @@ func TestInfixExpression(t *testing.T) {
 		exp, ok := stm.Expression.(*ast.InfixExpression)
 
 		if !ok {
-			t.Fatalf("stm.Expression type is not as expected insetead got= %T", stm.Expression)
+			t.Fatalf("stm.Expression type is not as expected instead got= %T", stm.Expression)
 		}
 
 		if !testLiteralExpression(t, exp.Left, test.Left) ||
@@ -268,7 +268,7 @@ func TestForLoopFunctions(t *testing.T) {
 	stm, ok := pr.Statements[0].(*ast.ExpressionStatement)
 
 	if !ok {
-		t.Fatalf("pr.Statments[0] type is not *ast.ExpressionStatement instead got %T",
+		t.Fatalf("pr.Statements[0] type is not *ast.ExpressionStatement instead got %T",
 			pr.Statements[0],
 		)
 	}
@@ -276,7 +276,7 @@ func TestForLoopFunctions(t *testing.T) {
 	exp, ok := stm.Expression.(*ast.ForLoopExpression)
 
 	if !ok {
-		t.Fatalf("*ast.FoorLoopExpression type is not *ast.ForLoopExpression instead got %T",
+		t.Fatalf("*ast.ForLoopExpression type is not *ast.ForLoopExpression instead got %T",
 			stm.Expression,
 		)
 	}
@@ -314,7 +314,7 @@ func TestParseFunctions(t *testing.T) {
 
 	stm, ok := pr.Statements[0].(*ast.ExpressionStatement)
 	if !ok {
-		t.Fatalf("pr.Statments[0] type is not *ast.ExpressionStatement instead got %T",
+		t.Fatalf("pr.Statements[0] type is not *ast.ExpressionStatement instead got %T",
 			pr.Statements[0],
 		)
 	}
@@ -380,7 +380,7 @@ func TestAssignExpr(t *testing.T) {
 	assignExp, ok := stm.Expression.(*ast.AssignmentExpression)
 
 	if !ok {
-		t.Fatalf("the stm.Expression is not not of type *ast.AssignementExpression. instead got %T",
+		t.Fatalf("the stm.Expression is not not of type *ast.AssignmentExpression. instead got %T",
 			stm.Expression)
 	}
 
@@ -442,6 +442,24 @@ func TestArrayIndexExp(t *testing.T) {
 		return
 	}
 }
+
+// func TestClassExpression(t *testing.T) {
+// 	input := data.ClassExp
+//
+// 	pr, parser := getProg(input)
+//
+// 	checkParserErrors(parser, t)
+// 	checkIsProgramStmLengthValid(pr, t, 1)
+//
+// 	stm, ok := pr.Statements[0].(*ast.ExpressionStatement)
+//
+// 	if !ok {
+// 		t.Fatalf("pr.Statements[0] is not of type *ast.ExpressionStatements instead got %T ", stm)
+// 	}
+//
+// 	fmt.Printf("program is %s", pr.ToString())
+//
+// }
 
 // Tests helper functions
 func checkIsProgramStmLengthValid(program *ast.Program, t *testing.T, length int) {

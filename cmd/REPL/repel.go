@@ -20,14 +20,14 @@ import (
 * Function to start the repl
  */
 
-const PROMPT = "🟢>_"
+const PROMPT = ">_"
 
 var ctx = types.NewContext()
 
 const (
-	enableCpuPr = true
-	enableMemPr = true
-	isDebugging = false
+	enableCpuProfiling = true
+	enableMemProfiling = true
+	isDebugging        = false
 )
 
 func Start(in io.Reader, out io.Writer) {
@@ -43,7 +43,7 @@ func Start(in io.Reader, out io.Writer) {
 	fmt.Println("------------- Welcome to JIPL: you can begin coding now ------------")
 	fmt.Println("                                 👋                              ")
 
-	if enableCpuPr {
+	if enableCpuProfiling {
 
 		f, err := os.Create("cpu.pprof")
 		if err != nil {
@@ -104,7 +104,7 @@ func Start(in io.Reader, out io.Writer) {
 		}
 
 		// take memory snapshot
-		if enableMemPr {
+		if enableMemProfiling {
 			f, err := os.Create("mem.pprod")
 
 			if err != nil {

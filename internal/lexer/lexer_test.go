@@ -41,8 +41,8 @@ func TestNext2(t *testing.T) {
 		calculatedToken := myLexer.NextToken()
 		// test the token type
 		if et.expectedTokenType != calculatedToken.Type {
-			log.Fatalf("tests index %d -> tokenType wrong, expected:[%d] and got:[%d]",
-				i, et.expectedTokenType, calculatedToken.Type)
+			log.Fatalf("tests index %d -> token value is wrong, expected:[%q] and got:[%q] %s:%s",
+				i, et.expectedValue, calculatedToken.Value, et.expectedValue, calculatedToken.Value)
 		}
 
 		// test the token literal value
@@ -71,8 +71,8 @@ func TestNext3(t *testing.T) {
 
 		// test the token literal value
 		if et.expectedValue != calculatedToken.Value {
-			log.Fatalf("tests index %d -> token value is wrong, expected:[%q] and got:[%q]",
-				i, et.expectedValue, calculatedToken.Value)
+			log.Fatalf("tests index %d -> token value is wrong, expected:[%q] and got:[%q] %s:%s",
+				i, et.expectedValue, calculatedToken.Value, et.expectedValue, calculatedToken.Value)
 		}
 	}
 }
@@ -245,6 +245,33 @@ var (
 		{expectedTokenType: token.IDENTIFIER, expectedValue: "val2"},
 		{expectedTokenType: token.RP, expectedValue: ")"},
 		{expectedTokenType: token.S_COLON, expectedValue: ";"},
+
+		{expectedTokenType: token.CLASS, expectedValue: "class"},
+		{expectedTokenType: token.IDENTIFIER, expectedValue: "helloworld"},
+		{expectedTokenType: token.LCB, expectedValue: "{"},
+		{expectedTokenType: token.DEF, expectedValue: "def"},
+		{expectedTokenType: token.IDENTIFIER, expectedValue: "var1"},
+		{expectedTokenType: token.ASSIGN, expectedValue: "="},
+		{expectedTokenType: token.INT, expectedValue: "444"},
+		{expectedTokenType: token.S_COLON, expectedValue: ";"},
+		{expectedTokenType: token.CONSTRUCTOR, expectedValue: "constructor"},
+		{expectedTokenType: token.LP, expectedValue: "("},
+		{expectedTokenType: token.RP, expectedValue: ")"},
+		{expectedTokenType: token.LCB, expectedValue: "{"},
+		{expectedTokenType: token.RCB, expectedValue: "}"},
+		{expectedTokenType: token.FUNCTION, expectedValue: "function"},
+		{expectedTokenType: token.IDENTIFIER, expectedValue: "toString"},
+		{expectedTokenType: token.LP, expectedValue: "("},
+		{expectedTokenType: token.RP, expectedValue: ")"},
+		{expectedTokenType: token.LCB, expectedValue: "{"},
+		{expectedTokenType: token.IDENTIFIER, expectedValue: "out"},
+		{expectedTokenType: token.LP, expectedValue: "("},
+		{expectedTokenType: token.STRING, expectedValue: "hello world"},
+		{expectedTokenType: token.RP, expectedValue: ")"},
+		{expectedTokenType: token.S_COLON, expectedValue: ";"},
+		{expectedTokenType: token.RCB, expectedValue: "}"},
+
+		{expectedTokenType: token.RCB, expectedValue: "}"},
 	}
 
 	Mock2 = `def val1 = 30;
@@ -278,7 +305,20 @@ var (
 	def add = function(x, y) {
 		x + y;
 	};
-	def result = add(val1, val2);`
+	def result = add(val1, val2);
+	class helloworld {
+		
+		def var1=444;
+
+		constructor() {
+
+		}
+
+		function toString() {
+			out("hello world");
+		}
+
+	}`
 
 	Mock0 = "=+(){},;"
 )
