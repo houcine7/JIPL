@@ -179,6 +179,10 @@ func (p *Parser) parseClass() ast.Expression {
 	}
 
 	exp.Methods, exp.DataMembers = methods, fields
+	if !p.expectedNextToken(token.CreateToken(token.RCB, "}")) {
+		return nil
+	}
+
 	return exp
 }
 
